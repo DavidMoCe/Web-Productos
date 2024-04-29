@@ -29,11 +29,11 @@ Route::get('/admin', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('admin.dashboard');
 
-// mostrar pagina de categorias
-Route::get('/categorias', [BackMarketController::class, 'mostrarCategorias']);
 
 // mostrar pagina de productos
-Route::get('/products', [ProductoController::class, 'productos'])->name('products');
+Route::get('/products', [BackMarketController::class, 'mostrarProductos'])->name('products');
+
+
 
 // mostrar pagina detalles del producto
 Route::get('/info-products', function () {

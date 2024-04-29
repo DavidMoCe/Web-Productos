@@ -11,6 +11,26 @@
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     {{ __("You're logged in!") }}
                     <h1>Bienvenido {{ auth()->user()->name }}</h1>
+                    
+                    @if (!isset($tipo))
+                        <div class="p-6 text-gray-900 dark:text-gray-100">
+                            {{ __("Elige el movil") }}
+                        </div>
+                    @endif
+                    
+                    
+                    @if (!isset($modelo) && isset($tipo))
+                        <div class="p-6 text-gray-900 dark:text-gray-100">
+                            {{ __("Elige el modelo") }}
+                        </div>
+                    @endif
+                    
+                    @if (isset($tipo) && isset($modelo))
+                        <div class="p-6 text-gray-900 dark:text-gray-100">
+                            {{ __("Se muestran los modelos") }}
+                        </div>
+                    @endif
+                        
                 </div>
             </div>
         </div>

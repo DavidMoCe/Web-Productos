@@ -16,21 +16,19 @@ class BackMarketController extends Controller
     }
 
     // Método para obtener los listados de Back Market
-    public function mostrarCategorias()
+    public function mostrarProductos($pagina = 1)
     {
         try {
             // Utiliza el método apiget() de BackMarketApi para obtener los listados
-            $listings = $this->backMarketApi->apiGet('/listings/detail?sku=iPhone+14+Plus+128GB+-+Blanco+Estrella+-+Libre+NEWBATTERY+COR');
-            
+            // $listings = $this->backMarketApi->apiGet('/listings/detail?sku=iPhone+14+Plus+128GB+-+Blanco+Estrella+-+Libre+NEWBATTERY+COR');
+            $productosPorPaginas= 50;
+            $listings = $this->backMarketApi->apiGet('listings/?publication_state=2&page='.$pagina.'&page-size='.$productosPorPaginas);
+
             // Devuelve los listados en una respuesta JSON
-
-            // echo  'Producto = '.$listings['sku'];
-            // echo  'Precio = '.$listings['price']."\n";
-
             // return response()->json($listings);
 
             // Llama al método productos() del ProductoController y pasa los listados como argumento
-            return app('App\Http\Controllers\ProductoController')->productos($listings);
+            return app('App\Http\Controllers\ProductoController')->productos($listings, $productosPorPaginas);
 
 
         } catch (\Exception $e) {
