@@ -124,7 +124,12 @@
 
                                         //sacamos el nombre para la imagen
                                         //quitamos los espacios
-                                        $nombreImagenAPI = $nombreTelefono." ".$restoFrase;
+                                        preg_match('/(\S*\s?){2}/', $nombreTelefono, $matches);
+                                        $nombreImagenAPI = isset($matches[0]) ? trim($matches[0]) : '';
+
+                                        preg_match('/\s*-\s*[\p{L}\s]+?(?=\s*-)/', $restoFrase, $matches);
+                                        $nombreImagenAPI .= isset($matches[0]) ? trim($matches[0]) : $nombreImagenAPI;
+
                                         $nombreImagenAPI= str_replace(' ','',$nombreImagenAPI);
                                         
                                         //la ponemos en minuscula

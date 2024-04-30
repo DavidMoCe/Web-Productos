@@ -116,7 +116,7 @@
                                     // El nombre del teléfono
                                     $nombreTelefono = trim($matches[1]);
                                     preg_match('/^(\S*\s?){2}/i', $nombreTelefono, $matches);
-                                    $nombreTelefono2 = trim($matches[0]);
+                                    $nombreTelefono = trim($matches[0]);
 
                                     $descripcionProductoAPI =$capacidad." ". $restoFrase;
                                 } else {
@@ -125,19 +125,23 @@
 
                                     //sacamos el nombre para la imagen
                                     //quitamos los espacios
-                                    $nombreImagenAPI = $nombreTelefono." ".$restoFrase;
+
+                                    preg_match('/\s*-\s*[\p{L}\s]+?(?=\s*-)/', $restoFrase, $matches);
+                                    $nombreImagenAPIResto = isset($matches[0]) ? trim($matches[0]) : $nombreImagenAPI;
+
+                                    $nombreImagenAPI = $nombreTelefono.$nombreImagenAPIResto;
                                     $nombreImagenAPI= str_replace(' ','',$nombreImagenAPI);
                                     
                                     //la ponemos en minuscula
                                     $nombreImagenAPI= strtolower($nombreImagenAPI);
                             @endphp
                             <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
-                                <a href={{ route('admin.modelo', ['tipo' => $nombreTelefono2]) }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
+                                <a href={{ route('admin.modelo', ['tipo' => $nombreTelefono]) }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
                                     <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit m-1">
                                         <img src="./imagenes/{{$nombreImagenAPI}}.jpg" alt="{{ $nombreImagenAPI }}" class="h-full w-full object-cover object-center">
                                     </div>
                                     <div class="col-span-2">
-                                        <h3 class="mt-4 text-xl text-gray-700 font-bold text-center">{{$nombreTelefono2}}</h3>
+                                        <h3 class="mt-4 text-xl text-gray-700 font-bold text-center">{{$nombreTelefono}}</h3>
                                     </div>
                                 </a>
                             </div>

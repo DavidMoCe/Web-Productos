@@ -15,12 +15,12 @@ use App\Http\Middleware\AdminMiddleware;
 // });
 
 //mostrar la pagina por defecto (es la pagina de productos)
-Route::get('/', [ProductoController::class, 'productos']);
+Route::get('/', [BackMarketController::class, 'mostrarProductos']);
 
 //mostrar la pagina de dashboard
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', AdminMiddleware::class])->name('dashboard');
 
 //redireccion que utiliza el controlador LoginController si el usuario se identifica
 Route::get('/redirect',[LoginController::class,'redirect'])->name('redireccionar-panel')->middleware('auth');
