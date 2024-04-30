@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\BackMarketApi;
 
-class BackMarketController extends Controller
-{
+class BackMarketController extends Controller{
     protected $backMarketApi;
 
     // Constructor del controlador
@@ -19,10 +18,17 @@ class BackMarketController extends Controller
     public function mostrarProductos($pagina = 1)
     {
         try {
+            // Extraer el número después de "page="
+            if (preg_match('/page=(\d+)/', $pagina, $matches)) {
+                $numeroPagina = $matches[1];
+            } else if (preg_match('/\d+/', $pagina, $matches)) {
+                $numeroPagina = $matches[0];
+            }
+            
             // Utiliza el método apiget() de BackMarketApi para obtener los listados
             // $listings = $this->backMarketApi->apiGet('/listings/detail?sku=iPhone+14+Plus+128GB+-+Blanco+Estrella+-+Libre+NEWBATTERY+COR');
             $productosPorPaginas= 50;
-            $listings = $this->backMarketApi->apiGet('listings/?publication_state=2&page='.$pagina.'&page-size='.$productosPorPaginas);
+            $listings = $this->backMarketApi->apiGet('listings/?publication_state=2&page='.$numeroPagina.'&page-size='.$productosPorPaginas);
 
             // Devuelve los listados en una respuesta JSON
             // return response()->json($listings);

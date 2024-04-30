@@ -31,7 +31,7 @@ Route::get('/admin', function () {
 
 
 // mostrar pagina de productos
-Route::get('/products', [BackMarketController::class, 'mostrarProductos'])->name('products');
+Route::get('/products/{pagina?}', [BackMarketController::class, 'mostrarProductos'])->name('products');
 
 
 
