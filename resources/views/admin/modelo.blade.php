@@ -83,7 +83,7 @@
                         </div>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 xl:gap-x-8">
+                    {{-- <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 xl:gap-x-8">
                         <!-- Mostrar lista de modelos de iPhone -->
                         @php
                             $productosColeccion = json_decode($productos, true);
@@ -132,7 +132,7 @@
                                     $nombreImagenAPI= strtolower($nombreImagenAPI);
                             @endphp
                             <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
-                                <a href={{ route('admin.modelo', ['tipo' => $nombreTelefono2]) }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
+                                <a href={{ route('admin.modelo') }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
                                     <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit m-1">
                                         <img src="./imagenes/{{$nombreImagenAPI}}.jpg" alt="{{ $nombreImagenAPI }}" class="h-full w-full object-cover object-center">
                                     </div>
@@ -142,7 +142,7 @@
                                 </a>
                             </div>
                         @endforeach
-                    </div>                
+                    </div>                 --}}
                 @endif
             </div>
         </x-app-layout>

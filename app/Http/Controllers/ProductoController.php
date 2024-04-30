@@ -10,7 +10,9 @@ class ProductoController extends Controller{
     // Función principal que puede ser llamada con o sin parámetros
     public function productos($listings = null, $productosPorPaginas = 50){
         $productos = Producto::all(); // Obtener todos los productos de la base de datos
-       $productos = null;
+        
+       $productos = null;//----------------------------------------------------------------
+
         // Verificar si tanto $productos como $listings son distintos de null
         if (!is_null($productos) && !is_null($listings)) {
             // Si ambos están disponibles, mostrar tanto los productos como el listado

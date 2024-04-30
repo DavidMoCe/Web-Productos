@@ -100,14 +100,16 @@
                         {{-- Ejemplo con producto de back market --}}
                         
                         {{-- Agrupar los productos por nombre --}}
-                        {{-- @foreach($productosAPI->groupBy('title') as $nombreProducto => $productos) --}}
-                            @foreach($productosAPI as $productoAPI2)
+
+                        {{-- --------------------------------------------------------------------------------- --}}
+                        @foreach($productosAPI->groupBy('title') as $nombreProducto => $productos)
+                            {{-- @foreach($productosAPI as $productoAPI2) --}}
                                 @php
                                     // Obtén el primer producto de cada grupo
-                                    // $productoAPI2 = $productos->first();
+                                    $productoAPI2 = $productos->first();
 
                                     // Encuentra el nombre del teléfono, la capacidad y el resto de la frase
-                                    if (preg_match('/^(.*?)\s*(\d+[TG]B\b)(\s.*)$/i', $productoAPI2['title'], $matches)) {
+                                    if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $productoAPI2['title'], $matches)) {
                                         // El nombre del teléfono
                                         $nombreTelefono = trim($matches[1]);
                                         // La capacidad
@@ -130,7 +132,7 @@
                                 @endphp
 
                                 <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
-                                    <a href='info-products' rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
+                                    <a href={{ route('info-products') }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
                                         <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit m-1">
                                             <img src="./imagenes/{{$nombreImagenAPI}}.jpg" alt="{{ $productoAPI2['title'] }}" class="h-full w-full object-cover object-center">
                                         </div>
@@ -188,7 +190,7 @@
                             @endphp
                             @for ($x = 1; $x <= $Totalpaginas; $x++)
                                 <li>
-                                    <a href="{{ route('products', ['pagina' => 'page='.$x]) }}" class="pagination-link block hover:bg-gray-200 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">{{ $x }}</a>
+                                    <a href="{{ route('products', ['page='.$x]) }}" class="pagination-link block hover:bg-gray-200 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">{{ $x }}</a>
                                 </li>
                             @endfor
                         </ul>
