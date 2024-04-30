@@ -98,10 +98,13 @@
         <div class="pt-2 pb-3 space-y-1">
             <!-- Ruta que he creado en el archivo web.php y que llama a la funcion redirect de LoginController -->
             <!-- Para dispositivos moviles -->
-            <x-responsive-nav-link :href="route('redireccionar-panel')" :active="request()->routeIs('*dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-
+            @auth
+                @if(Auth::user()->usertype == '1')
+                    <x-responsive-nav-link :href="route('redireccionar-panel')" :active="request()->routeIs('*dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-responsive-nav-link>
+                @endif
+            @endauth
             <x-responsive-nav-link :href="route('products')" :active="request()->routeIs('products') || request()->is('/')">
                 {{ __('Products') }}
             </x-responsive-nav-link>
