@@ -30,6 +30,7 @@ Route::get('/admin',[BackMarketController::class, 'obtenerMoviles'])->middleware
 
 Route::get('/modelo',[BackMarketController::class, 'obtenerModelos'])->middleware(['auth','verified', AdminMiddleware::class])->name('admin.modelo');
 
+Route::get('/stock',[BackMarketController::class, 'obtenerStock'])->middleware(['auth','verified', AdminMiddleware::class])->name('admin.stock');
 
 // mostrar pagina de productos
 Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name('products');
@@ -38,6 +39,13 @@ Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name(
 Route::get('/info-products', function () {
     return view('producto.info-products');
 })->name('info-products');
+
+//mostrar carrito de la compra
+Route::get('/cart', function (){
+    return view('carrito.cart');
+})->name('cart');
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

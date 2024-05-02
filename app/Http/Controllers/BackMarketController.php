@@ -44,8 +44,8 @@ class BackMarketController extends Controller{
         }
     }
 
-    // Método para mostrar los móviles que tenemos en backMarket
-    public function obtenerMoviles(){
+    // Método para obtener todos los productos en linea de Back Market
+    public function obtenerTodosEnLinea(){
         try{
             $allProducts = []; // Inicializa un arreglo vacío para almacenar todos los productos
             $numeroPagina=1;
@@ -65,9 +65,21 @@ class BackMarketController extends Controller{
                 
             }while(isset($listings['next']));
 
-            // Convierte los productos a formato JSON
-            $productosJson = json_encode($allProducts);
-            $productosColeccion = collect(json_decode($productosJson, true));
+            // Convierte los productos a una coleccion
+            $productosColeccion = collect($allProducts);
+            return $productosColeccion;
+
+        } catch (\Exception $e){
+            // Maneja cualquier excepción que pueda ocurrir durante la solicitud
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }    
+
+    // Método para mostrar los móviles que tenemos en backMarket
+    public function obtenerMoviles(){
+        try{
+            // Obtener los productos de la funcion obtenerTodosEnLínea
+            $productosColeccion = $this->obtenerTodosEnLinea();
             return view('admin.dashboard',['productos' => $productosColeccion]);
 
         } catch (\Exception $e){
@@ -76,8 +88,48 @@ class BackMarketController extends Controller{
         }
     }    
 
-    public function ObtenerModelos(){
-        return view('admin.modelo');
+    // Método para mostrar los modelos que tenemos en backMarket
+    public function ObtenerModelos(Request $request){
+        // Obtener el valor del parámetro de página de la solicitud
+        $tipo = $request->query('tipo', null);
+
+        // Obtener los productos de la funcion obtenerTodosEnLínea
+        $productosColeccion = $this->obtenerTodosEnLinea();
+
+        $productosFiltrados = $productosColeccion->filter(function ($producto) use ($tipo) {
+            return strpos($producto['title'], $tipo) !== false;
+        });
+
+        return view('admin.modelo',['productos' => $productosFiltrados]);
+    }
+
+
+      // Método para mostrar los modelos que tenemos en backMarket
+      public function ObtenerStock(Request $request){
+        // Obtener el valor del parámetro de página de la solicitud
+        $modelo = $request->query('modelo', null);
+
+        // Obtener los productos de la funcion obtenerTodosEnLínea
+        $productosColeccion = $this->obtenerTodosEnLinea();
+
+        $productosFiltrados = $productosColeccion->filter(function ($producto) use ($modelo) {
+             // Definir la expresión regular para capturar la palabra antes de la capacidad
+            $patron = '/^(.*?)\s*\d+GB\b/';
+
+            // Verificar si el tipo del producto coincide con el patrón
+            if (preg_match($patron, $producto['title'], $matches)) {
+                // Extraer el tipo capturado por la expresión regular
+                $tipoProducto = trim($matches[1]);
+
+                // Si coincide, devolver verdadero
+                return strtolower($tipoProducto) === strtolower($modelo);;
+            } else {
+                // Si no coincide, devolver falso
+                return false;
+            }
+        });
+
+        return view('admin.stock',['productos' => $productosFiltrados]);
     }
 
     // Otros métodos para manejar otras operaciones con la API de Back Market...

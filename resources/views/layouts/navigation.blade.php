@@ -78,7 +78,7 @@
                             {{ __('Register') }}
                         </a>
                     @endif
-                @endauth 
+                @endauth
             </div>
 
             <!-- Hamburger -->
