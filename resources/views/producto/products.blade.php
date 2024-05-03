@@ -52,7 +52,7 @@
                             @endphp
 
                             <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
-                                <a href='info-products' rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
+                                <a href='info_products' rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
                                     <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit m-1">
                                         <img src="./imagenes/{{$nombreImagen}}.jpg" alt="{{ $producto->nombre." ".$producto->descripcion }}" class="h-full w-full object-cover object-center">
                                     </div>
@@ -137,7 +137,7 @@
                                 @endphp
 
                                 <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
-                                    <a href={{ route('info-products') }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
+                                    <a href={{ route('info_products',  ['producto' => $nombreTelefono, 'capacidad' => $capacidad]) }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
                                         <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit m-1">
                                             <img src="./imagenes/{{$nombreImagenAPI}}.jpg" alt="{{ $productoAPI2['title'] }}" class="h-full w-full object-cover object-center">
                                         </div>

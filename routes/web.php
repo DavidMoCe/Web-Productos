@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\ProductoController;//para obtener productos de la bd
 use App\Http\Controllers\BackMarketController;//para utilizar la api
-use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\AdminMiddleware;//para limitar el acceso del usuario
+use App\Http\Controllers\CartController;//para manejar las funciones del carrito
 
 
 
@@ -36,15 +37,24 @@ Route::get('/stock',[BackMarketController::class, 'obtenerStock'])->middleware([
 Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name('products');
 
 // mostrar pagina detalles del producto
-Route::get('/info-products', function () {
-    return view('producto.info-products');
-})->name('info-products');
+Route::get('/info_products',[BackMarketController::class, 'OntenerUnProducto'])->name('info_products');
+
+
+// Route::get('/info-products', function () {
+//     return view('producto.info-products');
+// })->name('info-products');
 
 //mostrar carrito de la compra
-Route::get('/cart', function (){
-    return view('carrito.cart');
-})->name('cart');
+// Route::get('/cart', function (){
+//     return view('carrito.cart');
+// })->name('cart');
 
+//carrito
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 
 Route::middleware('auth')->group(function () {

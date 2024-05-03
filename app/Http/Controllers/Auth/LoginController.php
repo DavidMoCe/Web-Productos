@@ -13,7 +13,7 @@ use App\Models\User;
 class LoginController extends Controller
 {
     //
-    public function redirect(){
+    public function redirect(Request $request){
         $userType = Auth::user()->usertype;
 
         if ($userType == '1') {
@@ -22,7 +22,14 @@ class LoginController extends Controller
         } else {
             //redirige a dashboard
             return Redirect::route('dashboard');
-        }
+
+            // Transferir los datos del carrito de la cookie a la sesión del usuario si existe una cookie de carrito
+            $cookieCart = json_decode($request->cookie('cart'), true) ?: [];
+            session()->put('cart', $cookieCart);
+
+            // Eliminar la cookie del carrito ahora que los datos han sido transferidos a la sesión del usuario
+            return Redirect::route('dashboard')->withCookie(cookie()->forget('cart'));
+            }
 
     }
 

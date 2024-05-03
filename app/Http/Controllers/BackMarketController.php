@@ -9,12 +9,11 @@ class BackMarketController extends Controller{
     protected $backMarketApi;
     Protected $productosPorPaginas= 50;
     // Constructor del controlador
-    public function __construct(BackMarketApi $backMarketApi)
-    {
+    public function __construct(BackMarketApi $backMarketApi){
         $this->backMarketApi = $backMarketApi;
     }
 
-    // Método para obtener los productos en linea de Back Market
+    // Método para obtener los productos en linea de Back Market Pagina por pagina
     public function mostrarProductos(Request $request){
         try {
             // Obtener el valor del parámetro de página de la solicitud
@@ -44,7 +43,7 @@ class BackMarketController extends Controller{
         }
     }
 
-    // Método para obtener todos los productos en linea de Back Market
+    // Método para obtener todos los productos en linea de Back Market Devuelve una coleccion
     public function obtenerTodosEnLinea(){
         try{
             $allProducts = []; // Inicializa un arreglo vacío para almacenar todos los productos
@@ -96,6 +95,7 @@ class BackMarketController extends Controller{
         // Obtener los productos de la funcion obtenerTodosEnLínea
         $productosColeccion = $this->obtenerTodosEnLinea();
 
+        //filtramos el producto que coincida con algo del titulo
         $productosFiltrados = $productosColeccion->filter(function ($producto) use ($tipo) {
             return strpos($producto['title'], $tipo) !== false;
         });
@@ -103,9 +103,8 @@ class BackMarketController extends Controller{
         return view('admin.modelo',['productos' => $productosFiltrados]);
     }
 
-
-      // Método para mostrar los modelos que tenemos en backMarket
-      public function ObtenerStock(Request $request){
+    // Método para mostrar los modelos que tenemos en backMarket
+    public function ObtenerStock(Request $request){
         // Obtener el valor del parámetro de página de la solicitud
         $modelo = $request->query('modelo', null);
 
@@ -122,7 +121,7 @@ class BackMarketController extends Controller{
                 $tipoProducto = trim($matches[1]);
 
                 // Si coincide, devolver verdadero
-                return strtolower($tipoProducto) === strtolower($modelo);;
+                return strtolower($tipoProducto) === strtolower($modelo);
             } else {
                 // Si no coincide, devolver falso
                 return false;
@@ -130,6 +129,36 @@ class BackMarketController extends Controller{
         });
 
         return view('admin.stock',['productos' => $productosFiltrados]);
+    }
+
+    public function OntenerUnProducto(Request $request){
+        // Obtener el valor del parámetro de página de la solicitud
+        $productoSeleccionado = $request->query('producto', null);
+        $capacidad = $request->query('capacidad', null);
+        // Obtener los productos de la funcion obtenerTodosEnLínea
+        $productosColeccion = $this->obtenerTodosEnLinea();
+
+        //filtramos el producto que coincida con algo del titulo
+        $productosFiltrados = $productosColeccion->filter(function ($producto) use ($productoSeleccionado) {
+            // Definir la expresión regular para capturar la palabra antes de la capacidad
+            $patron = '/^(.*?)\s*\d+GB\b/';
+
+            // Verificar si el tipo del producto coincide con el patrón
+            if (preg_match($patron, $producto['title'], $matches)) {
+                // Extraer el tipo capturado por la expresión regular
+                $tipoProducto = trim($matches[1]);
+
+                // Si coincide, devolver verdadero
+               // return strpos($tipoProducto, $productoSeleccionado) !== false;
+                return strtolower($tipoProducto) === strtolower($productoSeleccionado);
+            } else {
+                // Si no coincide, devolver falso
+                return false;
+            }
+        });
+
+        return view('producto.info_products',['info_producto' => $productosFiltrados, 'capacidad' => $capacidad] );
+
     }
 
     // Otros métodos para manejar otras operaciones con la API de Back Market...
