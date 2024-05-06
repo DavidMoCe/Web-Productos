@@ -146,6 +146,8 @@ class BackMarketController extends Controller{
         $mejor_precio= $this->mejor_Precio($request);
         $mas_popular= $this->mas_popular($request);
 
+        //print_r($_POST);
+
         // Verificar si el producto existe
         if ($productoSeleccionado) {
 
@@ -282,13 +284,17 @@ class BackMarketController extends Controller{
                 });
             }
 
-            // Definir arrays para almacenar los precios y estados de los productos filtrados
-            // Formatear el precio: reemplazar punto por coma
-            $precioFormateado = number_format($productosFiltrados['price'], 2,",",".");
+           // Verificar si se encontró un producto que coincida con los criterios
+            if ($productosFiltrados) {
+                // Formatear el precio: reemplazar punto por coma
+                $precioFormateado = number_format($productosFiltrados['price'], 2, ",", ".");
 
-            // Devolver los datos del producto filtrado como respuesta JSON
-            return response()->json(['datos' => ['precio' => $precioFormateado, 'estado' => $productosFiltrados['state']]]);
-            
+                // Devolver los datos del producto filtrado como respuesta JSON
+                return response()->json(['precio' => $productosFiltrados['price'], 'estado' => $productosFiltrados['state']]);
+            } else {
+                // No se encontró ningún producto que coincida con los criterios, puedes devolver un mensaje de error o algo así
+                return response()->json(['noStock' => 'No hay stock','estado' => $estadoProducto]);
+            }
 
             // Devolver los precios y estados de los productos filtrados como respuesta JSON
             //return response()->json(['datos' => $datosProductos]);

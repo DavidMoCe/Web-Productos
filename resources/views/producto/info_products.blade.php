@@ -20,6 +20,7 @@
             </h2>
         </x-slot>
         @php
+            
 
             // Buscar el primer producto con un título que contenga la capacidad
             $productoDiferente = $info_producto->first(function ($producto) use ($info_producto,$capacidad,$color,$mejor_precio,$mas_popular) {
@@ -43,6 +44,7 @@
                 return $matchCapacidad && $matchColor;
 
             });
+            
 
             // Verificar si se encontró un producto con el título que contiene la cantidad y muestra sus datos
             if ($productoDiferente) {
@@ -55,6 +57,7 @@
                 $garantia = $productoDiferente['warranty_delay'];
                 $moneda = $productoDiferente['currency'];
             }
+            // print_r($productosClasificados);
 
             // Encuentra el nombre del teléfono, la capacidad y el resto de la frase
             if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $titulo, $matches)) {
@@ -301,7 +304,7 @@
                                                         class="flex flex-row flex-nowrap items-center justify-center gap-4">
                                                         <span class="font-bold text-center">Correcto</span>
                                                     </div>
-                                                    <div id=precioEstado class="text-static-default-low text-center text-gray-600">
+                                                    <div id="precioEstado_1" class="text-static-default-low text-center text-gray-600">
                                                         456,36&nbsp;€</div>
                                                 </div>
                                             </a>
@@ -317,7 +320,7 @@
                                                         class="flex flex-row flex-nowrap items-center justify-center gap-4">
                                                         <span class="font-bold text-center">Muy bueno</span>
                                                     </div>
-                                                    <div class="text-static-default-low text-center text-gray-600">
+                                                    <div id="precioEstado_2" class="text-static-default-low text-center text-gray-600">
                                                         439,99&nbsp;€</div>
                                                 </div>
                                                 {{-- <span class="rounded-xs inline-block max-w-full truncate font-bold px-4 py-0 bg-static-info-max text-static-default-hi absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 -rotate-3" title="¡Oferta!">¡Oferta!</span> --}}
@@ -334,7 +337,7 @@
                                                         class="flex flex-row flex-nowrap items-center justify-center gap-4">
                                                         <span class="font-bold text-center">Excelente</span>
                                                     </div>
-                                                    <div class="text-static-default-low text-center">481,42&nbsp;€
+                                                    <div id="precioEstado_3" class="text-static-default-low text-center">481,42&nbsp;€
                                                     </div>
                                                 </div>
                                             </a>
@@ -714,12 +717,31 @@
                         },
                         success: function(response) {
                             // La respuesta se recibe como un objeto JSON
-                            var precio = response.datos.precio;
-                            var estado = response.datos.estado;
+                            var precio = response.precio;
+                            var estado = response.estado;
+                            var noStock = response.noStock;
+                            if(estado===3 || estado === 4 || estado === 'estado_correcto'){
+                                if(precio){
+                                    $('#precioEstado_1').text(precio +' €');
+                                }else{
+                                    $('#precioEstado_1').text(noStock);
+                                }
+                            }else if(estado===1 || estado === 2 || estado === 'estado_muyBueno'){
+                                if(precio){
+                                    $('#precioEstado_2').text(precio +' €');
+                                }else{
+                                    $('#precioEstado_2').text('No hay stock');
+                                }
+                            }else if(estado===0 || estado === 'estado_excelente'){
+                                if(precio){
+                                    $('#precioEstado_3').text(precio +' €');
+                                }else{
+                                    $('#precioEstado_3').text('No hay stock');
+                                }
+                            }
 
-                            
-                            $('#precioEstado').text(precio +' €');
                             $('#estadoProducto').text('Estado: ' + estado);
+                        
                         },
                         error: function(xhr, status, error) {
                             // Manejar errores aquí

@@ -101,10 +101,13 @@
                         
                         {{-- Agrupar los productos por nombre --}}
 
-                        {{-- ----------------------------------------API----------------------------------------- --}}
+                        {{-- ---------------------------------API BACKMARKET----------------------------------------- --}}
+                        @php $contador =0; @endphp
                         @foreach($productosAPI->groupBy('title') as $nombreProducto => $productos)
                             {{-- @foreach($productosAPI as $productoAPI2) --}}
+                                
                                 @php
+                                    $contador++;
                                     // Obtén el primer producto de cada grupo
                                     $productoAPI2 = $productos->first();
 
@@ -139,9 +142,8 @@
                                         //la ponemos en minuscula
                                         $nombreImagenAPI= strtolower($nombreImagenAPI);
                                 @endphp
-
                                 <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
-                                    <a href={{ route('info_products',  ['producto' => $nombreTelefono, 'capacidad' => $capacidad, 'color' => $color]) }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
+                                    <a id="enviarDatos" href={{ route('info_products',  ['producto' => $nombreTelefono, 'capacidad' => $capacidad, 'color' => $color]) }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
                                         <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit m-1">
                                             <img src="./imagenes/{{$nombreImagenAPI}}.jpg" alt="{{ $productoAPI2['title'] }}" class="h-full w-full object-cover object-center">
                                         </div>
