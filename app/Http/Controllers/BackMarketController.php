@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\BackMarketApi;
 
+// use Illuminate\Support\Facades\Session;
+
 class BackMarketController extends Controller{
     protected $backMarketApi;
     Protected $productosPorPaginas= 50;
@@ -74,6 +76,9 @@ class BackMarketController extends Controller{
         }
     }    
 
+
+    // Parte de administrador
+
     // Método para mostrar los móviles que tenemos en backMarket
     public function obtenerMoviles(){
         try{
@@ -131,35 +136,169 @@ class BackMarketController extends Controller{
         return view('admin.stock',['productos' => $productosFiltrados]);
     }
 
+
+    // Parte de detalles del producto
     public function OntenerUnProducto(Request $request){
-        // Obtener el valor del parámetro de página de la solicitud
-        $productoSeleccionado = $request->query('producto', null);
-        $capacidad = $request->query('capacidad', null);
-        // Obtener los productos de la funcion obtenerTodosEnLínea
-        $productosColeccion = $this->obtenerTodosEnLinea();
+        // Obtener los parametros del producto
+        $productoSeleccionado= $this->tipoTelefono($request);
+        $capacidad= $this->capacidad($request);
+        $color= $this->color($request);
+        $mejor_precio= $this->mejor_Precio($request);
+        $mas_popular= $this->mas_popular($request);
 
-        //filtramos el producto que coincida con algo del titulo
-        $productosFiltrados = $productosColeccion->filter(function ($producto) use ($productoSeleccionado) {
-            // Definir la expresión regular para capturar la palabra antes de la capacidad
-            $patron = '/^(.*?)\s*\d+GB\b/';
+        // Verificar si el producto existe
+        if ($productoSeleccionado) {
 
-            // Verificar si el tipo del producto coincide con el patrón
-            if (preg_match($patron, $producto['title'], $matches)) {
-                // Extraer el tipo capturado por la expresión regular
-                $tipoProducto = trim($matches[1]);
+            // Obtener los productos de la funcion obtenerTodosEnLínea
+            $productosColeccion = $this->obtenerTodosEnLinea();
+            //filtramos el producto que coincida con algo del titulo
+            $productosFiltrados = $productosColeccion->filter(function ($producto) use ($productoSeleccionado) {
+                // Definir la expresión regular para capturar la palabra antes de la capacidad
+                $patron = '/^(.*?)\s*\d+GB\b/';
 
-                // Si coincide, devolver verdadero
-               // return strpos($tipoProducto, $productoSeleccionado) !== false;
-                return strtolower($tipoProducto) === strtolower($productoSeleccionado);
-            } else {
-                // Si no coincide, devolver falso
-                return false;
+                // Verificar si el tipo del producto coincide con el patrón
+                if (preg_match($patron, $producto['title'], $matches)) {
+                    // Extraer el tipo capturado por la expresión regular
+                    $tipoProducto = trim($matches[1]);
+
+                    // Si coincide, devolver verdadero
+                // return strpos($tipoProducto, $productoSeleccionado) !== false;
+                    return strtolower($tipoProducto) === strtolower($productoSeleccionado);
+                } else {
+                    // Si no coincide, devolver falso
+                    return false;
+                }
+            });
+
+            $data = ['info_producto' => $productosFiltrados];
+            $variables = ['productoSeleccionado', 'capacidad', 'color','mejor_precio','mas_popular'];
+            //comprobamos si es null o no 
+            foreach ($variables as $variable) {
+                if (isset($$variable)) {
+                    $data[$variable] = $$variable;
+                }
             }
-        });
-
-        return view('producto.info_products',['info_producto' => $productosFiltrados, 'capacidad' => $capacidad] );
-
+            return view('producto.info_products',$data);
+        }else{
+            return redirect()->route('products');
+        }
     }
 
-    // Otros métodos para manejar otras operaciones con la API de Back Market...
+    public function tipoTelefono(Request $request){
+        // Comprobar si el parámetro 'producto' está presente en la solicitud
+        if ($request->has('producto')) {
+            // Obtener el valor del parámetro 'producto'
+            $parametro = $request->query('producto');
+
+            // Guardar los parámetros en la sesión sirve para guardarlo cuando se elige otra opcion dentro del producto
+            //Session::put('productoSeleccionado', $parametro);
+            return $parametro;//devuelve por ejemplo iphone 12
+        }
+        //return Session::get('productoSeleccionado');
+        return '';
+    }
+
+    public function capacidad(Request $request){
+        // Comprobar si el parámetro 'capacidad' está presente en la solicitud
+        if ($request->has('capacidad')) { 
+            // Obtener el valor del parámetro 'capacidad'
+            $parametro = $request->query('capacidad');
+
+            // Guardar los parámetros en la sesión
+            //Session::put('capacidad', $parametro);
+            return $parametro;//devuelve por ejemplo 128GB
+        }
+        //return Session::get('capacidad');
+        return '';
+    }
+
+    public function color(Request $request){
+        // Comprobar si el parámetro 'color' está presente en la solicitud
+        if ($request->has('color')) {
+            // Obtener el valor del parámetro de página de la solicitud
+            $parametro = $request->query('color');
+
+            // Guardar los parámetros en la sesión
+            //Session::put('color', $parametro);
+            return $parametro;//devuelve por ejemplo Titanio Azul
+        }
+        //return Session::get('color');
+        return '';
+    }
+
+    public function mejor_Precio(Request $request){
+        // Comprobar si el parámetro 'mejor_precio' está presente en la solicitud
+        if ($request->has('mejor_precio')) {
+            // Obtener el valor del parámetro de página de la solicitud
+            $parametro = $request->query('mejor_precio');
+
+            // Guardar los parámetros en la sesión
+            //Session::put('mejor_precio', $parametro);
+            return $parametro;//devuelve por ejemplo si o no
+        }
+        return '';
+    }
+
+    public function mas_popular(Request $request){
+        // Comprobar si el parámetro 'mas_popular' está presente en la solicitud
+        if ($request->has('mas_popular')) {
+            // Obtener el valor del parámetro de página de la solicitud
+            $parametro = $request->query('mas_popular');
+
+            // Guardar los parámetros en la sesión
+            //Session::put('mas_popular', $parametro);
+            return $parametro;//devuelve por ejemplo si o no
+        }
+        return '';
+    }
+
+    public function precioEstado(Request $request){
+        try {
+            // Obtener todos los productos en línea
+            $productosColeccion = $this->obtenerTodosEnLinea();
+
+            // Obtener el título del producto de la solicitud
+            $tituloProducto = $request->input('titulo_producto');
+            $estadoProducto = $request->input('productid');
+            
+            if($estadoProducto ==='estado_correcto'){
+                // Filtrar productos que coincidan con el título y el estado
+                $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto) {
+                    return $producto['title'] === $tituloProducto && ($producto['state'] == 3 || $producto['state'] == 4) && strpos($producto['sku'], 'NEWBATTERY') === false;
+                });
+            }
+
+            if($estadoProducto ==='estado_muyBueno'){
+                // Filtrar productos que coincidan con el título y el estado
+                $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto) {
+                    return $producto['title'] === $tituloProducto && ($producto['state'] == 1 || $producto['state'] == 2) && strpos($producto['sku'], 'NEWBATTERY') === false;
+                });
+            }
+
+            if($estadoProducto ==='estado_excelente'){
+                // Filtrar productos que coincidan con el título y el estado
+                $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto) {
+                    return $producto['title'] === $tituloProducto && ($producto['state'] == 0) && strpos($producto['sku'], 'NEWBATTERY') === false;
+                });
+            }
+
+            // Definir arrays para almacenar los precios y estados de los productos filtrados
+            // Formatear el precio: reemplazar punto por coma
+            $precioFormateado = number_format($productosFiltrados['price'], 2,",",".");
+
+            // Devolver los datos del producto filtrado como respuesta JSON
+            return response()->json(['datos' => ['precio' => $precioFormateado, 'estado' => $productosFiltrados['state']]]);
+            
+
+            // Devolver los precios y estados de los productos filtrados como respuesta JSON
+            //return response()->json(['datos' => $datosProductos]);
+
+        } catch (\Exception $e) {
+            // Manejar cualquier excepción que pueda ocurrir durante la solicitud
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+
 }

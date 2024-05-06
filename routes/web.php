@@ -39,10 +39,8 @@ Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name(
 // mostrar pagina detalles del producto
 Route::get('/info_products',[BackMarketController::class, 'OntenerUnProducto'])->name('info_products');
 
+Route::post('/precioEstado',[BackMarketController::class,'precioEstado'])->name('precioEstado');
 
-// Route::get('/info-products', function () {
-//     return view('producto.info-products');
-// })->name('info-products');
 
 //mostrar carrito de la compra
 // Route::get('/cart', function (){
