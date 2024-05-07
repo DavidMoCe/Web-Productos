@@ -102,12 +102,12 @@
                         {{-- Agrupar los productos por nombre --}}
 
                         {{-- ---------------------------------API BACKMARKET----------------------------------------- --}}
-                        @php $contador =0; @endphp
+                        
                         @foreach($productosAPI->groupBy('title') as $nombreProducto => $productos)
                             {{-- @foreach($productosAPI as $productoAPI2) --}}
                                 
                                 @php
-                                    $contador++;
+                                    
                                     // Obtén el primer producto de cada grupo
                                     $productoAPI2 = $productos->first();
 

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,8 +92,8 @@
                             src="https://i.ibb.co/qxkRXSq/component-image-two.png" />
                     </div>
                     <div class="lg:hidden">
-                        <img class="w-full" alt="image of a girl posing"
-                            src="https://i.ibb.co/QMdWfzX/component-image-one.png" />
+                        <img class="w-full" alt="{{ $titulo }}"
+                            src="./imagenes/{{$nombreImagenAPI}}.jpg" />
                         <div class="flex items-center justify-between mt-3 space-x-3">
                             <img alt="image-tag-one" class="lg:w-48 lg:h-48 w-full"
                                 src="https://i.ibb.co/cYDrVGh/Rectangle-245.png" />
@@ -117,7 +118,7 @@
                             <div id=titulo-botonCompra class="dark:text-white">
                                 <div id="title"
                                     class="mb-4 mt-4 lg:!mt-0 flex flex-col md:!flex-row lg:items-center justify-between">
-                                    <h2 class="text-2xl sm:!text-3xl font-bold m-auto">{{ $titulo }}</h2>
+                                    <h2 class="text-2xl sm:!text-3xl font-bold m-auto">{{ $sku_title }}</h2>
                                     <div id="precio" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
                                         <div class="flex items-center mt-4">
                                             <div
@@ -297,7 +298,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <ul class="grid list-none gap-2 grid-cols-3 mb-4">
+                                    <ul id="ul-estado" class="grid list-none gap-2 grid-cols-3 mb-4">
 
                                         @php
                                             // parte de COR
@@ -322,7 +323,7 @@
                                                 return ($producto['state'] == 0) &&
                                                 strpos($producto['title'], $capacidad) !== false &&
                                                 strpos($producto['title'], $color) !== false;
-                                            });
+                                            }); 
                                             // $precio_producto_IMP = $productos_impecable->isEmpty()? "¡Agotado!": number_format($productos_impecable->first()['price'] * 0.95, 2, ",", ".");
                                                
                                             // Inicializar precio del producto seleccionado
@@ -385,7 +386,8 @@
 
 
                                         <li data-qa="grades-0">
-                                            <a aria-current="page" href="#"
+                                            <input type="radio" id="imput-estado" name="hosting" value="hosting-small" class="hidden peer" required />
+                                            <a aria-current="page" href="#scroll=false"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
                                             "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'COR') !== false || strpos($sku_title, 'STA') !== false) ? 'border-black bg-purple-50' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
@@ -409,6 +411,7 @@
                                             </a>
                                         </li>
                                         <li data-qa="grades-1">
+                                            <input type="radio" id="imput-estado" name="hosting" value="hosting-small" class="hidden peer" required />
                                             <a aria-current="page" href="#"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
                                             "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'BUE') !== false || strpos($sku_title, 'MBU') !== false) ? 'border-black bg-purple-50' : ''])
@@ -434,6 +437,7 @@
                                             </a>
                                         </li>
                                         <li data-qa="grades-2">
+                                            <input type="radio" id="imput-estado" name="hosting" value="hosting-small" class="hidden peer" required />
                                             <a aria-current="page" href="#"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
                                             "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'IMP') !== false) ? 'border-black bg-purple-50' : ''])
@@ -481,9 +485,9 @@
                                             </div>
 
                                             <label
-                                                class="relative h-8 w-14 rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent]"{{ $new_battery_present ? 'has-[:checked]:bg-green-500':''}}>
+                                                class="relative h-8 w-14 rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500">
                                                 <input type="checkbox" id="battery-checkbox"
-                                                    class="peer sr-only [&:checked_+_span_svg[data-checked-icon]]:block [&:checked_+_span_svg[data-unchecked-icon]]:hidden" />
+                                                    class="peer sr-only  [&:checked_+_span_svg[data-checked-icon]]:block [&:checked_+_span_svg[data-unchecked-icon]]:hidden" />
                                                 <span
                                                     class="absolute inset-y-0 start-0 z-10 m-1 inline-flex size-6 items-center justify-center rounded-full bg-white text-gray-400 transition-all peer-checked:start-6 peer-checked:text-green-600">
                                                     <svg data-unchecked-icon xmlns="http://www.w3.org/2000/svg"
@@ -509,10 +513,15 @@
                                     <div class="flex flex-row justify-between">
                                         <p class="mb-3 block">Almacenamiento (GB)</p>
                                     </div>
-                                    <ul class="grid list-none gap-3 grid-cols-3">
+                                    <ul id="capacity-list" class="grid list-none gap-3 grid-cols-3">
+                                        @php
+                                            //fdg
+                                            //fg
+                                        @endphp
+
                                         <li data-qa="storage-0">
-                                            <a aria-current="page" href="#"
-                                                class="router-link-active router-link-exact-active cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                            <a aria-current="page" href="#scroll=false"
+                                                class="router-link-active router-link-exact-active cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="ec975bb8-df95-43a5-b04d-de63378f4a12" disabled="false"
                                                 role="link" grade="[object Object]">
@@ -525,8 +534,8 @@
                                             </a>
                                         </li>
                                         <li data-qa="storage-1">
-                                            <a href="#"
-                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                            <a href="#scroll=false"
+                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="58c0e06e-f4b5-4553-a0a2-1f2a5d1da186" disabled="false"
                                                 role="link" grade="[object Object]">
@@ -539,8 +548,8 @@
                                             </a>
                                         </li>
                                         <li data-qa="storage-2">
-                                            <a href="#"
-                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                            <a href="#scroll=false"
+                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out {{ $sku_title && (strpos($sku_title, '512') !== false) ? 'border-black bg-purple-50' : '' }}"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="81ab240b-44af-4bb1-a59a-1321ffdd74ba" disabled="false"
                                                 role="link" grade="[object Object]">
@@ -562,10 +571,11 @@
                                     <div class="flex flex-row justify-between ">
                                         <p class="mb-2 block">Color</p>
                                     </div>
-                                    <ul class="grid list-none gap-2 grid-cols-3">
-                                        <li data-qa="color-0">
+                                    <ul id="color-list" class="grid list-none gap-2 grid-cols-3">
+                                        {{-- Se muestran los colores disponibles --}}
+                                        {{-- <li data-qa="color-0">
                                             <a href="#"
-                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
@@ -583,7 +593,7 @@
                                         </li>
                                         <li data-qa="color-1">
                                             <a href="#"
-                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
@@ -600,7 +610,7 @@
                                         </li>
                                         <li data-qa="color-2">
                                             <a href="#"
-                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
@@ -617,7 +627,7 @@
                                         </li>
                                         <li data-qa="color-3">
                                             <a href="#"
-                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
@@ -634,7 +644,7 @@
                                         </li>
                                         <li data-qa="color-4">
                                             <a href="#"
-                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
@@ -652,7 +662,7 @@
                                         </li>
                                         <li data-qa="color-5">
                                             <a href="#"
-                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                                class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
@@ -666,7 +676,7 @@
                                                     </div>
                                                 </div>
                                             </a>
-                                        </li>
+                                        </li> --}}
                                     </ul>
                                 </div>
                             </div>
@@ -810,6 +820,12 @@
                 </div>
             </div>
         </div>
+
+        @foreach ($info_producto as $producto){
+            {{$producto['sku']}}
+        }
+            
+        @endforeach
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
         <script>
@@ -823,7 +839,7 @@
                     // Enviar la solicitud AJAX
                     $.ajax({
                         type: 'POST',
-                        url: "{{ route('actualizarDetalles') }}",
+                        url: "{{ route('peticionEstados') }}",
                         data: { 
                             productid: productid,
                             titulo_producto: tituloProducto
@@ -849,6 +865,174 @@
                     });
                 });
             });
+
+            
+            document.addEventListener('DOMContentLoaded', function() {
+
+                //obtener capacidad
+                // // Definir un conjunto para almacenar los gigabytes únicos
+                // var uniqueCapacities = new Set();
+                // // Iterar sobre los títulos de los productos y extraer los gigabytes de cada uno
+                // @foreach ($info_producto as $producto)
+                //     var capacity = extractCapacity("{{ $producto['title'] }}");
+                //     uniqueCapacities.add(capacity);
+                // @endforeach
+
+                // // Función para extraer los gigabytes del título del producto
+                // function extractCapacity(title) {
+                //     var matches = title.match(/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i);
+                //     var capacity = matches ? matches[2] : "Sin capacidad";
+                //     return capacity.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
+                // }
+
+                // // Obtener el contenedor donde se agregarán los elementos <li>
+                // var capacityListContainer = document.getElementById('capacity-list');
+                // var CapacityIndex = 0;
+                // // Crear elementos <li> para cada capacidad única
+                // uniqueCapacities.forEach(function(capacity) {
+                //     var li = document.createElement('li');
+                //     li.setAttribute('data-qa', 'capacity-' + CapacityIndex);
+                //     li.innerHTML = `
+                //         <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productid="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
+                //             <div class="w-full">
+                //                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
+                //                     <span class="shrink truncate text-center text-sm">${capacity}</span>
+                //                 </div>
+                //             </div>
+                //         </a>
+                //     `;
+                //     capacityListContainer.appendChild(li);
+                //     CapacityIndex++;
+                // });
+
+                //marcar capacidad al principio
+                var storageItems = document.querySelectorAll('li[data-qa^="storage-"]');
+                storageItems.forEach(function(storageItem) {
+                    var spanElement = storageItem.querySelector('span');
+                    var spanValue = spanElement.innerText.replace(/\s/g, ''); // Eliminar todos los espacios en blanco
+                    var aElement = storageItem.querySelector('a');
+
+                    if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(spanValue)) {
+                        aElement.classList.add('border-black', 'bg-purple-50');
+                    }
+                });
+
+                //obtener colores
+                // Definir un conjunto para almacenar los colores únicos
+                var uniqueColors = new Set();
+                // Iterar sobre los títulos de los productos y extraer el color de cada uno
+                @foreach ($info_producto as $producto)
+                    var color = extractColor("{{ $producto['title'] }}");
+                    uniqueColors.add(color);
+                @endforeach
+                // Función para extraer el color del título del producto
+                function extractColor(title) {
+                    var matches = title.match(/-\s*([a-zA-ZáéíóúñÑÁÉÍÓÚ\s]+)\s*-\s*/);
+                    var color = matches ? matches[1] : "Sin color";
+                    return color.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
+                }
+
+                // Mapa de colores Rgb
+                var colorRgbMap = {
+                    blanco: 'rgb(255,255,255)',
+                    púrpura: 'rgb(167,137,251)',
+                    negro: 'rgb(29, 29, 29)',
+                    rojo: 'rgb(242, 70, 70)',
+                    azul: 'rgb(156, 176, 196)',
+                    verde: 'rgb(217, 239, 213)',
+                    rosa: 'rgb(252, 231, 231)',
+                    medianoche: 'rgb(24, 32, 40)',
+                    'blanco estrella': 'rgb(238, 233, 229)',
+                    'titanio natural': 'rgb(153, 150, 145)',
+                    'titanio azul': 'rgb(72, 76, 85)',
+                    'titanio blanco': 'rgb(255,255,255)',
+                    'Sin color': '#808080'
+                };
+                // Obtener el contenedor donde se agregarán los elementos <li>
+                var colorListContainer = document.getElementById('color-list');
+                var Colorindex=0;
+                // Crear elementos <li> para cada color único
+                uniqueColors.forEach(function(color) {
+                    var li = document.createElement('li');
+                    var RgbCode = colorRgbMap[color.toLowerCase()];
+                    li.setAttribute('data-qa', 'color-' + Colorindex);
+                    li.innerHTML = `
+                        <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productid="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
+                            <div class="w-full">
+                                <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
+                                    <div aria-hidden="" class="rounded-full h-4 w-4 border border-black shrink-0" style="background-color: ${RgbCode};"></div>
+                                    <span class="shrink truncate text-center text-sm">${color}</span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    colorListContainer.appendChild(li);
+                    Colorindex++;
+                });
+
+
+                //marcar color al principio
+                var colorItems = document.querySelectorAll('li[data-qa^="color-"]');
+                colorItems.forEach(function(colorItem) {
+                    var spanElement = colorItem.querySelector('span');
+                    var spanValue = spanElement.innerText; // Eliminar todos los espacios en blanco
+                    var aElement = colorItem.querySelector('a');
+
+                    if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(spanValue)) {
+                        aElement.classList.add('border-black', 'bg-purple-50');
+                    }
+                });
+
+
+            });
+          
+            // document.getElementById('li-hosting-small').addEventListener('click', function() {
+            //     var radio = document.getElementById('hosting-small');
+            //     if (radio) {
+            //         radio.checked = true; 
+            //         var aTag = document.querySelector('#li-hosting-small a');
+            //         if (radio.checked) {
+            //             aTag.classList.add('border-black', 'bg-purple-50');
+            //         } else {
+            //             aTag.classList.remove('border-black', 'bg-purple-50');
+            //         }
+            //     }
+            // });
+
+           // Obtener el elemento <ul> con el ID específico
+            var ulElement = document.getElementById('ul-estado');
+
+            // Obtener todos los elementos <li> dentro del <ul>
+            var liElements = ulElement.querySelectorAll('[data-qa^="grades-"]');
+
+            // Iterar sobre cada elemento <li>
+            liElements.forEach(function(li) {
+                // Agregar un event listener a cada <li>
+                li.addEventListener('click', function() {
+                    // Obtener todos los elementos <a> dentro del <ul>
+                    var allATags = ulElement.querySelectorAll('li a');
+                    allATags.forEach(function(aTag) {
+                        // Remover las clases de todos los <a>
+                        aTag.classList.remove('border-black', 'bg-purple-50');
+                    });
+
+                    // Obtener el radio button dentro del <li> clicado
+                    var radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        // Activar el radio button
+                        radio.checked = true;
+
+                        // Obtener el <a> dentro del <li> clicado
+                        var aTag = this.querySelector('a');
+                        // Agregar las clases al <a>
+                        aTag.classList.add('border-black', 'bg-purple-50');
+                    }
+                });
+            });
+
+
+
+
         </script>
     </x-app-layout>
 </body>

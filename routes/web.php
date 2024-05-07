@@ -40,7 +40,7 @@ Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name(
 Route::get('/info_products',[BackMarketController::class, 'OntenerUnProducto'])->name('info_products');
 
 
-Route::post('/actualizarDetalles',[BackMarketController::class,'actualizarDetalles'])->name('actualizarDetalles');
+Route::post('/peticionEstados',[BackMarketController::class,'peticionEstados'])->name('peticionEstados');
 
 
 //mostrar carrito de la compra
@@ -63,3 +63,6 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+
+                                        
