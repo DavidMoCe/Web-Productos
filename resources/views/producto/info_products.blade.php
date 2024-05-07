@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -10,18 +9,14 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body>
     <x-app-layout>
-
         <x-slot name="header">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Products') }}
             </h2>
         </x-slot>
         @php
-            
-
             // Buscar el primer producto con un título que contenga la capacidad
             $productoDiferente = $info_producto->first(function ($producto) use ($info_producto,$capacidad,$color,$mejor_precio,$mas_popular) {
                 // Especifica aquí la palabra diferente que estás buscando en el título (capacidad) y en el color
@@ -45,7 +40,6 @@
 
             });
             
-
             // Verificar si se encontró un producto con el título que contiene la cantidad y muestra sus datos
             if ($productoDiferente) {
                 // Acceder a las propiedades del producto encontrado
@@ -57,7 +51,6 @@
                 $garantia = $productoDiferente['warranty_delay'];
                 $moneda = $productoDiferente['currency'];
             }
-            // print_r($productosClasificados);
 
             // Encuentra el nombre del teléfono, la capacidad y el resto de la frase
             if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $titulo, $matches)) {
@@ -67,11 +60,9 @@
                 $capacidadIMG = isset($matches[2]) ? $matches[2] : '';
                 // El resto de la frase
                 $restoFraseIMG = isset($matches[3]) ? trim($matches[3]) : '';
-
                 //sacamos el color
                 preg_match('/-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*/', $restoFraseIMG, $matches);
                 $colorIMG = isset($matches[1]) ? trim($matches[1]) : '';
-
                 $descripcionProductoAPIimg = $capacidadIMG . ' ' . $restoFraseIMG;
             } else {
                 echo 'No se pudo encontrar el nombre del teléfono y la capacidad en el título del producto.';
@@ -83,13 +74,11 @@
             $nombreImagenAPI = isset($matches[0]) ? trim($matches[0]) : '';
 
             preg_match('/\s*-\s*[\p{L}\s]+?(?=\s*-)/', $restoFraseIMG, $matches);
+
             $nombreImagenAPI .= isset($matches[0]) ? trim($matches[0]) : $nombreImagenAPI;
-
             $nombreImagenAPI = str_replace(' ', '', $nombreImagenAPI);
-
             //la ponemos en minuscula
             $nombreImagenAPI = strtolower($nombreImagenAPI);
-            
 
         @endphp
         <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
@@ -133,10 +122,10 @@
                                         <div class="flex items-center mt-4">
                                             <div
                                                 class="previous-price text-xs lg:!text-sm font-semibold line-through mt-auto mr-2">
-                                                {{ str_replace('.', ',', number_format($precio, 2)) }}&nbsp;€ nuevo
+                                                {{ number_format($precio, 2,",", ".") }}&nbsp;€ nuevo
                                             </div>
                                             <div class="current-price text-xl lg:!text-2xl font-semibold">
-                                                {{ str_replace('.', ',', number_format($precio * 0.95, 2)) }}&nbsp;€
+                                                {{ number_format($precio* 0.95, 2,",", ".") }}&nbsp;€
                                             </div>
                                         </div>
                                         <div class="iva text-xs lg:text-sm ml-auto">IVA incluido*</div>
@@ -223,15 +212,23 @@
                                         <p class="mb-3 block">Lo mejor de lo mejor</p>
                                         <div>
                                             <div class="">
-                                                <button
-                                                    class= "rounded-md font-weight-link cursor-pointer hover-hover underline"
-                                                    type="button">Ver más</button>
+                                                <button class= "rounded-md font-weight-link cursor-pointer hover-hover underline" type="button">Ver más</button>
                                             </div>
                                         </div>
                                     </div>
                                     <ul class="grid list-none gap-2 grid-cols-2">
                                         <li data-qa="recommended_variants-0">
-                                            <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $capacidadIMG,'mejor_precio' => 'si'])) }} :active="request()->routeIs('products')"
+                                            @php
+                                                $producto_mejor_precio = $info_producto->min('price');
+                                                $producto_mejor = $info_producto->where('price', $producto_mejor_precio)->first();
+                                                $producto_mejor_titulo = $producto_mejor['title'];
+                                                $producto_mejor_titulo_color = '';
+
+                                                if (preg_match('/-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*/', $producto_mejor_titulo, $matches)) {
+                                                    $producto_mejor_titulo_color = isset($matches[1]) ? trim($matches[1]) : '';
+                                                }
+                                            @endphp
+                                            <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $capacidadIMG, 'color' =>  $producto_mejor_titulo_color ,'mejor_precio' => 'si'])) }} :active="request()->routeIs('products')"
                                                 class="{{ request()->has('mejor_precio') && request()->get('mejor_precio') === 'si' ? 'bg-sky-50 dark:bg-sky-50' : '' }} active text-blue-700 cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-blue-700 lg:px-8 py-3 no-underline hover:bg-gray-100 dark:bg-slate-50 dark:hover:bg-slate-200 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="ef5660d2-6883-4b81-b47d-86e5720687ef"
@@ -249,12 +246,22 @@
                                                         </svg>
                                                         <span class="shrink truncate text-center">Mejor precio</span>
                                                     </div>
-                                                    <div class="text-static-brand-hi text-center">430,09&nbsp;€</div>
+                                                    <div class="text-static-brand-hi text-center">{{  number_format($info_producto->where('price', $info_producto->min('price'))->first()['price']* 0.95, 2,",", ".") }}&nbsp;€</div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li data-qa="recommended_variants-1">
-                                            <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $capacidadIMG,'mas_popular' => 'si'])) }}
+                                            @php
+                                                $producto_popular_stock = $info_producto->min('quantity');
+                                                $producto_popular = $info_producto->where('quantity', $producto_popular_stock)->first();
+                                                $producto_popular_titulo = $producto_popular['title'];
+                                                $producto_popular_titulo_color = '';
+
+                                                if (preg_match('/-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*/', $producto_popular_titulo, $matches)) {
+                                                    $producto_popular_titulo_color = isset($matches[1]) ? trim($matches[1]) : '';
+                                                }
+                                            @endphp
+                                            <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $capacidadIMG,'color' =>  $producto_popular_titulo_color ,'mas_popular' => 'si'])) }}
                                                 class=" {{ request()->has('mas_popular') && request()->get('mas_popular') === 'si' ? 'bg-fuchsia-50' : '' }} text-purple-700 cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-purple-700 lg:px-8 py-3 no-underline motion-safe:transition-colors hover:bg-gray-100 dark:bg-slate-50 dark:hover:bg-slate-200 motion-safe:duration-300 motion-safe:ease-out border-action-brand-mid"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="ec975bb8-df95-43a5-b04d-de63378f4a12"
@@ -274,7 +281,7 @@
                                                             class="shrink truncate text-center text-action-brand-mid text-blue-">Más
                                                             populares</span>
                                                     </div>
-                                                    <div class="text-static-brand-mid text-center">481,42&nbsp;€</div>
+                                                    <div class="text-static-brand-mid text-center"> {{ number_format($info_producto->where('quantity', $info_producto->min('quantity'))->first()['price']* 0.95, 2,",", ".") }}&nbsp;€</div>
                                                 </div>
                                             </a>
                                         </li>
@@ -286,58 +293,101 @@
                                         <p class="mb-3 block">Estado</p>
                                         <div>
                                             <div class="font-bold">
-                                                <button
-                                                    class="rounded-md font-weight-link cursor-pointer hover-hover underline"
-                                                    type="button">Ver más</button>
+                                                <button class="rounded-md font-weight-link cursor-pointer hover-hover underline" type="button">Ver más</button>
                                             </div>
                                         </div>
                                     </div>
                                     <ul class="grid list-none gap-2 grid-cols-3 mb-4">
                                         <li data-qa="grades-0">
                                             <a aria-current="page" href="#"
-                                                class="estado-enlace router-link-active router-link-exact-active cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-black px-1 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                            @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
+                                            "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'COR') !== false || strpos($sku_title, 'STA') !== false) ? 'border-black bg-purple-50' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="estado_correcto" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
                                                         class="flex flex-row flex-nowrap items-center justify-center gap-4">
-                                                        <span class="font-bold text-center">Correcto</span>
+                                                        <span class="{{ $sku_title && (strpos($sku_title, 'COR') !== false || strpos($sku_title, 'STA') !== false) ? 'font-bold' : '' }} text-center">Correcto</span>
                                                     </div>
                                                     <div id="precioEstado_1" class="text-static-default-low text-center text-gray-600">
-                                                        456,36&nbsp;€</div>
+                                                        {{-- mostramos el precio de estado correcto --}}
+                                                        @php
+                                                            $productos_Correcto = $info_producto->filter(function ($producto) use ($capacidad, $color) {
+                                                                return ($producto['state'] == 3 || $producto['state'] == 4) &&
+                                                                    strpos($producto['title'], $capacidad) !== false &&
+                                                                    strpos($producto['title'], $color) !== false;
+                                                            });
+                                                            $precio_producto_Correcto = $productos_Correcto->isEmpty()? "¡Agotado!": number_format($productos_Correcto->first()['price'] * 0.95, 2, ",", ".");
+                                                        @endphp
+
+                                                        {{ $precio_producto_Correcto }}
+                                                        @if ($precio_producto_Correcto !== "¡Agotado!")
+                                                            &nbsp;€
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             </a>
                                         </li>
                                         <li data-qa="grades-1">
                                             <a aria-current="page" href="#"
-                                                class="estado-enlace router-link-active router-link-exact-active cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-1 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                            @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
+                                            "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'BUE') !== false || strpos($sku_title, 'MBU') !== false) ? 'border-black bg-purple-50' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="estado_muyBueno" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
                                                         class="flex flex-row flex-nowrap items-center justify-center gap-4">
-                                                        <span class="font-bold text-center">Muy bueno</span>
+                                                        <span class="{{ $sku_title && (strpos($sku_title, 'BUE') !== false || strpos($sku_title, 'MBU') !== false) ? 'font-bold' : '' }} text-center">Muy bueno</span>
                                                     </div>
                                                     <div id="precioEstado_2" class="text-static-default-low text-center text-gray-600">
-                                                        439,99&nbsp;€</div>
+                                                        {{-- mostramos el precio de estado MBU --}}
+                                                        @php
+                                                            $productos_MBU = $info_producto->filter(function ($producto) use ($capacidad, $color) {
+                                                                return ($producto['state'] == 1 || $producto['state'] == 2) &&
+                                                                    strpos($producto['title'], $capacidad) !== false &&
+                                                                    strpos($producto['title'], $color) !== false;
+                                                            });
+                                                            $precio_producto_MBU = $productos_MBU->isEmpty()? "¡Agotado!": number_format($productos_MBU->first()['price'] * 0.95, 2, ",", ".");
+                                                        @endphp
+
+                                                        {{ $precio_producto_MBU }}
+                                                        @if ($precio_producto_MBU !== "¡Agotado!")
+                                                            &nbsp;€
+                                                        @endif
+                                                    </div>
                                                 </div>
                                                 {{-- <span class="rounded-xs inline-block max-w-full truncate font-bold px-4 py-0 bg-static-info-max text-static-default-hi absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 -rotate-3" title="¡Oferta!">¡Oferta!</span> --}}
                                             </a>
                                         </li>
                                         <li data-qa="grades-2">
                                             <a aria-current="page" href="#"
-                                                class="estado-enlace router-link-active router-link-exact-active cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-1 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
+                                            @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
+                                            "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'IMP') !== false) ? 'border-black bg-purple-50' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="estado_excelente" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
                                                         class="flex flex-row flex-nowrap items-center justify-center gap-4">
-                                                        <span class="font-bold text-center">Excelente</span>
+                                                        <span class="{{ $sku_title && (strpos($sku_title, 'IMP') !== false) ? 'font-bold' : '' }} text-center">Excelente</span>
                                                     </div>
-                                                    <div id="precioEstado_3" class="text-static-default-low text-center">481,42&nbsp;€
+                                                    <div id="precioEstado_3" class="text-static-default-low text-center text-gray-600">
+                                                        {{-- mostramos el precio de estado IMP --}}
+                                                        @php
+                                                            $productos_IMP = $info_producto->filter(function ($producto) use ($capacidad, $color) {
+                                                                return ($producto['state'] == 1 || $producto['state'] == 2) &&
+                                                                    strpos($producto['title'], $capacidad) !== false &&
+                                                                    strpos($producto['title'], $color) !== false;
+                                                            });
+                                                            $precio_producto_IMP = $productos_IMP->isEmpty()? "¡Agotado!": number_format($productos_IMP->first()['price'] * 0.95, 2, ",", ".");
+                                                        @endphp
+
+                                                        {{ $precio_producto_IMP }}
+                                                        @if ($precio_producto_IMP !== "¡Agotado!")
+                                                            &nbsp;€
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </a>
@@ -707,7 +757,7 @@
                     // Enviar la solicitud AJAX
                     $.ajax({
                         type: 'POST',
-                        url: "{{ route('precioEstado') }}",
+                        url: "{{ route('tipoEstado') }}",
                         data: { 
                             productid: productid,
                             titulo_producto: tituloProducto
@@ -719,28 +769,11 @@
                             // La respuesta se recibe como un objeto JSON
                             var precio = response.precio;
                             var estado = response.estado;
+                            var bateriaNueva = response.bateriaNueva;
                             var noStock = response.noStock;
-                            if(estado===3 || estado === 4 || estado === 'estado_correcto'){
-                                if(precio){
-                                    $('#precioEstado_1').text(precio +' €');
-                                }else{
-                                    $('#precioEstado_1').text(noStock);
-                                }
-                            }else if(estado===1 || estado === 2 || estado === 'estado_muyBueno'){
-                                if(precio){
-                                    $('#precioEstado_2').text(precio +' €');
-                                }else{
-                                    $('#precioEstado_2').text('No hay stock');
-                                }
-                            }else if(estado===0 || estado === 'estado_excelente'){
-                                if(precio){
-                                    $('#precioEstado_3').text(precio +' €');
-                                }else{
-                                    $('#precioEstado_3').text('No hay stock');
-                                }
-                            }
-
-                            $('#estadoProducto').text('Estado: ' + estado);
+                           
+                            console.log(response);
+                            
                         
                         },
                         error: function(xhr, status, error) {
@@ -751,10 +784,6 @@
                 });
             });
         </script>
-
     </x-app-layout>
-
-
 </body>
-
 </html>

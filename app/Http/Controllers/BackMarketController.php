@@ -254,7 +254,7 @@ class BackMarketController extends Controller{
         return '';
     }
 
-    public function precioEstado(Request $request){
+    public function tipoEstado(Request $request){
         try {
             // Obtener todos los productos en línea
             $productosColeccion = $this->obtenerTodosEnLinea();
@@ -262,35 +262,39 @@ class BackMarketController extends Controller{
             // Obtener el título del producto de la solicitud
             $tituloProducto = $request->input('titulo_producto');
             $estadoProducto = $request->input('productid');
+            $bateriaNueva = 'No';
             
             if($estadoProducto ==='estado_correcto'){
                 // Filtrar productos que coincidan con el título y el estado
-                $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto) {
-                    return $producto['title'] === $tituloProducto && ($producto['state'] == 3 || $producto['state'] == 4) && strpos($producto['sku'], 'NEWBATTERY') === false;
+                $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto, &$bateriaNueva) {
+                    if($producto['title'] === $tituloProducto && ($producto['state'] == 3 || $producto['state'] == 4)) {
+                        if (strpos($producto['sku'], 'NEWBATTERY') !== false) {
+                            $bateriaNueva = 'si'; // Establecer el parámetro adicional a 'si'
+                        }
+                        return true;
+                    }
+                    return false;
                 });
             }
 
             if($estadoProducto ==='estado_muyBueno'){
                 // Filtrar productos que coincidan con el título y el estado
                 $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto) {
-                    return $producto['title'] === $tituloProducto && ($producto['state'] == 1 || $producto['state'] == 2) && strpos($producto['sku'], 'NEWBATTERY') === false;
+                    return $producto['title'] === $tituloProducto && ($producto['state'] == 1 || $producto['state'] == 2) !== false;
                 });
             }
 
             if($estadoProducto ==='estado_excelente'){
                 // Filtrar productos que coincidan con el título y el estado
                 $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto) {
-                    return $producto['title'] === $tituloProducto && ($producto['state'] == 0) && strpos($producto['sku'], 'NEWBATTERY') === false;
+                    return $producto['title'] === $tituloProducto && ($producto['state'] == 0) !== false;
                 });
             }
 
            // Verificar si se encontró un producto que coincida con los criterios
             if ($productosFiltrados) {
-                // Formatear el precio: reemplazar punto por coma
-                $precioFormateado = number_format($productosFiltrados['price'], 2, ",", ".");
-
                 // Devolver los datos del producto filtrado como respuesta JSON
-                return response()->json(['precio' => $productosFiltrados['price'], 'estado' => $productosFiltrados['state']]);
+                return response()->json(['precio' => $productosFiltrados['price'], 'estado' => $productosFiltrados['state'], 'bateriaNueva' => $bateriaNueva]);
             } else {
                 // No se encontró ningún producto que coincida con los criterios, puedes devolver un mensaje de error o algo así
                 return response()->json(['noStock' => 'No hay stock','estado' => $estadoProducto]);
