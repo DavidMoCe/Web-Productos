@@ -298,6 +298,92 @@
                                         </div>
                                     </div>
                                     <ul class="grid list-none gap-2 grid-cols-3 mb-4">
+
+                                        @php
+                                            // parte de COR
+                                            $productos_correcto = $info_producto->filter(function ($producto) use ($capacidad, $color) {
+                                                return ($producto['state'] == 3 || $producto['state'] == 4) &&
+                                                    strpos($producto['title'], $capacidad) !== false &&
+                                                    strpos($producto['title'], $color) !== false;
+                                            });
+                                            // $precio_producto_Correcto = $productos_correcto->isEmpty()? "¡Agotado!": number_format($productos_correcto->first()['price'] * 0.95, 2, ",", ".");
+
+
+                                            //parte de MBU
+                                            $productos_bueno = $info_producto->filter(function ($producto) use ($capacidad, $color) {
+                                                return ($producto['state'] == 1 || $producto['state'] == 2) &&
+                                                strpos($producto['title'], $capacidad) !== false &&
+                                                strpos($producto['title'], $color) !== false;
+                                            });
+                                            // $precio_producto_MBU = $productos_bueno->isEmpty()? "¡Agotado!": number_format($productos_bueno->first()['price'] * 0.95, 2, ",", ".");
+                                            
+                                            //parte de IMP
+                                            $productos_impecable = $info_producto->filter(function ($producto) use ($capacidad, $color) {
+                                                return ($producto['state'] == 0) &&
+                                                strpos($producto['title'], $capacidad) !== false &&
+                                                strpos($producto['title'], $color) !== false;
+                                            });
+                                            // $precio_producto_IMP = $productos_impecable->isEmpty()? "¡Agotado!": number_format($productos_impecable->first()['price'] * 0.95, 2, ",", ".");
+                                               
+                                            // Inicializar precio del producto seleccionado
+                                            $precio_producto_Correcto = "¡Agotado!";
+                                            $precio_producto_MBU = "¡Agotado!";
+                                            $precio_producto_IMP = "¡Agotado!";
+                                            $batNueva='No';
+
+                                            //si, esta seleccionado correcto y en el sku esta 'NEWBATTERY', en los demas estados se muestran con NEWBATTERY
+                                            if($sku_title && strpos($sku_title, 'NEWBATTERY') !== false){
+                                                // Seleccionar un producto con 'NEWBATTERY', seleccionar el primero que lo tenga
+                                                //Producto CORRECTO
+                                                $producto_COR = $productos_correcto->first(function ($producto) {
+                                                    return strpos($producto['sku'], 'NEWBATTERY') !== false;
+                                                });
+                                                //Producto MuyBueno
+                                                $producto_MBU = $productos_bueno->first(function ($producto) {
+                                                   return strpos($producto['sku'], 'NEWBATTERY') !== false;
+                                                });
+                                                //Producto Impecable
+                                                $producto_IMP = $productos_impecable->first(function ($producto){
+                                                    return strpos($producto['sku'], 'NEWBATTERY') !== false;
+                                                });
+                                                $batNueva='Si';
+                                            } 
+                                            else {
+                                                // Seleccionar el primer producto que NO tenga 'NEWBATTERY' en el SKU
+                                                //Producto CORRECTO
+                                                $producto_COR = $productos_correcto->first(function ($producto){
+                                                    return strpos($producto['sku'], 'NEWBATTERY') === false;
+                                                });
+                                                //Producto MuyBueno
+                                                $producto_MBU = $productos_bueno->first(function ($producto) {
+                                                    return strpos($producto['sku'], 'NEWBATTERY') === false;   
+                                                });
+                                                //Producto Impecable
+                                                $producto_IMP = $productos_impecable->first(function ($producto){
+                                                    return strpos($producto['sku'], 'NEWBATTERY') === false;
+                                                });
+                                            }                                         
+                                            // Si se encontró un producto seleccionado, calcular su precio correcto
+                                            if ($producto_COR) {
+                                                $precio_producto_Correcto = number_format($producto_COR['price']*0.95 , 2, ",", ".");
+                                            }
+                                            // Si se encontró un producto seleccionado, calcular su precio correcto
+                                            if ($producto_MBU) {
+                                                $precio_producto_MBU = number_format($producto_MBU['price']*0.95 , 2, ",", ".");
+                                            }                                      
+                                            // Si se encontró un producto seleccionado, calcular su precio correcto
+                                            if ($producto_IMP) {
+                                                $precio_producto_IMP = number_format($producto_IMP['price']*0.95 , 2, ",", ".");
+                                            }
+
+                                            // Verificar si el SKU contiene 'NEWBATTERY'
+                                            $new_battery_present = false;
+                                            if ($sku_title && strpos($sku_title, 'NEWBATTERY') !== false) {
+                                                $new_battery_present = true;
+                                            }
+                                        @endphp
+
+
                                         <li data-qa="grades-0">
                                             <a aria-current="page" href="#"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
@@ -312,14 +398,7 @@
                                                     </div>
                                                     <div id="precioEstado_1" class="text-static-default-low text-center text-gray-600">
                                                         {{-- mostramos el precio de estado correcto --}}
-                                                        @php
-                                                            $productos_Correcto = $info_producto->filter(function ($producto) use ($capacidad, $color) {
-                                                                return ($producto['state'] == 3 || $producto['state'] == 4) &&
-                                                                    strpos($producto['title'], $capacidad) !== false &&
-                                                                    strpos($producto['title'], $color) !== false;
-                                                            });
-                                                            $precio_producto_Correcto = $productos_Correcto->isEmpty()? "¡Agotado!": number_format($productos_Correcto->first()['price'] * 0.95, 2, ",", ".");
-                                                        @endphp
+                                                        
 
                                                         {{ $precio_producto_Correcto }}
                                                         @if ($precio_producto_Correcto !== "¡Agotado!")
@@ -343,14 +422,7 @@
                                                     </div>
                                                     <div id="precioEstado_2" class="text-static-default-low text-center text-gray-600">
                                                         {{-- mostramos el precio de estado MBU --}}
-                                                        @php
-                                                            $productos_MBU = $info_producto->filter(function ($producto) use ($capacidad, $color) {
-                                                                return ($producto['state'] == 1 || $producto['state'] == 2) &&
-                                                                    strpos($producto['title'], $capacidad) !== false &&
-                                                                    strpos($producto['title'], $color) !== false;
-                                                            });
-                                                            $precio_producto_MBU = $productos_MBU->isEmpty()? "¡Agotado!": number_format($productos_MBU->first()['price'] * 0.95, 2, ",", ".");
-                                                        @endphp
+
 
                                                         {{ $precio_producto_MBU }}
                                                         @if ($precio_producto_MBU !== "¡Agotado!")
@@ -376,13 +448,7 @@
                                                     <div id="precioEstado_3" class="text-static-default-low text-center text-gray-600">
                                                         {{-- mostramos el precio de estado IMP --}}
                                                         @php
-                                                            $productos_IMP = $info_producto->filter(function ($producto) use ($capacidad, $color) {
-                                                                return ($producto['state'] == 1 || $producto['state'] == 2) &&
-                                                                    strpos($producto['title'], $capacidad) !== false &&
-                                                                    strpos($producto['title'], $color) !== false;
-                                                            });
-                                                            $precio_producto_IMP = $productos_IMP->isEmpty()? "¡Agotado!": number_format($productos_IMP->first()['price'] * 0.95, 2, ",", ".");
-                                                        @endphp
+                                                           @endphp
 
                                                         {{ $precio_producto_IMP }}
                                                         @if ($precio_producto_IMP !== "¡Agotado!")
@@ -393,7 +459,7 @@
                                             </a>
                                         </li>
                                     </ul>
-                                    <label for="battery-checkbox" class="cursor-pointer">
+                                    <label for="battery-checkbox" id="batery-label" class="cursor-pointer">
                                         <div
                                             class="battery-replacement flex items-center justify-between border border-black rounded-md p-3">
                                             <div class="flex items-center">
@@ -415,7 +481,7 @@
                                             </div>
 
                                             <label
-                                                class="relative h-8 w-14 rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500">
+                                                class="relative h-8 w-14 rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent]"{{ $new_battery_present ? 'has-[:checked]:bg-green-500':''}}>
                                                 <input type="checkbox" id="battery-checkbox"
                                                     class="peer sr-only [&:checked_+_span_svg[data-checked-icon]]:block [&:checked_+_span_svg[data-unchecked-icon]]:hidden" />
                                                 <span
@@ -757,7 +823,7 @@
                     // Enviar la solicitud AJAX
                     $.ajax({
                         type: 'POST',
-                        url: "{{ route('tipoEstado') }}",
+                        url: "{{ route('actualizarDetalles') }}",
                         data: { 
                             productid: productid,
                             titulo_producto: tituloProducto

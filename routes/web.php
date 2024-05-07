@@ -40,7 +40,7 @@ Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name(
 Route::get('/info_products',[BackMarketController::class, 'OntenerUnProducto'])->name('info_products');
 
 
-Route::post('/tipoEstado',[BackMarketController::class,'tipoEstado'])->name('tipoEstado');
+Route::post('/actualizarDetalles',[BackMarketController::class,'actualizarDetalles'])->name('actualizarDetalles');
 
 
 //mostrar carrito de la compra
