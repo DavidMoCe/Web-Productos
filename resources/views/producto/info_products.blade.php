@@ -896,35 +896,52 @@
                 });
             });
 
-            //aplicar precio, marcar estado, y deshabilitar o habilitar bateria dependiendo de si se encuentra producto
-            $(document).ready(function() {
-                $('#battery-checkbox').change(function() {
-                    var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
-                    var tituloProducto = $(this).attr('titulo');
-                    // Obtener el estado del input radio seleccionado
-                    var estadoProducto = $('input[name="estado"]:checked').val(); 
+            // Función para realizar la solicitud AJAX
+function enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto) {
+    $.ajax({
+        type: 'POST',
+        url: "{{ route('peticionBateria') }}",
+        data: { 
+            estadoCheckbox: isChecked,
+            titulo_producto: tituloProducto,
+            estadoProducto: estadoProducto
+        },
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            console.log(response);
+            // Aquí puedes actualizar el precio y el estado en tu página
+        },
+        error: function(xhr, status, error) {
+            // Manejar errores aquí
+            console.error(xhr.responseText);
+        }
+    });
+}
 
-                    // Enviar la solicitud AJAX si el checkbox está marcado
-                    $.ajax({
-                        type: 'POST',
-                        url: "{{ route('peticionBateria') }}", // Reemplaza 'ruta_del_script.php' con la ruta de tu script PHP
-                        data: { 
-                            estadoCheckbox: isChecked,
-                            titulo_producto: tituloProducto
-                        },
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            console.log(response);
-                        },
-                        error: function(xhr, status, error) {
-                            // Manejar errores aquí
-                            console.error(xhr.responseText);
-                        }
-                    });
-                });
-            });
+// Aplicar precio y estado al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    var isChecked = $('#battery-checkbox').prop('checked'); // Verificar si el checkbox está marcado
+    var tituloProducto = $('#battery-checkbox').attr('titulo');
+    var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
+
+    // Realizar la solicitud AJAX
+    enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
+});
+
+// Aplicar precio, marcar estado y deshabilitar o habilitar la batería dependiendo de si se encuentra el producto
+$(document).ready(function() {
+    $('#battery-checkbox').change(function() {
+        var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
+        var tituloProducto = $(this).attr('titulo');
+        var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
+
+        // Realizar la solicitud AJAX
+        enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
+    });
+});
+
 
             //aplicar precio y titulo por capacidad
 
