@@ -335,10 +335,6 @@ class BackMarketController extends Controller{
             // Obtener el título del producto de la solicitud
             $tituloProducto = $request->input('titulo_producto');
             $estadoProducto = $request->input('productid');
-            $bateriaNueva = 'No';
-            
-            //si la opcion de bateria nueva es No
-            //if
 
             if($estadoProducto ==='estado_correcto'){
                 // Filtrar productos que coincidan con el título y el estado
@@ -364,7 +360,7 @@ class BackMarketController extends Controller{
            // Verificar si se encontró un producto que coincida con los criterios
             if ($productosFiltrados) {
                 // Devolver los datos del producto filtrado como respuesta JSON
-                return response()->json(['precio' => $productosFiltrados['price']*0.95, 'estado' => $productosFiltrados['state'], 'sku' => $productosFiltrados['sku'], 'stock' => $productosFiltrados['quantity']]);
+                return response()->json(['precio' => $productosFiltrados['price'], 'estado' => $productosFiltrados['state'], 'sku' => $productosFiltrados['sku'], 'stock' => $productosFiltrados['quantity']]);
             } else {
                 // No se encontró ningún producto que coincida con los criterios, puedes devolver un mensaje de error o algo así
                 return response()->json(['noStock' => 'No hay stock','estado' => $estadoProducto]);
@@ -372,6 +368,44 @@ class BackMarketController extends Controller{
 
             // Devolver los precios y estados de los productos filtrados como respuesta JSON
             //return response()->json(['datos' => $datosProductos]);
+
+        } catch (\Exception $e) {
+            // Manejar cualquier excepción que pueda ocurrir durante la solicitud
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function peticionBateria(Request $request){
+        try {
+            // Obtener todos los productos en línea
+            $productosColeccion = $this->obtenerTodosEnLinea();
+
+            // Obtener el título del producto de la solicitud
+            $tituloProducto = $request->input('titulo_producto');
+            $estadoCheckbox = $request->input('estadoCheckbox');
+
+             if($estadoCheckbox == 'true'){
+                 // Filtrar productos que coincidan con el título y tengan en el sku NEWBATTERY
+                 $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto) {
+                     return $producto['title'] === $tituloProducto && strpos($producto['sku'], 'NEWBATTERY') !==false;
+                 });
+             }else{
+                // Filtrar productos que coincidan con el título y tengan en el sku NEWBATTERY
+                $productosFiltrados = $productosColeccion->first(function ($producto) use ($tituloProducto) {
+                    return $producto['title'] === $tituloProducto && strpos($producto['sku'], 'NEWBATTERY') ===false;
+                });
+             }
+        //    // Verificar si se encontró un producto que coincida con los criterios
+        //     if ($productosFiltrados) {
+        //         // Devolver los datos del producto filtrado como respuesta JSON
+        //         return response()->json(['precio' => $productosFiltrados['price'], 'estado' => $productosFiltrados['state'], 'sku' => $productosFiltrados['sku'], 'stock' => $productosFiltrados['quantity']]);
+        //     } else {
+        //         // No se encontró ningún producto que coincida con los criterios, puedes devolver un mensaje de error o algo así
+        //         return response()->json(['noStock' => 'No hay stock','estado' => $estadoProducto]);
+        //     }
+
+            // Devolver los precios y estados de los productos filtrados como respuesta JSON
+            return response()->json(['imput' => $estadoCheckbox, 'titulo' => $tituloProducto, 'sku' => $productosFiltrados['sku']]);
 
         } catch (\Exception $e) {
             // Manejar cualquier excepción que pueda ocurrir durante la solicitud

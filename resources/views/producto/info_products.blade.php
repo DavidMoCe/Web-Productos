@@ -116,10 +116,11 @@
                     <div class="lg:mx-4 xl:w-3/4 lg:w-1/2 lg:ml-8 lg:ml-4">
                         <div class="product-details">
                             <div id=titulo-botonCompra class="dark:text-white">
+                                <div id="titulo_sku" class="hidden">{{ $sku_title }}</div>
                                 <div id="title"
                                     class="mb-4 mt-4 lg:!mt-0 flex flex-col md:!flex-row lg:items-center justify-between">
                                     <h2 class="text-2xl sm:!text-3xl font-bold m-auto">{{ $sku_title }}</h2>
-                                    <div id="precio" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
+                                    <div id="precio_producto" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
                                         <div class="flex items-center mt-4">
                                             <div
                                                 class="previous-price text-xs lg:!text-sm font-semibold line-through mt-auto mr-2">
@@ -223,13 +224,16 @@
                                                 $producto_mejor_precio = $info_producto->min('price');
                                                 $producto_mejor = $info_producto->where('price', $producto_mejor_precio)->first();
                                                 $producto_mejor_titulo = $producto_mejor['title'];
-                                                $producto_mejor_titulo_color = '';
 
+                                                if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto_mejor_titulo, $matches)) {
+                                                    // La capacidad
+                                                    $producto_mejor_capacidad = isset($matches[2]) ? $matches[2] : '';
+                                                }
                                                 if (preg_match('/-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*/', $producto_mejor_titulo, $matches)) {
                                                     $producto_mejor_titulo_color = isset($matches[1]) ? trim($matches[1]) : '';
                                                 }
                                             @endphp
-                                            <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $capacidadIMG, 'color' =>  $producto_mejor_titulo_color ,'mejor_precio' => 'si'])) }} :active="request()->routeIs('products')"
+                                            <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $producto_mejor_capacidad, 'color' =>  $producto_mejor_titulo_color ,'mejor_precio' => 'si'])) }} :active="request()->routeIs('products')"
                                                 class="{{ request()->has('mejor_precio') && request()->get('mejor_precio') === 'si' ? 'bg-sky-50 dark:bg-sky-50' : '' }} active text-blue-700 cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-blue-700 lg:px-8 py-3 no-underline hover:bg-gray-100 dark:bg-slate-50 dark:hover:bg-slate-200 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="ef5660d2-6883-4b81-b47d-86e5720687ef"
@@ -256,13 +260,17 @@
                                                 $producto_popular_stock = $info_producto->min('quantity');
                                                 $producto_popular = $info_producto->where('quantity', $producto_popular_stock)->first();
                                                 $producto_popular_titulo = $producto_popular['title'];
-                                                $producto_popular_titulo_color = '';
+
+                                                if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto_popular_titulo, $matches)) {
+                                                    // La capacidad
+                                                    $producto_popular_capacidad = isset($matches[2]) ? $matches[2] : '';
+                                                }
 
                                                 if (preg_match('/-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*/', $producto_popular_titulo, $matches)) {
                                                     $producto_popular_titulo_color = isset($matches[1]) ? trim($matches[1]) : '';
                                                 }
                                             @endphp
-                                            <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $capacidadIMG,'color' =>  $producto_popular_titulo_color ,'mas_popular' => 'si'])) }}
+                                            <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $producto_popular_capacidad,'color' =>  $producto_popular_titulo_color ,'mas_popular' => 'si'])) }}
                                                 class=" {{ request()->has('mas_popular') && request()->get('mas_popular') === 'si' ? 'bg-fuchsia-50' : '' }} text-purple-700 cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-purple-700 lg:px-8 py-3 no-underline motion-safe:transition-colors hover:bg-gray-100 dark:bg-slate-50 dark:hover:bg-slate-200 motion-safe:duration-300 motion-safe:ease-out border-action-brand-mid"
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="ec975bb8-df95-43a5-b04d-de63378f4a12"
@@ -330,7 +338,6 @@
                                             $precio_producto_Correcto = "¡Agotado!";
                                             $precio_producto_MBU = "¡Agotado!";
                                             $precio_producto_IMP = "¡Agotado!";
-                                            $batNueva='No';
 
                                             //si, esta seleccionado correcto y en el sku esta 'NEWBATTERY', en los demas estados se muestran con NEWBATTERY
                                             if($sku_title && strpos($sku_title, 'NEWBATTERY') !== false){
@@ -347,7 +354,6 @@
                                                 $producto_IMP = $productos_impecable->first(function ($producto){
                                                     return strpos($producto['sku'], 'NEWBATTERY') !== false;
                                                 });
-                                                $batNueva='Si';
                                             } 
                                             else {
                                                 // Seleccionar el primer producto que NO tenga 'NEWBATTERY' en el SKU
@@ -386,10 +392,10 @@
 
 
                                         <li data-qa="grades-0">
-                                            <input type="radio" id="imput-estado" name="hosting" value="hosting-small" class="hidden peer" required />
+                                            <input type="radio" id="imput-estado" name="estado" value="estado-correcto" class="hidden peer" required />
                                             <a aria-current="page" href="#scroll=false"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
-                                            "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'COR') !== false || strpos($sku_title, 'STA') !== false) ? 'border-black bg-purple-50' : ''])
+                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'COR') !== false || strpos($sku_title, 'STA') !== false) ? 'border-black bg-purple-50' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="estado_correcto" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
@@ -411,10 +417,10 @@
                                             </a>
                                         </li>
                                         <li data-qa="grades-1">
-                                            <input type="radio" id="imput-estado" name="hosting" value="hosting-small" class="hidden peer" required />
+                                            <input type="radio" id="imput-estado" name="estado" value="estado-bueno" class="hidden peer" required />
                                             <a aria-current="page" href="#"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
-                                            "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'BUE') !== false || strpos($sku_title, 'MBU') !== false) ? 'border-black bg-purple-50' : ''])
+                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'BUE') !== false || strpos($sku_title, 'MBU') !== false) ? 'border-black bg-purple-50' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="estado_muyBueno" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
@@ -437,10 +443,10 @@
                                             </a>
                                         </li>
                                         <li data-qa="grades-2">
-                                            <input type="radio" id="imput-estado" name="hosting" value="hosting-small" class="hidden peer" required />
+                                            <input type="radio" id="imput-estado" name="estado" value="estado-impecable" class="hidden peer" required />
                                             <a aria-current="page" href="#"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
-                                            "no-underline", "hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'IMP') !== false) ? 'border-black bg-purple-50' : ''])
+                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'IMP') !== false) ? 'border-black bg-purple-50' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
                                                 productid="estado_excelente" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
@@ -486,7 +492,7 @@
 
                                             <label
                                                 class="relative h-8 w-14 rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500">
-                                                <input type="checkbox" id="battery-checkbox"
+                                                <input type="checkbox" id="battery-checkbox" titulo="{{ $titulo }}"
                                                     class="peer sr-only  [&:checked_+_span_svg[data-checked-icon]]:block [&:checked_+_span_svg[data-unchecked-icon]]:hidden" />
                                                 <span
                                                     class="absolute inset-y-0 start-0 z-10 m-1 inline-flex size-6 items-center justify-center rounded-full bg-white text-gray-400 transition-all peer-checked:start-6 peer-checked:text-green-600">
@@ -822,20 +828,21 @@
         </div>
 
         @foreach ($info_producto as $producto){
-            {{$producto['sku']}}
+            {{$producto['sku'].$producto['price']}}
         }
             
         @endforeach
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
         <script>
+            //aplicar precio por estado
             $(document).ready(function() {
                 $('.estado-enlace').click(function(e) {
                     e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
                     
-                    var productid = $(this).attr('productid'); // Obtener el ID del producto del atributo 'productid'
+                    var productid = $(this).attr('productid'); // Obtener el atributo 'productid' (estado)
                     var tituloProducto = $(this).attr('titulo'); // Obtener el título del producto del atributo 'titulo'
-        
+
                     // Enviar la solicitud AJAX
                     $.ajax({
                         type: 'POST',
@@ -848,15 +855,38 @@
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         success: function(response) {
-                            // La respuesta se recibe como un objeto JSON
-                            var precio = response.precio;
-                            var estado = response.estado;
-                            var bateriaNueva = response.bateriaNueva;
-                            var noStock = response.noStock;
-                           
-                            console.log(response);
-                            
-                        
+                            // Verificar si la propiedad 'precio' existe en el objeto JSON
+                            if ('precio' in response) {
+                                // Obtener la cadena de precio del objeto JSON
+                                var precioString = response.precio;
+
+                                console.log(response.precio*0.95, response);
+                                
+                                // Convertir la cadena de precio a un número
+                                var precio = parseFloat(precioString);
+
+                                // Verificar si la conversión fue exitosa
+                                if (!isNaN(precio)) {
+                                    // Aplicar el descuento del 5% al precio
+                                    var precioNuevo = precio * 0.95;
+                                    
+                                    // Formatear el precio con dos decimales
+                                    var precioFormateado = precio.toFixed(2);
+
+                                    // Formatear el nuevo precio con dos decimales
+                                    var precioNuevoFormateado = precioNuevo.toFixed(2);
+
+                                    // Actualizar el precio en el elemento con el id "precio_producto"
+                                    $("#precio_producto .previous-price").html(precioFormateado + "&nbsp;€ nuevo");
+                                    $("#precio_producto .current-price").html(precioNuevoFormateado + "&nbsp;€");
+                                } else {
+                                    // Si la conversión no fue exitosa, mostrar un mensaje de error
+                                    console.error("El precio no es un número válido:", precioString);
+                                }
+                            } else {
+                                // Si la propiedad 'precio' no existe en el objeto JSON, mostrar un mensaje de error
+                                console.error("No se encontró la propiedad 'precio' en el objeto JSON:", response);
+                            }
                         },
                         error: function(xhr, status, error) {
                             // Manejar errores aquí
@@ -866,9 +896,45 @@
                 });
             });
 
+            //aplicar precio, marcar estado, y deshabilitar o habilitar bateria dependiendo de si se encuentra producto
+            $(document).ready(function() {
+                $('#battery-checkbox').change(function() {
+                    var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
+                    var tituloProducto = $(this).attr('titulo');
+                    // Obtener el estado del input radio seleccionado
+                    var estadoProducto = $('input[name="estado"]:checked').val(); 
+
+                    // Enviar la solicitud AJAX si el checkbox está marcado
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ route('peticionBateria') }}", // Reemplaza 'ruta_del_script.php' con la ruta de tu script PHP
+                        data: { 
+                            estadoCheckbox: isChecked,
+                            titulo_producto: tituloProducto
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            console.log(response);
+                        },
+                        error: function(xhr, status, error) {
+                            // Manejar errores aquí
+                            console.error(xhr.responseText);
+                        }
+                    });
+                });
+            });
+
+            //aplicar precio y titulo por capacidad
+
+
+
+
             
             document.addEventListener('DOMContentLoaded', function() {
 
+                
                 //obtener capacidad
                 // // Definir un conjunto para almacenar los gigabytes únicos
                 // var uniqueCapacities = new Set();
@@ -915,6 +981,37 @@
                     if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(spanValue)) {
                         aElement.classList.add('border-black', 'bg-purple-50');
                     }
+                });
+
+                //deshabilitar las capacidades
+                //Recorrer todos los elementos li dentro de #ul-estado
+                $('#ul-estado li').each(function() {
+                    // Buscar todos los elementos que tengan un ID que comience con "precioEstado_"
+                    $(this).find('[id^="precioEstado_"]').each(function() {
+                        var precioTexto = $(this).text().trim();
+                        if (precioTexto === "¡Agotado!") {
+                            // Si el precio está agotado, deshabilitar el li
+                            $(this).closest('li').addClass('pointer-events-none opacity-85');
+                            $(this).addClass('!text-red-500');
+                        }
+                    });
+                });
+
+                //marcar al principio el imput de la bateria
+                // Obtener el input y el label
+                const checkbox = document.getElementById('battery-checkbox');
+                const checkboxLabel = document.getElementById('batery-label');
+                // Obtener el div sku
+                const skuDiv = document.getElementById('titulo_sku');
+                // Verificar si la palabra "NEWBATTERY" está presente en el contenido del div sku
+                if (skuDiv.textContent.includes('NEWBATTERY')) {
+                    // Si está presente, activar el checkbox
+                    checkbox.checked = true;
+                }
+                // Agregar un event listener al label
+                checkboxLabel.addEventListener('click', function() {
+                    // Cambiar el estado del input al contrario de su estado actual
+                    checkbox.checked = !checkbox.checked;
                 });
 
                 //obtener colores
@@ -970,14 +1067,12 @@
                     Colorindex++;
                 });
 
-
                 //marcar color al principio
                 var colorItems = document.querySelectorAll('li[data-qa^="color-"]');
                 colorItems.forEach(function(colorItem) {
                     var spanElement = colorItem.querySelector('span');
                     var spanValue = spanElement.innerText; // Eliminar todos los espacios en blanco
                     var aElement = colorItem.querySelector('a');
-
                     if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(spanValue)) {
                         aElement.classList.add('border-black', 'bg-purple-50');
                     }
@@ -985,26 +1080,12 @@
 
 
             });
-          
-            // document.getElementById('li-hosting-small').addEventListener('click', function() {
-            //     var radio = document.getElementById('hosting-small');
-            //     if (radio) {
-            //         radio.checked = true; 
-            //         var aTag = document.querySelector('#li-hosting-small a');
-            //         if (radio.checked) {
-            //             aTag.classList.add('border-black', 'bg-purple-50');
-            //         } else {
-            //             aTag.classList.remove('border-black', 'bg-purple-50');
-            //         }
-            //     }
-            // });
 
+            //Quitar o poner clases al cambiar de estado
            // Obtener el elemento <ul> con el ID específico
             var ulElement = document.getElementById('ul-estado');
-
             // Obtener todos los elementos <li> dentro del <ul>
             var liElements = ulElement.querySelectorAll('[data-qa^="grades-"]');
-
             // Iterar sobre cada elemento <li>
             liElements.forEach(function(li) {
                 // Agregar un event listener a cada <li>
@@ -1015,17 +1096,25 @@
                         // Remover las clases de todos los <a>
                         aTag.classList.remove('border-black', 'bg-purple-50');
                     });
-
+                    // Obtener todos los elementos <span> dentro del <ul>
+                    var allSpanTags = ulElement.querySelectorAll('li a span');
+                    allSpanTags.forEach(function(spanTag) {
+                        // Remover las clases de todos los <a>
+                        spanTag.classList.remove('font-bold');
+                    });
                     // Obtener el radio button dentro del <li> clicado
                     var radio = this.querySelector('input[type="radio"]');
                     if (radio) {
                         // Activar el radio button
                         radio.checked = true;
-
                         // Obtener el <a> dentro del <li> clicado
                         var aTag = this.querySelector('a');
                         // Agregar las clases al <a>
                         aTag.classList.add('border-black', 'bg-purple-50');
+                        // Obtener el <span> dentro del <li> clicado
+                            var spanTag = this.querySelector('span');
+                        // Agregar las clases al <span>
+                        spanTag.classList.add('font-bold');
                     }
                 });
             });

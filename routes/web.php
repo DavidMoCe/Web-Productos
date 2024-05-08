@@ -41,6 +41,7 @@ Route::get('/info_products',[BackMarketController::class, 'OntenerUnProducto'])-
 
 
 Route::post('/peticionEstados',[BackMarketController::class,'peticionEstados'])->name('peticionEstados');
+Route::post('/peticionBateria',[BackMarketController::class,'peticionBateria'])->name('peticionBateria');
 
 
 //mostrar carrito de la compra
