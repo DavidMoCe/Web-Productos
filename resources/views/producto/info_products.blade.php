@@ -119,7 +119,7 @@
                                 <div id="titulo_sku" class="hidden">{{ $sku_title }}</div>
                                 <div id="title"
                                     class="mb-4 mt-4 lg:!mt-0 flex flex-col md:!flex-row lg:items-center justify-between">
-                                    <h2 class="text-2xl sm:!text-3xl font-bold m-auto">{{ $sku_title }}</h2>
+                                    <h2 id="titulo_producto" class="text-2xl sm:!text-3xl font-bold m-auto">{{ $sku_title }}</h2>
                                     <div id="precio_producto" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
                                         <div class="flex items-center mt-4">
                                             <div
@@ -236,7 +236,7 @@
                                             <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $producto_mejor_capacidad, 'color' =>  $producto_mejor_titulo_color ,'mejor_precio' => 'si'])) }} :active="request()->routeIs('products')"
                                                 class="{{ request()->has('mejor_precio') && request()->get('mejor_precio') === 'si' ? 'bg-sky-50 dark:bg-sky-50' : '' }} active text-blue-700 cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-blue-700 lg:px-8 py-3 no-underline hover:bg-gray-100 dark:bg-slate-50 dark:hover:bg-slate-200 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="ef5660d2-6883-4b81-b47d-86e5720687ef"
+                                                productoEstado="ef5660d2-6883-4b81-b47d-86e5720687ef"
                                                 grade="[object Object]" disabled="false" role="link">
                                                 <div class="w-full">
                                                     <div
@@ -273,7 +273,7 @@
                                             <a aria-current="page" href={{ url('/info_products?' . http_build_query(['producto' => $nombreTelefonoIMG, 'capacidad' => $producto_popular_capacidad,'color' =>  $producto_popular_titulo_color ,'mas_popular' => 'si'])) }}
                                                 class=" {{ request()->has('mas_popular') && request()->get('mas_popular') === 'si' ? 'bg-fuchsia-50' : '' }} text-purple-700 cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border border-purple-700 lg:px-8 py-3 no-underline motion-safe:transition-colors hover:bg-gray-100 dark:bg-slate-50 dark:hover:bg-slate-200 motion-safe:duration-300 motion-safe:ease-out border-action-brand-mid"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="ec975bb8-df95-43a5-b04d-de63378f4a12"
+                                                productoEstado="ec975bb8-df95-43a5-b04d-de63378f4a12"
                                                 grade="[object Object]" disabled="false" role="link">
                                                 <div class="w-full">
                                                     <div
@@ -392,12 +392,12 @@
 
 
                                         <li data-qa="grades-0">
-                                            <input type="radio" id="imput-estado" name="estado" value="estado-correcto" class="hidden peer" required />
+                                            <input type="radio" id="imput-estado" name="estado" value="estado_correcto" class="hidden peer" required />
                                             <a aria-current="page" href="#scroll=false"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
-                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'COR') !== false || strpos($sku_title, 'STA') !== false) ? 'border-black bg-purple-50' : ''])
+                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'COR') !== false || strpos($sku_title, 'STA') !== false) ? 'border-black bg-purple-50 estado-activo' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="estado_correcto" titulo="{{ $titulo }}" disabled="false"
+                                                productoEstado="estado_correcto" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
@@ -417,12 +417,12 @@
                                             </a>
                                         </li>
                                         <li data-qa="grades-1">
-                                            <input type="radio" id="imput-estado" name="estado" value="estado-bueno" class="hidden peer" required />
+                                            <input type="radio" id="imput-estado" name="estado" value="estado_bueno" class="hidden peer" required />
                                             <a aria-current="page" href="#"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
-                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'BUE') !== false || strpos($sku_title, 'MBU') !== false) ? 'border-black bg-purple-50' : ''])
+                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'BUE') !== false || strpos($sku_title, 'MBU') !== false) ? 'border-black bg-purple-50 estado-activo' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="estado_muyBueno" titulo="{{ $titulo }}" disabled="false"
+                                                productoEstado="estado_bueno" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
@@ -443,12 +443,12 @@
                                             </a>
                                         </li>
                                         <li data-qa="grades-2">
-                                            <input type="radio" id="imput-estado" name="estado" value="estado-impecable" class="hidden peer" required />
+                                            <input type="radio" id="imput-estado" name="estado" value="estado_impecable" class="hidden peer" required />
                                             <a aria-current="page" href="#"
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
-                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'IMP') !== false) ? 'border-black bg-purple-50' : ''])
+                                            "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'IMP') !== false) ? 'border-black bg-purple-50 estado-activo' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="estado_excelente" titulo="{{ $titulo }}" disabled="false"
+                                                productoEstado="estado_impecable" titulo="{{ $titulo }}" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
@@ -520,16 +520,11 @@
                                         <p class="mb-3 block">Almacenamiento (GB)</p>
                                     </div>
                                     <ul id="capacity-list" class="grid list-none gap-3 grid-cols-3">
-                                        @php
-                                            //fdg
-                                            //fg
-                                        @endphp
-
                                         <li data-qa="storage-0">
                                             <a aria-current="page" href="#scroll=false"
                                                 class="router-link-active router-link-exact-active cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="ec975bb8-df95-43a5-b04d-de63378f4a12" disabled="false"
+                                                productoEstado="ec975bb8-df95-43a5-b04d-de63378f4a12" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
@@ -543,7 +538,7 @@
                                             <a href="#scroll=false"
                                                 class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="58c0e06e-f4b5-4553-a0a2-1f2a5d1da186" disabled="false"
+                                                productoEstado="58c0e06e-f4b5-4553-a0a2-1f2a5d1da186" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
@@ -557,7 +552,7 @@
                                             <a href="#scroll=false"
                                                 class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out {{ $sku_title && (strpos($sku_title, '512') !== false) ? 'border-black bg-purple-50' : '' }}"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="81ab240b-44af-4bb1-a59a-1321ffdd74ba" disabled="false"
+                                                productoEstado="81ab240b-44af-4bb1-a59a-1321ffdd74ba" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div
                                                     class="absolute left-0 top-1/2 -mt-12 flex w-full place-content-center">
@@ -583,7 +578,7 @@
                                             <a href="#"
                                                 class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
+                                                productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
                                                 <div class="w-full">
                                                     <div
@@ -601,7 +596,7 @@
                                             <a href="#"
                                                 class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
+                                                productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
                                                 <div class="w-full">
                                                     <div
@@ -618,7 +613,7 @@
                                             <a href="#"
                                                 class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
+                                                productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
                                                 <div class="w-full">
                                                     <div
@@ -635,7 +630,7 @@
                                             <a href="#"
                                                 class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
+                                                productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
                                                 <div class="w-full">
                                                     <div
@@ -652,7 +647,7 @@
                                             <a href="#"
                                                 class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
+                                                productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
                                                 <div class="w-full">
                                                     <div
@@ -670,7 +665,7 @@
                                             <a href="#"
                                                 class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productid="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
+                                                productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
                                                 grade="[object Object]" disabled="false" role="link">
                                                 <div class="w-full">
                                                     <div
@@ -835,183 +830,61 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
         <script>
-            //aplicar precio por estado
-            $(document).ready(function() {
-                $('.estado-enlace').click(function(e) {
-                    e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
-                    
-                    var productid = $(this).attr('productid'); // Obtener el atributo 'productid' (estado)
-                    var tituloProducto = $(this).attr('titulo'); // Obtener el título del producto del atributo 'titulo'
-
-                    // Enviar la solicitud AJAX
-                    $.ajax({
-                        type: 'POST',
-                        url: "{{ route('peticionEstados') }}",
-                        data: { 
-                            productid: productid,
-                            titulo_producto: tituloProducto
-                        },
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            // Verificar si la propiedad 'precio' existe en el objeto JSON
-                            if ('precio' in response) {
-                                // Obtener la cadena de precio del objeto JSON
-                                var precioString = response.precio;
-
-                                console.log(response.precio*0.95, response);
-                                
-                                // Convertir la cadena de precio a un número
-                                var precio = parseFloat(precioString);
-
-                                // Verificar si la conversión fue exitosa
-                                if (!isNaN(precio)) {
-                                    // Aplicar el descuento del 5% al precio
-                                    var precioNuevo = precio * 0.95;
-                                    
-                                    // Formatear el precio con dos decimales
-                                    var precioFormateado = precio.toFixed(2);
-
-                                    // Formatear el nuevo precio con dos decimales
-                                    var precioNuevoFormateado = precioNuevo.toFixed(2);
-
-                                    // Actualizar el precio en el elemento con el id "precio_producto"
-                                    $("#precio_producto .previous-price").html(precioFormateado + "&nbsp;€ nuevo");
-                                    $("#precio_producto .current-price").html(precioNuevoFormateado + "&nbsp;€");
-                                } else {
-                                    // Si la conversión no fue exitosa, mostrar un mensaje de error
-                                    console.error("El precio no es un número válido:", precioString);
-                                }
-                            } else {
-                                // Si la propiedad 'precio' no existe en el objeto JSON, mostrar un mensaje de error
-                                console.error("No se encontró la propiedad 'precio' en el objeto JSON:", response);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            // Manejar errores aquí
-                            console.error(xhr.responseText);
-                        }
-                    });
-                });
-            });
-
-            // Función para realizar la solicitud AJAX
-function enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto) {
-    $.ajax({
-        type: 'POST',
-        url: "{{ route('peticionBateria') }}",
-        data: { 
-            estadoCheckbox: isChecked,
-            titulo_producto: tituloProducto,
-            estadoProducto: estadoProducto
-        },
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            console.log(response);
-            // Aquí puedes actualizar el precio y el estado en tu página
-        },
-        error: function(xhr, status, error) {
-            // Manejar errores aquí
-            console.error(xhr.responseText);
-        }
-    });
-}
-
-// Aplicar precio y estado al cargar la página
-document.addEventListener('DOMContentLoaded', function() {
-    var isChecked = $('#battery-checkbox').prop('checked'); // Verificar si el checkbox está marcado
-    var tituloProducto = $('#battery-checkbox').attr('titulo');
-    var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
-
-    // Realizar la solicitud AJAX
-    enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
-});
-
-// Aplicar precio, marcar estado y deshabilitar o habilitar la batería dependiendo de si se encuentra el producto
-$(document).ready(function() {
-    $('#battery-checkbox').change(function() {
-        var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
-        var tituloProducto = $(this).attr('titulo');
-        var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
-
-        // Realizar la solicitud AJAX
-        enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
-    });
-});
-
-
-            //aplicar precio y titulo por capacidad
-
-
-
-
-            
-            document.addEventListener('DOMContentLoaded', function() {
-
-                
+            //Ejecutar al cargar la pagina      
+            document.addEventListener('DOMContentLoaded', function() {    
                 //obtener capacidad
-                // // Definir un conjunto para almacenar los gigabytes únicos
-                // var uniqueCapacities = new Set();
-                // // Iterar sobre los títulos de los productos y extraer los gigabytes de cada uno
-                // @foreach ($info_producto as $producto)
-                //     var capacity = extractCapacity("{{ $producto['title'] }}");
-                //     uniqueCapacities.add(capacity);
-                // @endforeach
+                    // // Definir un conjunto para almacenar los gigabytes únicos
+                    // var uniqueCapacities = new Set();
+                    // // Iterar sobre los títulos de los productos y extraer los gigabytes de cada uno
+                    // @foreach ($info_producto as $producto)
+                    //     var capacity = extractCapacity("{{ $producto['title'] }}");
+                    //     uniqueCapacities.add(capacity);
+                    // @endforeach
 
-                // // Función para extraer los gigabytes del título del producto
-                // function extractCapacity(title) {
-                //     var matches = title.match(/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i);
-                //     var capacity = matches ? matches[2] : "Sin capacidad";
-                //     return capacity.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
-                // }
+                    // // Función para extraer los gigabytes del título del producto
+                    // function extractCapacity(title) {
+                    //     var matches = title.match(/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i);
+                    //     var capacity = matches ? matches[2] : "Sin capacidad";
+                    //     return capacity.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
+                    // }
 
-                // // Obtener el contenedor donde se agregarán los elementos <li>
-                // var capacityListContainer = document.getElementById('capacity-list');
-                // var CapacityIndex = 0;
-                // // Crear elementos <li> para cada capacidad única
-                // uniqueCapacities.forEach(function(capacity) {
-                //     var li = document.createElement('li');
-                //     li.setAttribute('data-qa', 'capacity-' + CapacityIndex);
-                //     li.innerHTML = `
-                //         <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productid="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
-                //             <div class="w-full">
-                //                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                //                     <span class="shrink truncate text-center text-sm">${capacity}</span>
-                //                 </div>
-                //             </div>
-                //         </a>
-                //     `;
-                //     capacityListContainer.appendChild(li);
-                //     CapacityIndex++;
-                // });
+                    // // Obtener el contenedor donde se agregarán los elementos <li>
+                    // var capacityListContainer = document.getElementById('capacity-list');
+                    // var CapacityIndex = 0;
+                    // // Crear elementos <li> para cada capacidad única
+                    // uniqueCapacities.forEach(function(capacity) {
+                    //     var li = document.createElement('li');
+                    //     li.setAttribute('data-qa', 'capacity-' + CapacityIndex);
+                    //     li.innerHTML = `
+                    //         <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
+                    //             <div class="w-full">
+                    //                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
+                    //                     <span class="shrink truncate text-center text-sm">${capacity}</span>
+                    //                 </div>
+                    //             </div>
+                    //         </a>
+                    //     `;
+                    //     capacityListContainer.appendChild(li);
+                    //     CapacityIndex++;
+                    // });
 
-                //marcar capacidad al principio
-                var storageItems = document.querySelectorAll('li[data-qa^="storage-"]');
-                storageItems.forEach(function(storageItem) {
-                    var spanElement = storageItem.querySelector('span');
-                    var spanValue = spanElement.innerText.replace(/\s/g, ''); // Eliminar todos los espacios en blanco
-                    var aElement = storageItem.querySelector('a');
+                //marcar el imput del estado al cargar la página
+                // Obtener todos los elementos li dentro del ul
+                var liElementos = document.querySelectorAll('#ul-estado li');
 
-                    if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(spanValue)) {
-                        aElement.classList.add('border-black', 'bg-purple-50');
-                    }
-                });
+                // Iterar sobre los elementos li y activar el input correspondiente si tiene ciertas clases
+                liElementos.forEach(function(li) {
+                    // Obtener el elemento <a> dentro del <li>
+                    var aElemento = li.querySelector('a');
 
-                //deshabilitar las capacidades
-                //Recorrer todos los elementos li dentro de #ul-estado
-                $('#ul-estado li').each(function() {
-                    // Buscar todos los elementos que tengan un ID que comience con "precioEstado_"
-                    $(this).find('[id^="precioEstado_"]').each(function() {
-                        var precioTexto = $(this).text().trim();
-                        if (precioTexto === "¡Agotado!") {
-                            // Si el precio está agotado, deshabilitar el li
-                            $(this).closest('li').addClass('pointer-events-none opacity-85');
-                            $(this).addClass('!text-red-500');
+                    // Verificar si el <a> tiene las clases específicas
+                    if (aElemento.classList.contains('estado-activo')) {
+                        // Activar el input dentro de este li
+                        var input = li.querySelector('input[type="radio"]');
+                        if (input) {
+                            input.checked = true;
                         }
-                    });
+                    }
                 });
 
                 //marcar al principio el imput de la bateria
@@ -1029,6 +902,37 @@ $(document).ready(function() {
                 checkboxLabel.addEventListener('click', function() {
                     // Cambiar el estado del input al contrario de su estado actual
                     checkbox.checked = !checkbox.checked;
+                });
+                //obtener el estado del imput y mandarlo por ajax
+                var isChecked = $('#battery-checkbox').prop('checked'); // Verificar si el checkbox está marcado
+                var tituloProducto = $('#battery-checkbox').attr('titulo');
+                var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
+               // Realizar la solicitud AJAX
+                enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
+                //marcar capacidad al principio
+                var storageItems = document.querySelectorAll('li[data-qa^="storage-"]');
+                storageItems.forEach(function(storageItem) {
+                    var spanElement = storageItem.querySelector('span');
+                    var spanValue = spanElement.innerText.replace(/\s/g, ''); // Eliminar todos los espacios en blanco
+                    var aElement = storageItem.querySelector('a');
+
+                    if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(spanValue)) {
+                        aElement.classList.add('border-black', 'bg-purple-50','storage-activo');
+                    }
+                });
+
+                //deshabilitar los estados
+                //Recorrer todos los elementos li dentro de #ul-estado
+                $('#ul-estado li').each(function() {
+                    // Buscar todos los elementos que tengan un ID que comience con "precioEstado_"
+                    $(this).find('[id^="precioEstado_"]').each(function() {
+                        var precioTexto = $(this).text().trim();
+                        if (precioTexto === "¡Agotado!") {
+                            // Si el precio está agotado, deshabilitar el li
+                            $(this).closest('li').addClass('pointer-events-none opacity-85');
+                            $(this).addClass('!text-red-500');
+                        }
+                    });
                 });
 
                 //obtener colores
@@ -1071,7 +975,7 @@ $(document).ready(function() {
                     var RgbCode = colorRgbMap[color.toLowerCase()];
                     li.setAttribute('data-qa', 'color-' + Colorindex);
                     li.innerHTML = `
-                        <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productid="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
+                        <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
                             <div class="w-full">
                                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
                                     <div aria-hidden="" class="rounded-full h-4 w-4 border border-black shrink-0" style="background-color: ${RgbCode};"></div>
@@ -1091,7 +995,7 @@ $(document).ready(function() {
                     var spanValue = spanElement.innerText; // Eliminar todos los espacios en blanco
                     var aElement = colorItem.querySelector('a');
                     if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(spanValue)) {
-                        aElement.classList.add('border-black', 'bg-purple-50');
+                        aElement.classList.add('border-black', 'bg-purple-50','color-activo');
                     }
                 });
 
@@ -1099,7 +1003,7 @@ $(document).ready(function() {
             });
 
             //Quitar o poner clases al cambiar de estado
-           // Obtener el elemento <ul> con el ID específico
+            // Obtener el elemento <ul> con el ID específico
             var ulElement = document.getElementById('ul-estado');
             // Obtener todos los elementos <li> dentro del <ul>
             var liElements = ulElement.querySelectorAll('[data-qa^="grades-"]');
@@ -1111,7 +1015,7 @@ $(document).ready(function() {
                     var allATags = ulElement.querySelectorAll('li a');
                     allATags.forEach(function(aTag) {
                         // Remover las clases de todos los <a>
-                        aTag.classList.remove('border-black', 'bg-purple-50');
+                        aTag.classList.remove('border-black', 'bg-purple-50','estado-activo');
                     });
                     // Obtener todos los elementos <span> dentro del <ul>
                     var allSpanTags = ulElement.querySelectorAll('li a span');
@@ -1127,7 +1031,7 @@ $(document).ready(function() {
                         // Obtener el <a> dentro del <li> clicado
                         var aTag = this.querySelector('a');
                         // Agregar las clases al <a>
-                        aTag.classList.add('border-black', 'bg-purple-50');
+                        aTag.classList.add('border-black', 'bg-purple-50','estado-activo');
                         // Obtener el <span> dentro del <li> clicado
                             var spanTag = this.querySelector('span');
                         // Agregar las clases al <span>
@@ -1135,6 +1039,127 @@ $(document).ready(function() {
                     }
                 });
             });
+
+
+            //aplicar precio segun el estado
+            $(document).ready(function() {
+                // Evento de cambio para el checkbox
+    $('#battery-checkbox').change(function() {
+        var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
+        var tituloProducto = $(this).attr('titulo');
+        var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
+
+        // Realizar la solicitud AJAX
+        enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
+    });
+
+    // Evento de clic para los enlaces de estado
+    $('.estado-enlace').click(function(e) {
+        e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
+
+        var productoEstado = $(this).attr('productoEstado'); // Obtener el atributo 'productoEstado' (estado)
+        var tituloProducto = $(this).attr('titulo'); // Obtener el título del producto del atributo 'titulo'
+        var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
+        // Realizar la solicitud AJAX
+        enviarSolicitudAjax(isChecked, tituloProducto, productoEstado);
+    });
+            });
+
+            // Función para realizar la solicitud AJAX
+            function enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto) {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ route('peticionBateria') }}",
+                    data: { 
+                        estadoCheckbox: isChecked,
+                        titulo_producto: tituloProducto,
+                        estadoProducto: estadoProducto
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        var hayStock='si';
+                        hayStock= response.hayStock;
+                        console.log(response);
+
+                        //si existe, se cambia el precio y el sku oculto
+                        if ('precio' in response) {
+                                // Obtener la cadena de precio del objeto JSON
+                                var precioString = response.precio;
+                                var precioCOR= response.precioCOR;
+                                var precioBUE= response.precioBUE;
+                                var precioIMP= response.precioIMP;
+
+                                console.log(response.precio*0.95, response);
+                                // Convertir la cadena de precio a un número
+                                var precio = parseFloat(precioString);
+                                var precioCOR = parseFloat(precioCOR);
+                                var precioBUE = parseFloat(precioBUE);
+                                var precioIMP = parseFloat(precioIMP);
+
+                                // Verificar si la conversión fue exitosa
+                                if (!isNaN(precio)) {
+                                    // Aplicar el descuento del 5% al precio
+                                    var precioNuevo = precio * 0.95;
+                                    var precioCOR = precioCOR * 0.95;
+                                    var precioBUE = precioBUE * 0.95;
+                                    var precioIMP = precioIMP * 0.95;
+                                    
+                                    // Formatear el precio con dos decimales
+                                    var precioFormateado = precio.toFixed(2);
+                                    // Formatear el nuevo precio con dos decimales
+                                    var precioNuevoFormateado = precioNuevo.toFixed(2);
+                                    var precioCOR = precioCOR.toFixed(2);
+                                    var precioBUE = precioBUE.toFixed(2);
+                                    var precioIMP = precioIMP.toFixed(2);
+                                    // Actualizar el precio en el elemento con el id "precio_producto"
+                                    $("#precio_producto .previous-price").html(precioFormateado + "&nbsp;€ nuevo");
+                                    $("#precio_producto .current-price").html(precioNuevoFormateado + "&nbsp;€");
+                                    $("#precioEstado_1").text( precioCOR + "€");
+                                    $("#precioEstado_2").text(precioBUE + "€");
+                                    $("#precioEstado_3").text(precioIMP + "€");
+                                    $("#titulo_producto").html(response.sku);
+                                    
+                                }
+                        } else {
+                            // Si la propiedad 'precio' no existe en el objeto JSON, mostrar un mensaje de error
+                            console.error("No se encontró la propiedad 'precio' en el objeto JSON:", response);
+                        }
+                        // Verificar si hayStock es igual a "no"
+                        if (hayStock == "no") {
+                            // Agregar una clase al label
+                            $("#batery-label").addClass("pointer-events-none");
+                        }
+                           
+                    },
+                    error: function(xhr, status, error) {
+                        // Manejar errores aquí
+                        console.error(xhr.responseText);
+                        // Verificar si la respuesta es un objeto JSON
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            var hayStock = response.hayStock;
+                            const checkbox = document.getElementById('battery-checkbox');
+                            // Verificar si hayStock es igual a "no"
+                            if (hayStock == "no") {
+                                // Agregar una clase al label
+                                $("#batery-label").addClass("pointer-events-none");
+                                checkbox.checked = true;
+                            }
+                        } catch (e) {
+                            console.error("Error al analizar la respuesta JSON del servidor:", e);
+                        }
+                    }
+                });
+            }
+
+
+            //aplicar precio y titulo por capacidad
+
+
+
+           
 
 
 

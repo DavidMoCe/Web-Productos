@@ -40,7 +40,7 @@ Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name(
 Route::get('/info_products',[BackMarketController::class, 'OntenerUnProducto'])->name('info_products');
 
 
-Route::post('/peticionEstados',[BackMarketController::class,'peticionEstados'])->name('peticionEstados');
+//Route::post('/peticionEstados',[BackMarketController::class,'peticionEstados'])->name('peticionEstados');
 Route::post('/peticionBateria',[BackMarketController::class,'peticionBateria'])->name('peticionBateria');
 
 
