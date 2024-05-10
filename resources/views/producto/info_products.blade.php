@@ -119,7 +119,7 @@
                                 <div id="titulo_sku" class="hidden">{{ $sku_title }}</div>
                                 <div id="title"
                                     class="mb-4 mt-4 lg:!mt-0 flex flex-col md:!flex-row lg:items-center justify-between">
-                                    <h2 id="titulo_producto" class="text-2xl sm:!text-3xl font-bold m-auto">{{ $sku_title }}</h2>
+                                    <h2 id="titulo_producto" class="text-2xl sm:!text-3xl font-bold m-auto">{{ $titulo }}</h2>
                                     <div id="precio_producto" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
                                         <div class="flex items-center mt-4">
                                             <div
@@ -410,7 +410,7 @@
 
                                                         {{ $precio_producto_Correcto }}
                                                         @if ($precio_producto_Correcto !== "¡Agotado!")
-                                                            &nbsp;€
+                                                            €
                                                         @endif
                                                     </div>
                                                 </div>
@@ -435,7 +435,7 @@
 
                                                         {{ $precio_producto_MBU }}
                                                         @if ($precio_producto_MBU !== "¡Agotado!")
-                                                            &nbsp;€
+                                                            €
                                                         @endif
                                                     </div>
                                                 </div>
@@ -462,7 +462,7 @@
 
                                                         {{ $precio_producto_IMP }}
                                                         @if ($precio_producto_IMP !== "¡Agotado!")
-                                                            &nbsp;€
+                                                            €
                                                         @endif
                                                     </div>
                                                 </div>
@@ -470,15 +470,10 @@
                                         </li>
                                     </ul>
                                     <label for="battery-checkbox" id="batery-label" class="cursor-pointer">
-                                        <div
-                                            class="battery-replacement flex items-center justify-between border border-black rounded-md p-3">
+                                        <div id="batery-label-1" class="battery-replacement flex items-center justify-between border border-black rounded-md p-3">
                                             <div class="flex items-center">
-                                                <div
-                                                    class="rounded-md mr-3 lg:mr-16 border border-black p-1 bg-slate-100">
-                                                    <svg aria-hidden="true" fill="currentColor" height="24"
-                                                        viewBox="0 0 24 24" width="24"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        class="peer:checked:text-green-600">
+                                                <div class="rounded-md mr-3 lg:mr-16 border border-black p-1 bg-slate-100">
+                                                    <svg aria-hidden="true" fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" class="peer:checked:text-green-600">
                                                         <path
                                                             d="M11.665 12.715 12.82 9.5l.015-.04a.106.106 0 0 0-.035-.11.095.095 0 0 0-.135 0 1.73 1.73 0 0 0-.056.088.852.852 0 0 1-.034.052l-.07.115-.405.675L10.5 13l-.415.69h2.294l-.834 2.865a.105.105 0 0 0 .045.12.11.11 0 0 0 .14-.04l1.77-3.25.38-.67z">
                                                         </path>
@@ -490,21 +485,15 @@
                                                 <span class="text-sm font-medium mr-3">Batería nueva</span>
                                             </div>
 
-                                            <label
-                                                class="relative h-8 w-14 rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500">
-                                                <input type="checkbox" id="battery-checkbox" titulo="{{ $titulo }}"
-                                                    class="peer sr-only  [&:checked_+_span_svg[data-checked-icon]]:block [&:checked_+_span_svg[data-unchecked-icon]]:hidden" />
-                                                <span
-                                                    class="absolute inset-y-0 start-0 z-10 m-1 inline-flex size-6 items-center justify-center rounded-full bg-white text-gray-400 transition-all peer-checked:start-6 peer-checked:text-green-600">
-                                                    <svg data-unchecked-icon xmlns="http://www.w3.org/2000/svg"
-                                                        class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <label id="batery-label-2" class="pointer-events-none relative h-8 w-14 rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500">
+                                                <input type="checkbox" id="battery-checkbox" titulo="{{ $titulo }}" class="peer sr-only  [&:checked_+_span_svg[data-checked-icon]]:block [&:checked_+_span_svg[data-unchecked-icon]]:hidden" />
+                                                <span id="battery-span" class="absolute inset-y-0 start-0 z-10 m-1 inline-flex size-6 items-center justify-center rounded-full bg-white text-gray-400 transition-all peer-checked:start-6 peer-checked:text-green-600">
+                                                    <svg data-unchecked-icon xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                                         <path fill-rule="evenodd"
                                                             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                                                             clip-rule="evenodd" />
                                                     </svg>
-                                                    <svg data-checked-icon xmlns="http://www.w3.org/2000/svg"
-                                                        class="hidden h-4 w-4" viewBox="0 0 20 20"
-                                                        fill="currentColor">
+                                                    <svg data-checked-icon xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                                         <path fill-rule="evenodd"
                                                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                                             clip-rule="evenodd" />
@@ -520,7 +509,7 @@
                                         <p class="mb-3 block">Almacenamiento (GB)</p>
                                     </div>
                                     <ul id="capacity-list" class="grid list-none gap-3 grid-cols-3">
-                                        <li data-qa="storage-0">
+                                        {{-- <li data-qa="storage-0">
                                             <a aria-current="page" href="#scroll=false"
                                                 class="router-link-active router-link-exact-active cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
                                                 rel="noreferrer noopener" aria-disabled="false"
@@ -564,7 +553,7 @@
                                                     </div>
                                                 </div>
                                             </a>
-                                        </li>
+                                        </li> --}}
                                     </ul>
                                 </div>
 
@@ -832,42 +821,6 @@
         <script>
             //Ejecutar al cargar la pagina      
             document.addEventListener('DOMContentLoaded', function() {    
-                //obtener capacidad
-                    // // Definir un conjunto para almacenar los gigabytes únicos
-                    // var uniqueCapacities = new Set();
-                    // // Iterar sobre los títulos de los productos y extraer los gigabytes de cada uno
-                    // @foreach ($info_producto as $producto)
-                    //     var capacity = extractCapacity("{{ $producto['title'] }}");
-                    //     uniqueCapacities.add(capacity);
-                    // @endforeach
-
-                    // // Función para extraer los gigabytes del título del producto
-                    // function extractCapacity(title) {
-                    //     var matches = title.match(/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i);
-                    //     var capacity = matches ? matches[2] : "Sin capacidad";
-                    //     return capacity.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
-                    // }
-
-                    // // Obtener el contenedor donde se agregarán los elementos <li>
-                    // var capacityListContainer = document.getElementById('capacity-list');
-                    // var CapacityIndex = 0;
-                    // // Crear elementos <li> para cada capacidad única
-                    // uniqueCapacities.forEach(function(capacity) {
-                    //     var li = document.createElement('li');
-                    //     li.setAttribute('data-qa', 'capacity-' + CapacityIndex);
-                    //     li.innerHTML = `
-                    //         <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
-                    //             <div class="w-full">
-                    //                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                    //                     <span class="shrink truncate text-center text-sm">${capacity}</span>
-                    //                 </div>
-                    //             </div>
-                    //         </a>
-                    //     `;
-                    //     capacityListContainer.appendChild(li);
-                    //     CapacityIndex++;
-                    // });
-
                 //marcar el imput del estado al cargar la página
                 // Obtener todos los elementos li dentro del ul
                 var liElementos = document.querySelectorAll('#ul-estado li');
@@ -909,6 +862,7 @@
                 var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
                // Realizar la solicitud AJAX
                 enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
+
                 //marcar capacidad al principio
                 var storageItems = document.querySelectorAll('li[data-qa^="storage-"]');
                 storageItems.forEach(function(storageItem) {
@@ -921,7 +875,7 @@
                     }
                 });
 
-                //deshabilitar los estados
+                //deshabilitar y habilitar los estados
                 //Recorrer todos los elementos li dentro de #ul-estado
                 $('#ul-estado li').each(function() {
                     // Buscar todos los elementos que tengan un ID que comience con "precioEstado_"
@@ -931,9 +885,111 @@
                             // Si el precio está agotado, deshabilitar el li
                             $(this).closest('li').addClass('pointer-events-none opacity-85');
                             $(this).addClass('!text-red-500');
+                            
+                        }else{
+                            // Si el precio no está agotado, habilitar el li
+                            $(this).closest('li').removeClass('pointer-events-none opacity-85');
+                            $(this).removeClass('!text-red-500');
                         }
                     });
                 });
+
+                //obtener capacidad
+                // Definir un conjunto para almacenar los gigabytes únicos
+                var uniqueCapacities = new Set();
+                // Iterar sobre los títulos de los productos y extraer los gigabytes de cada uno
+                @foreach ($info_producto as $producto)
+                    var capacity = extractCapacity("{{ $producto['title'] }}");
+                    uniqueCapacities.add(capacity);
+                @endforeach
+
+                // Función para extraer los gigabytes del título del producto
+                function extractCapacity(title) {
+                    var matches = title.match(/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i);
+                    var capacity = matches ? matches[2] : "Sin capacidad";
+                    return capacity.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
+                }
+
+                // Obtener el contenedor donde se agregarán los elementos <li>
+                var capacityListContainer = document.getElementById('capacity-list');
+                var CapacityIndex = 0;
+                // Crear elementos <li> para cada capacidad única
+                uniqueCapacities.forEach(function(capacity) {
+                    var li = document.createElement('li');
+                    li.setAttribute('data-qa', 'storage-' + CapacityIndex);
+                    li.innerHTML = `
+                    <input type="radio" id="input-capacidad-${CapacityIndex}" name="capacidad" value="${capacity}" class="hidden peer" required />
+                        <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
+                            <div class="w-full">
+                                <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
+                                    <span class="shrink truncate text-center text-sm">${capacity}</span>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    capacityListContainer.appendChild(li);
+                    CapacityIndex++;
+                });
+                //marcar capacidad al principio
+                var capacidadItems = document.querySelectorAll('li[data-qa^="storage-"]');
+                capacidadItems.forEach(function(capacidadItem) {
+                    var capacidadspanElement = capacidadItem.querySelector('span');
+                    var capacidadspanValue = capacidadspanElement.innerText; // Eliminar todos los espacios en blanco
+                    var capacidadaElement = capacidadItem.querySelector('a');
+                    if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(capacidadspanValue)) {
+                        capacidadaElement.classList.add('border-black', 'bg-purple-50','capacidad-activo');
+                    }
+                });
+
+                // Obtener todos los elementos li dentro del ul
+                var liElementos = document.querySelectorAll('#capacity-list li');
+                // Iterar sobre los elementos li y activar el input correspondiente si tiene ciertas clases
+                liElementos.forEach(function(li) {
+                    // Obtener el elemento <a> dentro del <li>
+                    var aElemento = li.querySelector('a');
+                    // Verificar si el <a> tiene las clases específicas
+                    if (aElemento.classList.contains('capacidad-activo')) {
+                        // Activar el input dentro de este li
+                        var input = li.querySelector('input[type="radio"]');
+                        if (input) {
+                            input.checked = true;
+                        }
+                    }
+                });
+
+
+                // //cambiar las clases de los li de capacidad
+                // // Obtener el elemento <ul> con el ID específico
+                // var ulElement_storage = document.getElementById('capacity-list');
+                // // Obtener todos los elementos <li> dentro del <ul>
+                // var liElements_storage = ulElement_storage.querySelectorAll('[data-qa^="storage-"]');
+                // // Iterar sobre cada elemento <li>
+                // liElements_storage.forEach(function(li_storage) {
+                //     // Agregar el evento de clic
+                //     li_storage.addEventListener('click', function() {
+                //         // Obtener todos los elementos <a> dentro del <ul>
+                //         var allATags_storage = ulElement_storage.querySelectorAll('li a');
+                //         allATags_storage.forEach(function(aTag_storage) {
+                //             // Remover las clases de todos los <a>
+                //             aTag_storage.classList.remove('border-black', 'bg-purple-50', 'capacidad-activo');
+                //         });
+                //         // Obtener el radio button dentro del <li> clicado
+                //         var radio_storage = this.querySelector('input[type="radio"]');
+                //         if (radio_storage) {
+                //             // Activar el radio button
+                //             radio_storage.checked = true;
+                //             // Obtener el <a> dentro del <li> clicado
+                //             var aTag_storage = this.querySelector('a');
+                //             // Agregar las clases al <a>
+                //             aTag_storage.classList.add('border-black', 'bg-purple-50', 'capacidad-activo');
+                //         }
+                //     });
+                // });
+
+
+
+
+
 
                 //obtener colores
                 // Definir un conjunto para almacenar los colores únicos
@@ -1000,7 +1056,16 @@
                 });
 
 
+               
+
             });
+
+
+
+
+
+
+
 
             //Quitar o poner clases al cambiar de estado
             // Obtener el elemento <ul> con el ID específico
@@ -1041,28 +1106,58 @@
             });
 
 
+            // Obtener el elemento <ul> con el ID específico
+            var ulElement = document.getElementById('capacity-list');
+            // Obtener todos los elementos <li> dentro del <ul>
+            var liElements = ulElement.querySelectorAll('[data-qa^="storage-"]');
+            // Iterar sobre cada elemento <li>
+            liElements.forEach(function(li) {
+                // Agregar el evento de clic
+                li.addEventListener('click', function() {
+                    // Obtener todos los elementos <a> dentro del <ul>
+                    var allATags = ulElement.querySelectorAll('li a');
+                    allATags.forEach(function(aTag) {
+                        // Remover las clases de todos los <a>
+                        aTag.classList.remove('border-black', 'bg-purple-50', 'capacidad-activo');
+                    });
+                    // Obtener el radio button dentro del <li> clicado
+                    var radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        // Activar el radio button
+                        radio.checked = true;
+                        // Obtener el <a> dentro del <li> clicado
+                        var aTag = this.querySelector('a');
+                        // Agregar las clases al <a>
+                        aTag.classList.add('border-black', 'bg-purple-50', 'capacidad-activo');
+                    }
+                });
+            });
+
+
             //aplicar precio segun el estado
             $(document).ready(function() {
                 // Evento de cambio para el checkbox
-    $('#battery-checkbox').change(function() {
-        var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
-        var tituloProducto = $(this).attr('titulo');
-        var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
+                $('#battery-checkbox').change(function() {
+                    var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
+                    var tituloProducto = $(this).attr('titulo');
+                    var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
 
-        // Realizar la solicitud AJAX
-        enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
-    });
+                    // Realizar la solicitud AJAX
+                    enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
+                });
 
-    // Evento de clic para los enlaces de estado
-    $('.estado-enlace').click(function(e) {
-        e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
+                // Evento de clic para los enlaces de estado
+                $('#ul-estado li').click(function(e) {
+                    e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
 
-        var productoEstado = $(this).attr('productoEstado'); // Obtener el atributo 'productoEstado' (estado)
-        var tituloProducto = $(this).attr('titulo'); // Obtener el título del producto del atributo 'titulo'
-        var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
-        // Realizar la solicitud AJAX
-        enviarSolicitudAjax(isChecked, tituloProducto, productoEstado);
-    });
+                    var productoEstado = $(this).find('a').attr('productoEstado'); // Obtener el atributo 'productoEstado' (estado)
+                    var tituloProducto = $(this).find('a').attr('titulo'); // Obtener el título del producto del atributo 'titulo'
+                    var isChecked = $('#battery-checkbox').prop('checked'); // Verificar si el checkbox está marcado
+                    // Realizar la solicitud AJAX
+                    enviarSolicitudAjax(isChecked, tituloProducto, productoEstado);
+                });
+
+               
             });
 
             // Función para realizar la solicitud AJAX
@@ -1079,83 +1174,110 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
-                        var hayStock='si';
-                        hayStock= response.hayStock;
-                        console.log(response);
-
                         //si existe, se cambia el precio y el sku oculto
-                        if ('precio' in response) {
-                                // Obtener la cadena de precio del objeto JSON
-                                var precioString = response.precio;
-                                var precioCOR= response.precioCOR;
-                                var precioBUE= response.precioBUE;
-                                var precioIMP= response.precioIMP;
+                        // Obtener la cadena de precio del objeto JSON
+                        var precioString = response.precio;
+                        var precioCOR= response.precioCOR;
+                        var precioBUE= response.precioBUE;
+                        var precioIMP= response.precioIMP;
 
-                                console.log(response.precio*0.95, response);
-                                // Convertir la cadena de precio a un número
-                                var precio = parseFloat(precioString);
-                                var precioCOR = parseFloat(precioCOR);
-                                var precioBUE = parseFloat(precioBUE);
-                                var precioIMP = parseFloat(precioIMP);
+                        console.log(response.precio*0.95, response);
+                        //Convertir la cadena de precio a un número
+                        var precio = parseFloat(precioString);
+                        var precioCOR = parseFloat(precioCOR);
+                        var precioBUE = parseFloat(precioBUE);
+                        var precioIMP = parseFloat(precioIMP);
 
-                                // Verificar si la conversión fue exitosa
-                                if (!isNaN(precio)) {
-                                    // Aplicar el descuento del 5% al precio
-                                    var precioNuevo = precio * 0.95;
-                                    var precioCOR = precioCOR * 0.95;
-                                    var precioBUE = precioBUE * 0.95;
-                                    var precioIMP = precioIMP * 0.95;
+                        // Verificar si la conversión fue exitosa
+                        if (!isNaN(precio)) {
+                            // Aplicar el descuento del 5% al precio
+                            var precioNuevo = precio * 0.95;
+                            var precioCOR = precioCOR * 0.95;
+                            var precioBUE = precioBUE * 0.95;
+                            var precioIMP = precioIMP * 0.95;
+
+                            //formateamos el precioTotal en euro
+                            const formatterEuro = new Intl.NumberFormat("es-ES", {
+                                style: "currency",
+                                currency: "EUR",
+                                minimumFractionDigits: 2,
+                                // Especificar separador de miles
+                                useGrouping: true,
+                            });
                                     
-                                    // Formatear el precio con dos decimales
-                                    var precioFormateado = precio.toFixed(2);
-                                    // Formatear el nuevo precio con dos decimales
-                                    var precioNuevoFormateado = precioNuevo.toFixed(2);
-                                    var precioCOR = precioCOR.toFixed(2);
-                                    var precioBUE = precioBUE.toFixed(2);
-                                    var precioIMP = precioIMP.toFixed(2);
-                                    // Actualizar el precio en el elemento con el id "precio_producto"
-                                    $("#precio_producto .previous-price").html(precioFormateado + "&nbsp;€ nuevo");
-                                    $("#precio_producto .current-price").html(precioNuevoFormateado + "&nbsp;€");
-                                    $("#precioEstado_1").text( precioCOR + "€");
-                                    $("#precioEstado_2").text(precioBUE + "€");
-                                    $("#precioEstado_3").text(precioIMP + "€");
-                                    $("#titulo_producto").html(response.sku);
-                                    
+                            // Formatear el precio con dos decimales
+                            var precioFormateado = formatterEuro.format(precio);
+                            // Formatear el nuevo precio con dos decimales
+                            var precioNuevoFormateado = formatterEuro.format(precioNuevo);
+                            // Actualizar el precio en el elemento con el id "precio_producto"
+                            $("#precio_producto .previous-price").html(precioFormateado + " nuevo");
+                            $("#precio_producto .current-price").html(precioNuevoFormateado);
+                            $("#titulo_sku").html(response.sku);
+
+                            //Ponemos el precio o el aviso
+                            if(precioCOR==0){
+                                $("#precioEstado_1").text("¡Agotado!");
+                            }else{
+                                var precioCOR = formatterEuro.format(precioCOR);
+                                $("#precioEstado_1").text( precioCOR);
+                            }
+                            if(precioBUE==0){
+                                $("#precioEstado_2").text("¡Agotado!");
+                            }else{
+                                var precioBUE = formatterEuro.format(precioBUE);
+                                $("#precioEstado_2").text( precioBUE);
+                            }
+                            if(precioIMP==0){
+                                $("#precioEstado_3").text("¡Agotado!");
+                            }else{
+                                var precioIMP = formatterEuro.format(precioIMP);
+                                $("#precioEstado_3").text( precioIMP);
+                            }           
+                        }
+
+                        //deshabilitar y habilitar los estados
+                        //Recorrer todos los elementos li dentro de #ul-estado
+                        $('#ul-estado li').each(function() {
+                            // Buscar todos los elementos que tengan un ID que comience con "precioEstado_"
+                            $(this).find('[id^="precioEstado_"]').each(function() {
+                                var precioTexto = $(this).text().trim();
+                                if (precioTexto === "¡Agotado!") {
+                                    // Si el precio está agotado, deshabilitar el li
+                                    $(this).closest('li').addClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
+                                    $(this).addClass('!text-red-500');
+                                }else{
+                                    // Si el precio no está agotado, habilitar el li
+                                    $(this).closest('li').removeClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
+                                    $(this).removeClass('!text-red-500');
+                                    $(this).find('input[type="radio"]').prop('checked', true);
                                 }
-                        } else {
-                            // Si la propiedad 'precio' no existe en el objeto JSON, mostrar un mensaje de error
-                            console.error("No se encontró la propiedad 'precio' en el objeto JSON:", response);
-                        }
+                            });
+                        });
+
                         // Verificar si hayStock es igual a "no"
-                        if (hayStock == "no") {
+                        if (response.productBat == "NoHay") {
                             // Agregar una clase al label
-                            $("#batery-label").addClass("pointer-events-none");
+                            $("#battery-checkbox").prop("disabled", true);
+                            $("#batery-label-1").addClass("border-stone-500 bg-stone-200");
+                            $("#batery-label").addClass("opacity-55 pointer-events-none");  
+                        }else{
+                            // Eliminar la clase al label
+                            $("#battery-checkbox").prop("disabled", false);
+                            $("#batery-label-1").removeClass("border-stone-500 bg-stone-200");
+                            $("#batery-label").removeClass("pointer-events-none opacity-55");
                         }
-                           
                     },
                     error: function(xhr, status, error) {
                         // Manejar errores aquí
                         console.error(xhr.responseText);
-                        // Verificar si la respuesta es un objeto JSON
-                        try {
-                            var response = JSON.parse(xhr.responseText);
-                            var hayStock = response.hayStock;
-                            const checkbox = document.getElementById('battery-checkbox');
-                            // Verificar si hayStock es igual a "no"
-                            if (hayStock == "no") {
-                                // Agregar una clase al label
-                                $("#batery-label").addClass("pointer-events-none");
-                                checkbox.checked = true;
-                            }
-                        } catch (e) {
-                            console.error("Error al analizar la respuesta JSON del servidor:", e);
-                        }
                     }
                 });
             }
 
 
             //aplicar precio y titulo por capacidad
+            
+
 
 
 
