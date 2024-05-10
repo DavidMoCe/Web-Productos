@@ -918,7 +918,7 @@
                     var li = document.createElement('li');
                     li.setAttribute('data-qa', 'storage-' + CapacityIndex);
                     li.innerHTML = `
-                    <input type="radio" id="input-capacidad-${CapacityIndex}" name="capacidad" value="${capacity}" class="hidden peer" required />
+                    <input type="radio" id="input-capacidad-${CapacityIndex}" name="capacidad" value="${capacity}" class="hidde peer" required />
                         <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
                             <div class="w-full">
                                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
@@ -956,37 +956,6 @@
                         }
                     }
                 });
-
-
-                // //cambiar las clases de los li de capacidad
-                // // Obtener el elemento <ul> con el ID específico
-                // var ulElement_storage = document.getElementById('capacity-list');
-                // // Obtener todos los elementos <li> dentro del <ul>
-                // var liElements_storage = ulElement_storage.querySelectorAll('[data-qa^="storage-"]');
-                // // Iterar sobre cada elemento <li>
-                // liElements_storage.forEach(function(li_storage) {
-                //     // Agregar el evento de clic
-                //     li_storage.addEventListener('click', function() {
-                //         // Obtener todos los elementos <a> dentro del <ul>
-                //         var allATags_storage = ulElement_storage.querySelectorAll('li a');
-                //         allATags_storage.forEach(function(aTag_storage) {
-                //             // Remover las clases de todos los <a>
-                //             aTag_storage.classList.remove('border-black', 'bg-purple-50', 'capacidad-activo');
-                //         });
-                //         // Obtener el radio button dentro del <li> clicado
-                //         var radio_storage = this.querySelector('input[type="radio"]');
-                //         if (radio_storage) {
-                //             // Activar el radio button
-                //             radio_storage.checked = true;
-                //             // Obtener el <a> dentro del <li> clicado
-                //             var aTag_storage = this.querySelector('a');
-                //             // Agregar las clases al <a>
-                //             aTag_storage.classList.add('border-black', 'bg-purple-50', 'capacidad-activo');
-                //         }
-                //     });
-                // });
-
-
 
 
 
@@ -1056,7 +1025,6 @@
                 });
 
 
-               
 
             });
 
@@ -1106,32 +1074,40 @@
             });
 
 
-            // Obtener el elemento <ul> con el ID específico
-            var ulElement = document.getElementById('capacity-list');
-            // Obtener todos los elementos <li> dentro del <ul>
-            var liElements = ulElement.querySelectorAll('[data-qa^="storage-"]');
-            // Iterar sobre cada elemento <li>
-            liElements.forEach(function(li) {
-                // Agregar el evento de clic
-                li.addEventListener('click', function() {
-                    // Obtener todos los elementos <a> dentro del <ul>
-                    var allATags = ulElement.querySelectorAll('li a');
-                    allATags.forEach(function(aTag) {
-                        // Remover las clases de todos los <a>
-                        aTag.classList.remove('border-black', 'bg-purple-50', 'capacidad-activo');
-                    });
-                    // Obtener el radio button dentro del <li> clicado
-                    var radio = this.querySelector('input[type="radio"]');
-                    if (radio) {
-                        // Activar el radio button
-                        radio.checked = true;
-                        // Obtener el <a> dentro del <li> clicado
-                        var aTag = this.querySelector('a');
-                        // Agregar las clases al <a>
-                        aTag.classList.add('border-black', 'bg-purple-50', 'capacidad-activo');
-                    }
-                });
-            });
+            //Quitar o poner clases al cambiar de capacidad
+ // //cambiar las clases de los li de capacidad
+                // // Obtener el elemento <ul> con el ID específico
+                // var ulElement_storage = document.getElementById('capacity-list');
+                // // Obtener todos los elementos <li> dentro del <ul>
+                // var liElements_storage = ulElement_storage.querySelectorAll('[data-qa^="storage-"]');
+                // // Iterar sobre cada elemento <li>
+                // liElements_storage.forEach(function(li_storage) {
+                //     // Agregar el evento de clic
+                //     li_storage.addEventListener('click', function() {
+                //         // Obtener todos los elementos <a> dentro del <ul>
+                //         var allATags_storage = ulElement_storage.querySelectorAll('li a');
+                //         allATags_storage.forEach(function(aTag_storage) {
+                //             // Remover las clases de todos los <a>
+                //             aTag_storage.classList.remove('border-black', 'bg-purple-50', 'capacidad-activo');
+                //         });
+                //         // Obtener el radio button dentro del <li> clicado
+                //         var radio_storage = this.querySelector('input[type="radio"]');
+                //         if (radio_storage) {
+                //             // Activar el radio button
+                //             radio_storage.checked = true;
+                //             // Obtener el <a> dentro del <li> clicado
+                //             var aTag_storage = this.querySelector('a');
+                //             // Agregar las clases al <a>
+                //             aTag_storage.classList.add('border-black', 'bg-purple-50', 'capacidad-activo');
+                //         }
+                //     });
+                // });
+
+//tiene que ir al cargar la pagina creo
+
+
+
+
 
 
             //aplicar precio segun el estado
