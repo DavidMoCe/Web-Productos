@@ -86,13 +86,13 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
                 <div class="lg:flex items-start justify-center py-12 2xl:px-20 sm:!px-8 px-4">
                     <div class="xl:w-3/5 lg:w-2/5 w-80 lg:mx-6 hidden lg:!block">
-                        <img class="w-full" alt="{{ $titulo }}"
+                        <img class="imagenGrande w-full" alt="{{ $titulo }}"
                             src="./imagenes/{{$nombreImagenAPI}}.jpg" />
                         <img class="mt-6 w-full" alt="image of a girl posing"
                             src="https://i.ibb.co/qxkRXSq/component-image-two.png" />
                     </div>
                     <div class="lg:hidden">
-                        <img class="w-full" alt="{{ $titulo }}"
+                        <img class="imagenPequena w-full" alt="{{ $titulo }}"
                             src="./imagenes/{{$nombreImagenAPI}}.jpg" />
                         <div class="flex items-center justify-between mt-3 space-x-3">
                             <img alt="image-tag-one" class="lg:w-48 lg:h-48 w-full"
@@ -354,8 +354,7 @@
                                                 $producto_IMP = $productos_impecable->first(function ($producto){
                                                     return strpos($producto['sku'], 'NEWBATTERY') !== false;
                                                 });
-                                            } 
-                                            else {
+                                            }else {
                                                 // Seleccionar el primer producto que NO tenga 'NEWBATTERY' en el SKU
                                                 //Producto CORRECTO
                                                 $producto_COR = $productos_correcto->first(function ($producto){
@@ -397,7 +396,7 @@
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
                                             "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'COR') !== false || strpos($sku_title, 'STA') !== false) ? 'border-black bg-purple-50 estado-activo' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productoEstado="estado_correcto" titulo="{{ $titulo }}" disabled="false"
+                                                productoEstado="estado_correcto" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
@@ -422,7 +421,7 @@
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
                                             "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'BUE') !== false || strpos($sku_title, 'MBU') !== false) ? 'border-black bg-purple-50 estado-activo' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productoEstado="estado_bueno" titulo="{{ $titulo }}" disabled="false"
+                                                productoEstado="estado_bueno" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
@@ -448,7 +447,7 @@
                                             @class(["estado-enlace","router-link-active", "router-link-exact-active", "cursor-pointer", "rounded-md", "relative", "flex", "w-full", "flex-col", "items-center", "justify-center", "border",  "px-1", "py-3",
                                             "no-underline", "lg:hover:bg-gray-100", "motion-safe:transition-colors", "motion-safe:duration-300", "motion-safe:ease-out",  $sku_title && (strpos($sku_title, 'IMP') !== false) ? 'border-black bg-purple-50 estado-activo' : ''])
                                                 rel="noreferrer noopener" aria-disabled="false"
-                                                productoEstado="estado_impecable" titulo="{{ $titulo }}" disabled="false"
+                                                productoEstado="estado_impecable" disabled="false"
                                                 role="link" grade="[object Object]">
                                                 <div class="w-full">
                                                     <div
@@ -486,7 +485,7 @@
                                             </div>
 
                                             <label id="batery-label-2" class="pointer-events-none relative h-8 w-14 rounded-full bg-gray-300 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-green-500">
-                                                <input type="checkbox" id="battery-checkbox" titulo="{{ $titulo }}" class="peer sr-only  [&:checked_+_span_svg[data-checked-icon]]:block [&:checked_+_span_svg[data-unchecked-icon]]:hidden" />
+                                                <input type="checkbox" id="battery-checkbox" class="peer sr-only  [&:checked_+_span_svg[data-checked-icon]]:block [&:checked_+_span_svg[data-unchecked-icon]]:hidden" />
                                                 <span id="battery-span" class="absolute inset-y-0 start-0 z-10 m-1 inline-flex size-6 items-center justify-center rounded-full bg-white text-gray-400 transition-all peer-checked:start-6 peer-checked:text-green-600">
                                                     <svg data-unchecked-icon xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                                         <path fill-rule="evenodd"
@@ -856,13 +855,7 @@
                     // Cambiar el estado del input al contrario de su estado actual
                     checkbox.checked = !checkbox.checked;
                 });
-                //obtener el estado del imput y mandarlo por ajax
-                var isChecked = $('#battery-checkbox').prop('checked'); // Verificar si el checkbox está marcado
-                var tituloProducto = $('#battery-checkbox').attr('titulo');
-                var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
-               // Realizar la solicitud AJAX
-                enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
-
+                
                 //marcar capacidad al principio
                 var storageItems = document.querySelectorAll('li[data-qa^="storage-"]');
                 storageItems.forEach(function(storageItem) {
@@ -910,16 +903,18 @@
                     return capacity.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
                 }
 
+                // Convertir el conjunto uniqueCapacities a un array y ordenarlo
+                var sortedCapacities = Array.from(uniqueCapacities).sort();
                 // Obtener el contenedor donde se agregarán los elementos <li>
                 var capacityListContainer = document.getElementById('capacity-list');
                 var CapacityIndex = 0;
                 // Crear elementos <li> para cada capacidad única
-                uniqueCapacities.forEach(function(capacity) {
+                    sortedCapacities.forEach(function(capacity) {
                     var li = document.createElement('li');
                     li.setAttribute('data-qa', 'storage-' + CapacityIndex);
                     li.innerHTML = `
-                    <input type="radio" id="input-capacidad-${CapacityIndex}" name="capacidad" value="${capacity}" class="hidde peer" required />
-                        <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
+                    <input type="radio" id="input-capacidad-${CapacityIndex}" name="capacidad" value="${capacity}" class="hidden peer" required />
+                        <a href="#" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
                             <div class="w-full">
                                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
                                     <span class="shrink truncate text-center text-sm">${capacity}</span>
@@ -927,9 +922,11 @@
                             </div>
                         </a>
                     `;
+
                     capacityListContainer.appendChild(li);
                     CapacityIndex++;
                 });
+
                 //marcar capacidad al principio
                 var capacidadItems = document.querySelectorAll('li[data-qa^="storage-"]');
                 capacidadItems.forEach(function(capacidadItem) {
@@ -941,10 +938,10 @@
                     }
                 });
 
-                // Obtener todos los elementos li dentro del ul
-                var liElementos = document.querySelectorAll('#capacity-list li');
+                // Obtener todos los elementos li dentro del ul para marcar el input
+                var liElementosCapacidad = document.querySelectorAll('#capacity-list li');
                 // Iterar sobre los elementos li y activar el input correspondiente si tiene ciertas clases
-                liElementos.forEach(function(li) {
+                liElementosCapacidad.forEach(function(li) {
                     // Obtener el elemento <a> dentro del <li>
                     var aElemento = li.querySelector('a');
                     // Verificar si el <a> tiene las clases específicas
@@ -956,9 +953,34 @@
                         }
                     }
                 });
-
-
-
+        
+                //Quitar o poner clases al cambiar de capacidad, tiene que ir aqui ya que se genera la ul dinamicamente
+                // Obtener el elemento <ul> con el ID específico
+                var ulElement_storage = document.getElementById('capacity-list');
+                // Obtener todos los elementos <li> dentro del <ul>
+                var liElements_storage = ulElement_storage.querySelectorAll('[data-qa^="storage-"]');
+                // Iterar sobre cada elemento <li>
+                liElements_storage.forEach(function(li_storage) {
+                    // Agregar el evento de clic
+                    li_storage.addEventListener('click', function() {
+                        // Obtener todos los elementos <a> dentro del <ul>
+                        var allATags_storage = ulElement_storage.querySelectorAll('li a');
+                        allATags_storage.forEach(function(aTag_storage) {
+                            // Remover las clases de todos los <a>
+                            aTag_storage.classList.remove('border-black', 'bg-purple-50', 'capacidad-activo');
+                        });
+                        // Obtener el radio button dentro del <li> clicado
+                        var radio_storage = this.querySelector('input[type="radio"]');
+                        if (radio_storage) {
+                            // Activar el radio button
+                            radio_storage.checked = true;
+                            // Obtener el <a> dentro del <li> clicado
+                            var aTag_storage = this.querySelector('a');
+                            // Agregar las clases al <a>
+                            aTag_storage.classList.add('border-black', 'bg-purple-50', 'capacidad-activo');
+                        }
+                    });
+                });
 
                 //obtener colores
                 // Definir un conjunto para almacenar los colores únicos
@@ -989,6 +1011,10 @@
                     'titanio natural': 'rgb(153, 150, 145)',
                     'titanio azul': 'rgb(72, 76, 85)',
                     'titanio blanco': 'rgb(255,255,255)',
+                    'azul pacifico' : 'rgb(43, 70, 81)',
+                    'grafito' : 'rgb(192, 192, 192)',
+                    'oro' : 'rgb(235, 220, 197)',
+                    'plata' : 'rgb(243, 244, 236)',
                     'Sin color': '#808080'
                 };
                 // Obtener el contenedor donde se agregarán los elementos <li>
@@ -1000,6 +1026,7 @@
                     var RgbCode = colorRgbMap[color.toLowerCase()];
                     li.setAttribute('data-qa', 'color-' + Colorindex);
                     li.innerHTML = `
+                        <input type="radio" id="input-color-${Colorindex}" name="color" value="${color}" class="hidden peer" required />
                         <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
                             <div class="w-full">
                                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
@@ -1024,16 +1051,60 @@
                     }
                 });
 
+                // Obtener todos los elementos li dentro del ul para marcar el input
+                var liElementosColor = document.querySelectorAll('#color-list li');
+                // Iterar sobre los elementos li y activar el input correspondiente si tiene ciertas clases
+                liElementosColor.forEach(function(li) {
+                    // Obtener el elemento <a> dentro del <li>
+                    var aElemento = li.querySelector('a');
+                    // Verificar si el <a> tiene las clases específicas
+                    if (aElemento.classList.contains('color-activo')) {
+                        // Activar el input dentro de este li
+                        var input = li.querySelector('input[type="radio"]');
+                        if (input) {
+                            input.checked = true;
+                        }
+                    }
+                });
 
+                //Quitar o poner clases al cambiar de color, tiene que ir aqui ya que se genera la ul dinamicamente
+                // Obtener el elemento <ul> con el ID específico
+                    var ulElement_color = document.getElementById('color-list');
+                // Obtener todos los elementos <li> dentro del <ul>
+                var liElements_color = ulElement_color.querySelectorAll('[data-qa^="color-"]');
+                // Iterar sobre cada elemento <li>
+                liElements_color.forEach(function(li_color) {
+                    // Agregar el evento de clic
+                    li_color.addEventListener('click', function() {
+                        // Obtener todos los elementos <a> dentro del <ul>
+                        var allATags_color = ulElement_color.querySelectorAll('li a');
+                        allATags_color.forEach(function(aTag_color) {
+                            // Remover las clases de todos los <a>
+                            aTag_color.classList.remove('border-black', 'bg-purple-50', 'capacidad-activo');
+                        });
+                        // Obtener el radio button dentro del <li> clicado
+                        var radio_color = this.querySelector('input[type="radio"]');
+                        if (radio_color) {
+                            // Activar el radio button
+                            radio_color.checked = true;
+                            // Obtener el <a> dentro del <li> clicado
+                            var aTag_color = this.querySelector('a');
+                            // Agregar las clases al <a>
+                            aTag_color.classList.add('border-black', 'bg-purple-50', 'capacidad-activo');
+                        }
+                    });
+                });
+
+                //obtener el estado del imput y mandarlo por ajax
+                var isChecked = $('#battery-checkbox').prop('checked'); // Verificar si el checkbox está marcado
+                var tituloProducto ="<?php echo $nombreTelefonoIMG; ?>" // Obtener el título del producto
+                var productoEstado = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
+                var productoCapacidad = $('input[name="capacidad"]:checked').val() // Obtener el atributo 'productoCapacidad' (capacidad)
+                var productoColor = $('input[name="color"]:checked').val();
+               // Realizar la solicitud AJAX
+                enviarSolicitudAjax(isChecked, tituloProducto, productoEstado, productoCapacidad, productoColor);
 
             });
-
-
-
-
-
-
-
 
             //Quitar o poner clases al cambiar de estado
             // Obtener el elemento <ul> con el ID específico
@@ -1073,78 +1144,52 @@
                 });
             });
 
-
-            //Quitar o poner clases al cambiar de capacidad
- // //cambiar las clases de los li de capacidad
-                // // Obtener el elemento <ul> con el ID específico
-                // var ulElement_storage = document.getElementById('capacity-list');
-                // // Obtener todos los elementos <li> dentro del <ul>
-                // var liElements_storage = ulElement_storage.querySelectorAll('[data-qa^="storage-"]');
-                // // Iterar sobre cada elemento <li>
-                // liElements_storage.forEach(function(li_storage) {
-                //     // Agregar el evento de clic
-                //     li_storage.addEventListener('click', function() {
-                //         // Obtener todos los elementos <a> dentro del <ul>
-                //         var allATags_storage = ulElement_storage.querySelectorAll('li a');
-                //         allATags_storage.forEach(function(aTag_storage) {
-                //             // Remover las clases de todos los <a>
-                //             aTag_storage.classList.remove('border-black', 'bg-purple-50', 'capacidad-activo');
-                //         });
-                //         // Obtener el radio button dentro del <li> clicado
-                //         var radio_storage = this.querySelector('input[type="radio"]');
-                //         if (radio_storage) {
-                //             // Activar el radio button
-                //             radio_storage.checked = true;
-                //             // Obtener el <a> dentro del <li> clicado
-                //             var aTag_storage = this.querySelector('a');
-                //             // Agregar las clases al <a>
-                //             aTag_storage.classList.add('border-black', 'bg-purple-50', 'capacidad-activo');
-                //         }
-                //     });
-                // });
-
-//tiene que ir al cargar la pagina creo
-
-
-
-
-
-
             //aplicar precio segun el estado
             $(document).ready(function() {
-                // Evento de cambio para el checkbox
-                $('#battery-checkbox').change(function() {
-                    var isChecked = $(this).prop('checked'); // Verificar si el checkbox está marcado
-                    var tituloProducto = $(this).attr('titulo');
-                    var estadoProducto = $('input[name="estado"]:checked').val(); // Obtener el estado del input radio seleccionado
+                // Definir una función para manejar la solicitud AJAX
+                function manejarSolicitudAjax() {
+                    var isChecked = $('#battery-checkbox').prop('checked');
+                    var tituloProducto = "<?php echo $nombreTelefonoIMG; ?>";
+                    var productoEstado = $('input[name="estado"]:checked').val();
+                    var productoCapacidad = $('input[name="capacidad"]:checked').val();
+                    var productoColor = $('input[name="color"]:checked').val();
 
                     // Realizar la solicitud AJAX
-                    enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto);
-                });
+                    enviarSolicitudAjax(isChecked, tituloProducto, productoEstado, productoCapacidad, productoColor);
+                }
 
                 // Evento de clic para los enlaces de estado
                 $('#ul-estado li').click(function(e) {
                     e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
-
-                    var productoEstado = $(this).find('a').attr('productoEstado'); // Obtener el atributo 'productoEstado' (estado)
-                    var tituloProducto = $(this).find('a').attr('titulo'); // Obtener el título del producto del atributo 'titulo'
-                    var isChecked = $('#battery-checkbox').prop('checked'); // Verificar si el checkbox está marcado
-                    // Realizar la solicitud AJAX
-                    enviarSolicitudAjax(isChecked, tituloProducto, productoEstado);
+                    manejarSolicitudAjax();
                 });
-
-               
+                // Evento de cambio para el checkbox
+                $('#battery-checkbox').change(function() {
+                    manejarSolicitudAjax();
+                });
+                // Evento de clic para los enlaces de capacidad
+                $('#capacity-list li').click(function(e) {
+                    e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
+                    manejarSolicitudAjax();
+                });
+                // Evento de clic para los enlaces de color
+                $('#color-list li').click(function(e) {
+                    e.preventDefault(); // Evitar el comportamiento predeterminado del enlace
+                    manejarSolicitudAjax();
+                });
             });
 
             // Función para realizar la solicitud AJAX
-            function enviarSolicitudAjax(isChecked, tituloProducto, estadoProducto) {
+            function enviarSolicitudAjax(isChecked, tituloProducto, productoEstado, productoCapacidad, productoColor) {
                 $.ajax({
                     type: 'POST',
                     url: "{{ route('peticionBateria') }}",
                     data: { 
                         estadoCheckbox: isChecked,
                         titulo_producto: tituloProducto,
-                        estadoProducto: estadoProducto
+                        estadoProducto: productoEstado,
+                        productoCapacidad: productoCapacidad,
+                        productoColor: productoColor
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1185,10 +1230,13 @@
                             var precioFormateado = formatterEuro.format(precio);
                             // Formatear el nuevo precio con dos decimales
                             var precioNuevoFormateado = formatterEuro.format(precioNuevo);
-                            // Actualizar el precio en el elemento con el id "precio_producto"
+                            // Actualizar el precio, titulo, imagen
                             $("#precio_producto .previous-price").html(precioFormateado + " nuevo");
                             $("#precio_producto .current-price").html(precioNuevoFormateado);
                             $("#titulo_sku").html(response.sku);
+                            $("#titulo_producto").html(response.titulo);
+                            $(".imagenGrande").attr("src", './imagenes/'+response.nombreIMG+'.jpg');
+                            $(".imagenPequena").attr("src", './imagenes/'+response.nombreIMG+'.jpg');
 
                             //Ponemos el precio o el aviso
                             if(precioCOR==0){
@@ -1249,9 +1297,6 @@
                     }
                 });
             }
-
-
-            //aplicar precio y titulo por capacidad
             
 
 

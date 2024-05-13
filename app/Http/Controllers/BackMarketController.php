@@ -258,100 +258,176 @@ class BackMarketController extends Controller{
         try {
             // Obtener todos los productos en línea
             $productosColeccion = $this->obtenerTodosEnLinea();
+
             // Obtener el título del producto de la solicitud
             $tituloProducto = $request->input('titulo_producto');
             $estadoCheckbox = $request->input('estadoCheckbox');
             $estadoProducto = $request->input('estadoProducto');
+            $productoCapacidad = $request->input('productoCapacidad');
+            $productoColor = $request->input('productoColor');
             $productoSinBateria= false;
             $productoConBateria= false;
 
-            //comprobamos si existe el producto
+            //si el checkbox esta marcado
             if($estadoCheckbox=='true'){
-                
+            //comprobamos si existe el producto con NEWBATTERY
                 if($estadoProducto === "estado_correcto"){
-                    // Filtrar productos que coincidan con el título y tengan en el sku NEWBATTERY
-                    $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto) { 
-                        return $producto['title'] === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                    // Filtrar productos que coincidan con el título, tengan en el sku NEWBATTERY, la capacidad seleccionada y el color
+                    $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        }
+                        return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                     });
-                    $productoEncontradoSinBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoSinBateria) {
-                        if ($producto['title'] === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false)) {
+                    $productoEncontradoSinBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoSinBateria, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        }
+
+                        if ($nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
                             $productoSinBateria = true;
                         }
                     });
                 }elseif($estadoProducto === "estado_bueno"){
                     // Filtrar productos que coincidan con el título y tengan en el sku NEWBATTERY
-                    $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                        return $producto['title'] === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                    $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        }
+                        return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                     });
-                    $productoEncontradoSinBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoSinBateria) {
-                        if ($producto['title'] === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false)) {
+                    $productoEncontradoSinBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoSinBateria, $productoCapacidad,$productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        }
+                        if ($nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
                             $productoSinBateria = true;
                         }
                     });
                 }elseif($estadoProducto === "estado_impecable"){
                      // Filtrar productos que coincidan con el título y tengan en el sku NEWBATTERY
-                     $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                        return $producto['title'] === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                     $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        }
+                        return $nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                     });
-                    $productoEncontradoSinBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoSinBateria) {
-                        if ($producto['title'] === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false)) {
+                    $productoEncontradoSinBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoSinBateria, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        }
+                        if ($nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
                             $productoSinBateria = true;
                         }
                     });
                 }
 
                 //obtener el precio de los tres estados con NEWBATTERY para ponerlo en el estado
-                $precioCOR= collect($productosColeccion)->first(function ($producto) use ($tituloProducto) { 
-                    return $producto['title'] === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                $precioCOR= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                    if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                        // El nombre del teléfono
+                        $nombreTelefono = trim($matches[1]);
+                    } 
+                    return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
-                $precioBUE= collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                    return $producto['title'] === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                $precioBUE= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                    if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                        // El nombre del teléfono
+                        $nombreTelefono = trim($matches[1]);
+                    } 
+                    return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
-                $precioIMP= collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                    return $producto['title'] === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                $precioIMP= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                    if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                        // El nombre del teléfono
+                        $nombreTelefono = trim($matches[1]);
+                    } 
+                    return $nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
 
             }else{
                 if($estadoProducto === "estado_correcto"){
                     // Filtrar productos que coincidan con el título y NO tengan en el sku NEWBATTERY
-                    $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                        return $producto['title'] === $tituloProducto && (strpos($producto['sku'], 'COR') || strpos($producto['sku'], 'STA')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') === false);
+                    $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad ,$productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        } 
+                        return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') || strpos($producto['sku'], 'STA')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                     });
-                    $productoEncontradoConBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoConBateria) {
-                        if ($producto['title'] === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') === false)) {
+                    $productoEncontradoConBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoConBateria, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        } 
+                        if ($nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
                             $productoConBateria = true;
                         }
                     });
                 }elseif($estadoProducto === "estado_bueno"){
                     // Filtrar productos que coincidan con el título y NO tengan en el sku NEWBATTERY
-                    $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                        return $producto['title'] === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') === false);
+                    $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        } 
+                        return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                     });
-                    $productoEncontradoConBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoConBateria) {
-                        if ($producto['title'] === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') === false)) {
+                    $productoEncontradoConBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoConBateria, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        } 
+                        if ($nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
                             $productoConBateria = true;
                         }
                     });
                 }elseif($estadoProducto === "estado_impecable"){
                      // Filtrar productos que coincidan con el título y NO tengan en el sku NEWBATTERY
-                     $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                        return $producto['title'] === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') === false);
+                     $productosFiltrados = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        } 
+                        return $nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                     });
-                    $productoEncontradoConBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoConBateria) {
-                        if ($producto['title'] === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') === false)) {
+                    $productoEncontradoConBateria = collect($productosColeccion)->first(function ($producto) use ($tituloProducto, &$productoConBateria, $productoCapacidad, $productoColor) {
+                        if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                            // El nombre del teléfono
+                            $nombreTelefono = trim($matches[1]);
+                        } 
+                        if ($nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
                             $productoConBateria = true;
                         }
                     });
                 }
                 //obtener el precio de los tres estados sin NEWBATTERY para ponerlo en el estado
-                $precioCOR= collect($productosColeccion)->first(function ($producto) use ($tituloProducto) { 
-                    return $producto['title'] === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                $precioCOR= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) { 
+                    if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                        // El nombre del teléfono
+                        $nombreTelefono = trim($matches[1]);
+                    } 
+                    return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
-                $precioBUE= collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                    return $producto['title'] === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                $precioBUE= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                    if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                        // El nombre del teléfono
+                        $nombreTelefono = trim($matches[1]);
+                    } 
+                    return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
-                $precioIMP= collect($productosColeccion)->first(function ($producto) use ($tituloProducto) {
-                    return $producto['title'] === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false);
+                $precioIMP= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                    if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
+                        // El nombre del teléfono
+                        $nombreTelefono = trim($matches[1]);
+                    } 
+                    return $nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
             }
 
@@ -390,18 +466,55 @@ class BackMarketController extends Controller{
             if($estadoCheckbox=='false' && $productoSinBateria ==false && $productoConBateria ==true){
                 $productBat = 'hayConBat';
             }
+            
+            //sacar el titulo del producto para mostrarlo
+            $frase = $productosFiltradosSku;
+            $patron = '/^(.*?Libre)/i'; // El patrón busca cualquier texto antes de "Libre"
+            if (preg_match($patron, $frase, $matches)) {
+                $parteExtraida = trim($matches[1]); // El texto extraído estará en $matches[1]
+            } else {
+                echo "No se encontró 'Libre' en la frase.";
+            }
+
+
+            //sacamos el nombre para cambiar la imagen del producto
+                // Encuentra el nombre del teléfono, la capacidad y el resto de la frase
+                if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $frase, $matches)) {
+                    // El nombre del teléfono
+                    $nombreTelefonoIMG = trim($matches[1]);
+                    // La capacidad
+                    $capacidadIMG = isset($matches[2]) ? $matches[2] : '';
+                    // El resto de la frase
+                    $restoFraseIMG = isset($matches[3]) ? trim($matches[3]) : '';
+                    //sacamos el color
+                    preg_match('/-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*/', $restoFraseIMG, $matches);
+                    $colorIMG = isset($matches[1]) ? trim($matches[1]) : '';
+                    $descripcionProductoAPIimg = $capacidadIMG . ' ' . $restoFraseIMG;
+                } else {
+                    echo 'No se pudo encontrar el nombre del teléfono y la capacidad en el título del producto.';
+                }
+
+                //sacamos el nombre para la imagen
+                //quitamos los espacios
+                preg_match('/(\S*\s?){2}/', $nombreTelefonoIMG, $matches);
+                $nombreImagenAPI = isset($matches[0]) ? trim($matches[0]) : '';
+
+                preg_match('/\s*-\s*[\p{L}\s]+?(?=\s*-)/', $restoFraseIMG, $matches);
+
+                $nombreImagenAPI .= isset($matches[0]) ? trim($matches[0]) : $nombreImagenAPI;
+                $nombreImagenAPI = str_replace(' ', '', $nombreImagenAPI);
+                //la ponemos en minuscula
+                $nombreImagenAPI = strtolower($nombreImagenAPI);
 
             // Devolver los precios y estados de los productos filtrados como respuesta JSON
-            return response()->json(['imput' => $estadoCheckbox, 'titulo' => $tituloProducto, 'sku' => $productosFiltradosSku, 'precio' => $productosFiltradosPrecio,
-             'estado' => $estadoProducto, 'productoSinBateria' => $productoSinBateria, 'productoConBateria' => $productoConBateria,'precioCOR'=>$precioCOR,'precioBUE'=>$precioBUE,'precioIMP'=>$precioIMP,'productBat'=>$productBat]);
+            return response()->json(['imput' => $estadoCheckbox, 'titulo' => $parteExtraida, 'sku' => $productosFiltradosSku, 'precio' => $productosFiltradosPrecio,
+             'estado' => $estadoProducto, 'productoSinBateria' => $productoSinBateria, 'productoConBateria' => $productoConBateria,'precioCOR'=>$precioCOR,'precioBUE'=>$precioBUE,'precioIMP'=>$precioIMP,'productBat'=>$productBat, 'capacidad'=>$productoCapacidad, 'nombreIMG'=>$nombreImagenAPI]);
 
         } catch (\Exception $e) {
             // Manejar cualquier excepción que pueda ocurrir durante la solicitud
             return response()->json(['noStock' => 'No hay productos','error' => $e->getMessage()], 500);
         }
     }
-
-
 }
 
 
