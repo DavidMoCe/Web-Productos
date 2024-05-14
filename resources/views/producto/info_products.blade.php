@@ -983,6 +983,12 @@
                 });
 
                 //obtener colores
+                // Función para extraer el color del título del producto
+                function extractColor(title) {
+                    var matches = title.match(/-\s*([a-zA-ZáéíóúñÑÁÉÍÓÚ\s]+)\s*-\s*/);
+                    var color = matches ? matches[1] : "Sin color";
+                    return color.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
+                }
                 // Definir un conjunto para almacenar los colores únicos
                 var uniqueColors = new Set();
                 // Iterar sobre los títulos de los productos y extraer el color de cada uno
@@ -990,13 +996,6 @@
                     var color = extractColor("{{ $producto['title'] }}");
                     uniqueColors.add(color);
                 @endforeach
-                // Función para extraer el color del título del producto
-                function extractColor(title) {
-                    var matches = title.match(/-\s*([a-zA-ZáéíóúñÑÁÉÍÓÚ\s]+)\s*-\s*/);
-                    var color = matches ? matches[1] : "Sin color";
-                    return color.trim(); // Para eliminar espacios en blanco al principio y al final, si los hubiera
-                }
-
                 // Mapa de colores Rgb
                 var colorRgbMap = {
                     blanco: 'rgb(255,255,255)',
@@ -1208,7 +1207,6 @@
                         var precioCOR = parseFloat(precioCOR);
                         var precioBUE = parseFloat(precioBUE);
                         var precioIMP = parseFloat(precioIMP);
-
                         // Verificar si la conversión fue exitosa
                         if (!isNaN(precio)) {
                             // Aplicar el descuento del 5% al precio
@@ -1216,7 +1214,6 @@
                             var precioCOR = precioCOR * 0.95;
                             var precioBUE = precioBUE * 0.95;
                             var precioIMP = precioIMP * 0.95;
-
                             //formateamos el precioTotal en euro
                             const formatterEuro = new Intl.NumberFormat("es-ES", {
                                 style: "currency",
@@ -1224,8 +1221,7 @@
                                 minimumFractionDigits: 2,
                                 // Especificar separador de miles
                                 useGrouping: true,
-                            });
-                                    
+                            });         
                             // Formatear el precio con dos decimales
                             var precioFormateado = formatterEuro.format(precio);
                             // Formatear el nuevo precio con dos decimales
@@ -1237,6 +1233,8 @@
                             $("#titulo_producto").html(response.titulo);
                             $(".imagenGrande").attr("src", './imagenes/'+response.nombreIMG+'.jpg');
                             $(".imagenPequena").attr("src", './imagenes/'+response.nombreIMG+'.jpg');
+                            $(".imagenGrande").attr("alt", response.titulo);
+                            $(".imagenPequeña").attr("alt", response.titulo);
 
                             //Ponemos el precio o el aviso
                             if(precioCOR==0){
@@ -1260,7 +1258,10 @@
                         }
 
                         //deshabilitar y habilitar los estados
-                        //Recorrer todos los elementos li dentro de #ul-estado
+                        // Variable para controlar si hay algún input seleccionado
+                        var haySeleccion = false;
+                        var salir=false;    
+                       //Recorrer todos los elementos li dentro de #ul-estado para deshabilitar
                         $('#ul-estado li').each(function() {
                             // Buscar todos los elementos que tengan un ID que comience con "precioEstado_"
                             $(this).find('[id^="precioEstado_"]').each(function() {
@@ -1269,19 +1270,53 @@
                                     // Si el precio está agotado, deshabilitar el li
                                     $(this).closest('li').addClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
                                     $(this).addClass('!text-red-500');
-                                }else{
+                                    // Deseleccionar el input de tipo radio
+                                    $(this).closest('li').find('input[type="radio"]').prop('checked', false);
+                                } else {
                                     // Si el precio no está agotado, habilitar el li
                                     $(this).closest('li').removeClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
                                     $(this).removeClass('!text-red-500');
-                                    $(this).find('input[type="radio"]').prop('checked', true);
-                                }
+                                } 
+                                if(precioTexto === "¡Agotado!"){ 
+                                    //En ambos casos quito los estilos ya que los añado luego
+                                    $(this).closest('a').removeClass('border-black bg-purple-50 estado-activo');
+                                    $(this).closest('li').find('span').removeClass('font-bold');
+                                }           
                             });
                         });
-
+                        // Verificar si algún input está seleccionado
+                        $('#ul-estado li input[type="radio"]').each(function() {
+                            if ($(this).prop('checked')) {
+                                haySeleccion = true;
+                                return false; // Salir del bucle each si se encuentra una selección
+                            }
+                        });
+                        if(!haySeleccion){
+                            //Recorrer todos los elementos li dentro de #ul-estado para habilitar
+                            $('#ul-estado li').each(function() {
+                                //si salir es true, salimos del bucle
+                                if(salir){
+                                    return false;
+                                }
+                                // Buscar todos los elementos que tengan un ID que comience con "precioEstado_"
+                                $(this).find('[id^="precioEstado_"]').each(function() {
+                                    var precioTexto = $(this).text().trim();
+                                    if (precioTexto !== "¡Agotado!") {
+                                        $(this).closest('a').addClass('border-black bg-purple-50 estado-activo');
+                                        // Seleccionar el input de tipo radio
+                                        $(this).closest('li').find('input[type="radio"]').prop('checked', true);
+                                        $(this).closest('li').find('span').addClass('font-bold');
+                                        salir=true;
+                                        return false;
+                                    }                  
+                                });
+                            });
+                        }
                         // Verificar si hayStock es igual a "no"
                         if (response.productBat == "NoHay") {
                             // Agregar una clase al label
                             $("#battery-checkbox").prop("disabled", true);
+                            $("#battery-checkbox").prop("checked", true);
                             $("#batery-label-1").addClass("border-stone-500 bg-stone-200");
                             $("#batery-label").addClass("opacity-55 pointer-events-none");  
                         }else{

@@ -329,21 +329,21 @@ class BackMarketController extends Controller{
                 }
 
                 //obtener el precio de los tres estados con NEWBATTERY para ponerlo en el estado
-                $precioCOR= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                $precioCOR1= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
                     if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
                         // El nombre del teléfono
                         $nombreTelefono = trim($matches[1]);
                     } 
                     return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
-                $precioBUE= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                $precioBUE1= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
                     if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
                         // El nombre del teléfono
                         $nombreTelefono = trim($matches[1]);
                     } 
                     return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
-                $precioIMP= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                $precioIMP1= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
                     if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
                         // El nombre del teléfono
                         $nombreTelefono = trim($matches[1]);
@@ -366,7 +366,7 @@ class BackMarketController extends Controller{
                             // El nombre del teléfono
                             $nombreTelefono = trim($matches[1]);
                         } 
-                        if ($nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
+                        if ($nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
                             $productoConBateria = true;
                         }
                     });
@@ -384,7 +384,7 @@ class BackMarketController extends Controller{
                             // El nombre del teléfono
                             $nombreTelefono = trim($matches[1]);
                         } 
-                        if ($nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
+                        if ($nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false)) {
                             $productoConBateria = true;
                         }
                     });
@@ -408,21 +408,21 @@ class BackMarketController extends Controller{
                     });
                 }
                 //obtener el precio de los tres estados sin NEWBATTERY para ponerlo en el estado
-                $precioCOR= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) { 
+                $precioCOR1= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) { 
                     if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
                         // El nombre del teléfono
                         $nombreTelefono = trim($matches[1]);
                     } 
                     return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'COR') !== false || strpos($producto['sku'], 'STA') !== false) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
-                $precioBUE= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                $precioBUE1= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
                     if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
                         // El nombre del teléfono
                         $nombreTelefono = trim($matches[1]);
                     } 
                     return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], 'BUE') || strpos($producto['sku'], 'MBU')) && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
-                $precioIMP= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
+                $precioIMP1= collect($productosColeccion)->first(function ($producto) use ($tituloProducto, $productoCapacidad, $productoColor) {
                     if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches)) {
                         // El nombre del teléfono
                         $nombreTelefono = trim($matches[1]);
@@ -430,30 +430,19 @@ class BackMarketController extends Controller{
                     return $nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                 });
             }
-
-            if($productosFiltrados){
-                $productosFiltradosPrecio = $productosFiltrados['price'];
-            }else{
-                $productosFiltradosPrecio = 0;
-            }
-            if($productosFiltrados){
-                $productosFiltradosSku = $productosFiltrados['sku'];
-            }else{
-                $productosFiltradosSku = '';
-            }
              
-            if(isset($precioCOR)){
-                $precioCOR = $precioCOR['price'];
+            if(isset($precioCOR1)){
+                $precioCOR = $precioCOR1['price'];
             }else{
                 $precioCOR = 0;
             }
-            if(isset($precioBUE)){
-                $precioBUE = $precioBUE['price'];
+            if(isset($precioBUE1)){
+                $precioBUE = $precioBUE1['price'];
             }else{
                 $precioBUE = 0;
             }
-            if(isset($precioIMP)){
-                $precioIMP = $precioIMP['price'];
+            if(isset($precioIMP1)){
+                $precioIMP = $precioIMP1['price'];
             }else{
                 $precioIMP = 0;
             }
@@ -467,6 +456,28 @@ class BackMarketController extends Controller{
                 $productBat = 'hayConBat';
             }
             
+            //si productosFiltradosSku es null, si precioCOR==0 miramos el precioBUE y si no precioIMP y mostramos el primero que  encuentres en cualquiera de los tres estados
+            if(!isset($productosFiltrados)){
+                if($precioCOR!=0){
+                    $productosFiltrados = $precioCOR1;
+                }elseif($precioBUE!=0){
+                    $productosFiltrados = $precioBUE1;
+                }elseif($precioIMP!=0){
+                    $productosFiltrados = $precioIMP1;
+                }
+            }
+            if($productosFiltrados){
+                $productosFiltradosPrecio = $productosFiltrados['price'];
+            }else{
+                $productosFiltradosPrecio = 0;
+            }
+            if($productosFiltrados){
+                $productosFiltradosSku = $productosFiltrados['sku'];
+            }else{
+                $productosFiltradosSku = '';
+            }
+
+            
             //sacar el titulo del producto para mostrarlo
             $frase = $productosFiltradosSku;
             $patron = '/^(.*?Libre)/i'; // El patrón busca cualquier texto antes de "Libre"
@@ -475,7 +486,6 @@ class BackMarketController extends Controller{
             } else {
                 echo "No se encontró 'Libre' en la frase.";
             }
-
 
             //sacamos el nombre para cambiar la imagen del producto
                 // Encuentra el nombre del teléfono, la capacidad y el resto de la frase
@@ -500,7 +510,6 @@ class BackMarketController extends Controller{
                 $nombreImagenAPI = isset($matches[0]) ? trim($matches[0]) : '';
 
                 preg_match('/\s*-\s*[\p{L}\s]+?(?=\s*-)/', $restoFraseIMG, $matches);
-
                 $nombreImagenAPI .= isset($matches[0]) ? trim($matches[0]) : $nombreImagenAPI;
                 $nombreImagenAPI = str_replace(' ', '', $nombreImagenAPI);
                 //la ponemos en minuscula
