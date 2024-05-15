@@ -503,7 +503,7 @@
                                     </label>
                                 </div>
 
-                                <div id="capacidad" class="mb-9 font-bold">
+                                <div id="capacidad" class="mb-9">
                                     <div class="flex flex-row justify-between">
                                         <p class="mb-3 block">Almacenamiento (GB)</p>
                                     </div>
@@ -556,7 +556,7 @@
                                     </ul>
                                 </div>
 
-                                <div id="color" class="mb-12 font-bold">
+                                <div id="color" class="mb-12">
                                     <div class="flex flex-row justify-between ">
                                         <p class="mb-2 block">Color</p>
                                     </div>
@@ -904,7 +904,13 @@
                 }
 
                 // Convertir el conjunto uniqueCapacities a un array y ordenarlo
-                var sortedCapacities = Array.from(uniqueCapacities).sort();
+                var sortedCapacities = Array.from(uniqueCapacities).sort(function(a, b) {
+                    // Extraer solo el número de la cadena y convertirlo a entero para comparar
+                    var capacityA = parseInt(a);
+                    var capacityB = parseInt(b);
+                    return capacityA - capacityB;
+                });
+
                 // Obtener el contenedor donde se agregarán los elementos <li>
                 var capacityListContainer = document.getElementById('capacity-list');
                 var CapacityIndex = 0;
@@ -912,12 +918,13 @@
                     sortedCapacities.forEach(function(capacity) {
                     var li = document.createElement('li');
                     li.setAttribute('data-qa', 'storage-' + CapacityIndex);
+                    li.className='pointer-events-none opacity-85 bg-stone-100 border-stone-700';
                     li.innerHTML = `
                     <input type="radio" id="input-capacidad-${CapacityIndex}" name="capacidad" value="${capacity}" class="hidden peer" required />
                         <a href="#" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
                             <div class="w-full">
                                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                                    <span class="shrink truncate text-center text-sm">${capacity}</span>
+                                    <span class="truncate text-center text-sm font-bold">${capacity}</span>
                                 </div>
                             </div>
                         </a>
@@ -1024,13 +1031,14 @@
                     var li = document.createElement('li');
                     var RgbCode = colorRgbMap[color.toLowerCase()];
                     li.setAttribute('data-qa', 'color-' + Colorindex);
+                    li.className='pointer-events-none opacity-85 bg-stone-100 border-stone-700';
                     li.innerHTML = `
                         <input type="radio" id="input-color-${Colorindex}" name="color" value="${color}" class="hidden peer" required />
                         <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
                             <div class="w-full">
                                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                                    <div aria-hidden="" class="rounded-full h-4 w-4 border border-black shrink-0" style="background-color: ${RgbCode};"></div>
-                                    <span class="shrink truncate text-center text-sm">${color}</span>
+                                    <div aria-hidden="" class="rounded-full h-4 w-4 border border-black" style="background-color: ${RgbCode};"></div>
+                                    <span class="truncate text-center text-sm font-bold">${color}</span>
                                 </div>
                             </div>
                         </a>
@@ -1312,11 +1320,48 @@
                                 });
                             });
                         }
+
+                        // Respuesta JSON recibida que contiene los colores a activar
+                        var coloresActivar = response.colorActivar;
+                        $('#color-list li').each(function() {
+                            var colorTexto = $(this).find('input[type="radio"]').val();
+                            if (coloresActivar.includes(colorTexto)) {
+                                // Si el color está en la lista de colores activados, realizar acciones
+                                // Por ejemplo, habilitar el li y cambiar estilos
+                                $(this).removeClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
+                                $(this).find('input[type="radio"]').prop('disabled', true);
+                                $(this).find('span').addClass('font-bold');
+                            }else{
+                                $(this).addClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
+                                $(this).find('input[type="radio"]').prop('disabled', false);
+                                $(this).find('span').removeClass('font-bold');
+                            }
+                        });
+
+                        // Respuesta JSON recibida que contiene las capacidades a activar
+                        var capacidadesActivar = response.capacidadActivar;
+                        $('#capacity-list li').each(function() {
+                            var capacidadTexto = $(this).find('input[type="radio"]').val();
+                            if (capacidadesActivar.includes(capacidadTexto)) {
+                                // Si el color está en la lista de capacidades activados, realizar acciones
+                                // Por ejemplo, habilitar el li y cambiar estilos
+                                $(this).removeClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
+                                $(this).find('input[type="radio"]').prop('disabled', true);
+                                $(this).find('span').addClass('font-bold');
+
+                            }else{
+                                $(this).addClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
+                                $(this).find('input[type="radio"]').prop('disabled', false);
+                                $(this).find('span').removeClass('font-bold');
+                            }
+                        });
+
+
                         // Verificar si hayStock es igual a "no"
                         if (response.productBat == "NoHay") {
                             // Agregar una clase al label
                             $("#battery-checkbox").prop("disabled", true);
-                            $("#battery-checkbox").prop("checked", true);
+                            //$("#battery-checkbox").prop("checked", true);
                             $("#batery-label-1").addClass("border-stone-500 bg-stone-200");
                             $("#batery-label").addClass("opacity-55 pointer-events-none");  
                         }else{
