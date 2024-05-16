@@ -18,43 +18,59 @@ class CartController extends Controller{
     public function index(){
 
         // Método para mostrar el contenido del carrito
-        $cart = session()->get('cart', []);
-        return view('carrito.cart', compact('cart'));
+        $cookieCart = session()->get('cart', []);
+        return view('carrito.cart', compact('cookieCart'));
 
         // Pasar los datos de las sesiones activas a la vista
         //return view('carrito.cart', ['sesionesActivas' => $sesionesActivas]);
     }
 
+    // //prueba para mostrar carrito con el post
+    // public function mostrar(Request $request){
+    //     return view('carrito.cart', ['datos' => $request->all()]);
+    // }
+
+    //añadir producto al carrito
     public function add(Request $request){
         try {
-             // Obtener el ID del producto desde la solicitud
-            $productId = $request->id;
-
             // Verificar si hay una cookie de carrito
             $cookieCart = json_decode($request->cookie('cart'), true) ?: [];
+
+            // Obtener los datos del formulario POST
+            $tituloImagen = $request->input('titulo_imagen');
+            $tituloSku = $request->input('titulo_sku');
+            $cantidadProducto = $request->input('cantidad_producto');
+            $tituloProducto = $request->input('titulo_producto');
+            $precioProducto = $request->input('precio_producto');
+            $estado = $request->input('estado');
+            $capacidad = $request->input('capacidad');
+            $color = $request->input('color');
 
             // Inicializar la variable productExists
             $productExists = false;
 
             // Verificar si el producto ya está en el carrito
-            foreach ($cookieCart as $item) {
-                if ($item['id'] === $productId) {
+            foreach ($cookieCart as &$item) {
+                if ($item['titulo_sku'] === $tituloSku) {
                     // Si el producto ya está en el carrito, aumentar la cantidad y actualizar el carrito en la sesión
-                    $item['cantidad'] += 1;
+                    $item['cantidad'] += $cantidadProducto;
                     $productExists = true;
                     break;
                 }
             }
-            // Si el producto no está en el carrito, obtener los datos del producto utilizando la instancia de BackMarketApi
+
+            // Si el producto no está en el carrito, agregarlo
             if (!$productExists) {
-                $producto = $this->backMarketApi->apiGet('listings/detail?sku='.$request->id);
-    
                 // Añadir el producto al carrito
                 $cookieCart[] = [
-                    'id' => $producto['id'],
-                    'nombre' => $producto['title'],
-                    'precio' => $producto['price'],
-                    'cantidad' => 1,
+                    'titulo_imagen' => $tituloImagen,
+                    'titulo_sku' => $tituloSku,
+                    'cantidad' => $cantidadProducto,
+                    'titulo_producto' => $tituloProducto,
+                    'precio_producto' => $precioProducto,
+                    'estado' => $estado,
+                    'capacidad' => $capacidad,
+                    'color' => $color,
                 ];
             }
 
@@ -69,30 +85,56 @@ class CartController extends Controller{
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $sku){
         // Método para actualizar la cantidad de un elemento en el carrito
-        $quantity = $request->input('quantity');
-
+        $cantidad_sumar = $request->input('cantidad_sumar');
         $cart = session()->get('cart', []);
-        if (array_key_exists($id, $cart)) {
-            // Actualizar la cantidad del producto en el carrito
-            $cart[$id]['cantidad'] = $quantity;
-            session()->put('cart', $cart);
+        $nueva_cantidad = 0;
+        $puedeSumar=true;
+        foreach ($cart as $key => $item) {
+            if ($item['titulo_sku'] === $sku) {
+                //Si la cantidad es menor que el stock disponible, se suma
+                if($item['cantidad'] < 10){
+                    // Actualizar la cantidad del producto en el carrito
+                    $cart[$key]['cantidad'] += $cantidad_sumar;
+                    $nueva_cantidad = $cart[$key]['cantidad'];
+                    session()->put('cart', $cart);
+                    $puedeSumar=true;
+                    break;
+                }else{
+                    $nueva_cantidad = $cart[$key]['cantidad'];
+                    $puedeSumar=false;
+                }
+            }
         }
-
-        return redirect()->route('cart.index');
+        redirect()->route('cart.index');
+        return response()->json(['sku'=> $sku, "carrito"=>$cart,'cantidad_actualizada' => $nueva_cantidad,'puedeSumar'=>$puedeSumar ]);
     }
 
-    public function remove($id){
+    public function remove(Request $request, $sku){
         // Método para eliminar un elemento del carrito
+        $cantidad_restar = $request->input('cantidad_restar');
         $cart = session()->get('cart', []);
-        if (array_key_exists($id, $cart)) {
-            // Eliminar el producto del carrito
-            unset($cart[$id]);
-            session()->put('cart', $cart);
+        $nueva_cantidad = 0;
+        $puedeRestar=true;
+        foreach ($cart as $key => $item) {
+            if ($item['titulo_sku'] === $sku) {
+                //Si la cantidad es mayor que 0, se resta
+                if($item['cantidad'] > 1){
+                    // Actualizar la cantidad del producto en el carrito
+                    $cart[$key]['cantidad'] -= $cantidad_restar;
+                    $nueva_cantidad = $cart[$key]['cantidad'];
+                    session()->put('cart', $cart);
+                    $puedeRestar=true;
+                    break;
+                }else{
+                    $nueva_cantidad = $cart[$key]['cantidad'];
+                    $puedeRestar=false;
+                }
+            }
         }
-
-        return redirect()->route('cart.index');
+        redirect()->route('cart.index');
+        return response()->json(['sku'=> $sku, "carrito"=>$cart,'cantidad_actualizada' => $nueva_cantidad,'puedeRestar'=>$puedeRestar ]);
     }
 
     public function clear(){

@@ -254,7 +254,7 @@ class BackMarketController extends Controller{
         return '';
     }
 
-    public function peticionBateria(Request $request){
+    public function peticionProductos(Request $request){
         try {
             // Definir una colección para almacenar los colores únicos y las capacidades unicas
             $coloresUnicos = new \Illuminate\Support\Collection();
@@ -271,8 +271,6 @@ class BackMarketController extends Controller{
             $productoColor = $request->input('productoColor');
             $productoSinBateria= false;
             $productoConBateria= false;
-
-            do{
 
             
                 //si el checkbox esta marcado
@@ -365,7 +363,7 @@ class BackMarketController extends Controller{
                                 // El nombre del teléfono
                                 $nombreTelefono = trim($matches[1]);
                             }
-                            return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], $productoCapacidad) !== false);
+                            return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], $productoCapacidad) !== false)  && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false);
                         });
                         // Iterar sobre los productos filtrados para extraer los colores
                         $coloresProducto->each(function ($producto) use ($coloresUnicos) {
@@ -386,7 +384,7 @@ class BackMarketController extends Controller{
                                 // El nombre del teléfono
                                 $nombreTelefono = trim($matches[1]);
                             }
-                            return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], $productoColor) !== false);
+                            return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], $productoColor) !== false)  && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false);
                         });
                         // Iterar sobre los productos filtrados para extraer las capacidades
                         $capacidadesProducto->each(function ($producto) use ($capacidadesUnicas) {
@@ -487,7 +485,7 @@ class BackMarketController extends Controller{
                                 // El nombre del teléfono
                                 $nombreTelefono = trim($matches[1]);
                             }
-                            return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], $productoCapacidad) !== false);
+                            return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], $productoCapacidad) !== false)  && (strpos($producto['sku'], 'NEWBATTERY') === false && strpos($producto['sku'], 'NEW BATTERY') === false);
                         });
                         // Iterar sobre los productos filtrados para extraer los colores
                         $coloresProducto->each(function ($producto) use ($coloresUnicos) {
@@ -508,7 +506,7 @@ class BackMarketController extends Controller{
                                 // El nombre del teléfono
                                 $nombreTelefono = trim($matches[1]);
                             }
-                            return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], $productoColor) !== false);
+                            return $nombreTelefono === $tituloProducto && (strpos($producto['sku'], $productoColor) !== false) && (strpos($producto['sku'], 'NEWBATTERY') === false && strpos($producto['sku'], 'NEW BATTERY') === false);
                         });
                         // Iterar sobre los productos filtrados para extraer las capacidades
                         $capacidadesProducto->each(function ($producto) use ($capacidadesUnicas) {
@@ -554,7 +552,6 @@ class BackMarketController extends Controller{
                     }
                 }
 
-            }while(!$productosFiltrados);//Esto es una prueba
 
             $productBat='NoHay';
             //si hay productos con barteria mandar conBat y si hay productos sin bateria mandar sinBat

@@ -8,8 +8,8 @@ use App\Http\Controllers\ProductoController;//para obtener productos de la bd
 use App\Http\Controllers\BackMarketController;//para utilizar la api
 use App\Http\Middleware\AdminMiddleware;//para limitar el acceso del usuario
 use App\Http\Controllers\CartController;//para manejar las funciones del carrito
-
-
+//use DragonCode\Contracts\Cashier\Http\Request;
+use Illuminate\Http\Request;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -38,22 +38,19 @@ Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name(
 
 // mostrar pagina detalles del producto
 Route::get('/info_products',[BackMarketController::class, 'OntenerUnProducto'])->name('info_products');
-
-
-//Route::post('/peticionEstados',[BackMarketController::class,'peticionEstados'])->name('peticionEstados');
-Route::post('/peticionBateria',[BackMarketController::class,'peticionBateria'])->name('peticionBateria');
-
+//ruta para las peticiones de la ppagina dellates del producto
+Route::post('/peticionProductos',[BackMarketController::class,'peticionProductos'])->name('peticionProductos');
 
 //mostrar carrito de la compra
-// Route::get('/cart', function (){
+// Route::get('/carrito', function (){
 //     return view('carrito.cart');
-// })->name('cart');
+// })->name('carrito');
 
 //carrito
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/update/{sku}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove/{sku}', [CartController::class, 'remove'])->name('cart.remove');
 Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 

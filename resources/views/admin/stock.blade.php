@@ -37,8 +37,28 @@
             </h2>
         </x-slot>
  
+        @php
+            function getEstado($state) {
+                switch ($state) {
+                    case 0:
+                        return "Perfecto";
+                    case 1:
+                        return "Como Nuevo";
+                    case 2:
+                        return "Muy Buen Estado";
+                    case 3:
+                        return "Buen Estado";
+                    case 4:
+                        return "Aceptable";
+                    default:
+                        return "Desconocido";
+                }
+            }
+        @endphp
+
+
        
-        <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8 ">
+        <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8 ">
             @if (!isset($productos) || $productos->isEmpty())
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -55,18 +75,18 @@
                                         <!-- Cabecera de la tabla -->
                                         <thead class="bg-gray-50 dark:bg-gray-700">
                                             <tr>
-                                                <th scope="col"
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Nombre</th>
-                                                <th scope="col"
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Stock</th>
-                                                <th scope="col"
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Grado</th>
-                                                <th scope="col" colspan="3"
-                                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                    Precio</th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Nombre
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Stock
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Grado
+                                                </th>
+                                                <th scope="col" colspan="3" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Precio
+                                                </th>
                                             </tr>
                                         </thead>
                                         <!-- Cuerpo de la tabla -->
@@ -79,12 +99,12 @@
                                                             value="{{ $producto['quantity'] }}">
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
-                                                        <input type="text" name="grado"
-                                                            value="{{ $producto['state'] }}">
+                                                        <input type="hidden" name="grado" value="{{ $producto['state'] }}">
+                                                        <input type="text" value="{{ getEstado($producto['state']) }}" readonly>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <input type="text" name="precio"
-                                                            value="{{ $producto['price'] }}">
+                                                            value="{{ $producto['price'] }} €">
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <button type="button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
