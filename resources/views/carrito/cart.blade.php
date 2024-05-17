@@ -4,6 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <!-- <title>Shop Homepage - Start Bootstrap Template</title> -->
         <title>TouchPhone</title>
         <!-- Favicon-->
@@ -46,9 +47,7 @@
                                 <tr>
                                     <td>
                                         <div class="flex justify-center">
-                                            <img
-                                            src="{{ $producto['titulo_imagen'] }}"
-                                            class="object-cover h-28 w-28 rounded-2xl" alt="image"/>
+                                            <img src="./imagenes/{{ $producto['titulo_imagen'] }}.jpg" class="object-cover h-28 w-28 rounded-2xl" alt="{{ $producto['titulo_imagen'] }}"/>
                                         </div>
                                     </td>
                                     <td class="p-4 px-6 text-center whitespace-nowrap">
@@ -57,6 +56,7 @@
                                         </div>
                                     </td>
                                     <td class="p-4 px-6 text-center whitespace-nowrap">
+                                        <input name="stock_producto" value="{{ $producto['stock_total'] }}" class="hidden peer" readonly />
                                         <div>
                                             <button class="decrement-btn" data-product-sku="{{ $producto['titulo_sku'] }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="inline-flex w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,6 +120,7 @@
                             <button class="w-full py-2 text-center text-white bg-blue-500 rounded-md shadow hover:bg-blue-600">
                                 Proceed to Checkout
                             </button>
+                            <button id="clear-cart-btn">Vaciar Carrito</button>
                         </div>
                         </div>
                     </div>
@@ -132,11 +133,13 @@
                     // Incrementar cantidad
                     $('.increment-btn').click(function() {
                         var productSku = $(this).data('product-sku');
+                        var stock_total = $("input[name='stock_producto']").val();
                         $.ajax({
                             url: "{{ route('cart.update', ['sku' => ':sku']) }}".replace(':sku', productSku),
                             type: 'POST',
                             data: { 
-                                cantidad_sumar:1
+                                cantidad_sumar:1,
+                                stock_total: stock_total
                             },
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -169,6 +172,27 @@
                             },
                             error: function(xhr, status, error) {
                                 console.error(xhr.responseText);
+                            }
+                        });
+                    });
+
+                    // Botón para vaciar el carrito
+                    $('#clear-cart-btn').click(function() {
+                        $.ajax({
+                            url: "{{ route('cart.clear') }}",
+                            type: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                console.log(response);
+                                //alert('Carrito eliminado con éxito');
+                                // Redirigir o actualizar la página para reflejar el carrito vacío
+                                window.location.href = "{{ route('cart.index') }}";
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(xhr.responseText);
+                                alert('Error al eliminar el carrito');
                             }
                         });
                     });

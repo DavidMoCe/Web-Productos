@@ -522,8 +522,6 @@ class BackMarketController extends Controller{
                     //
 
                 }
-            
-
                 //si existe el producto en los estados, se pone el precio si no se pone 0
                 if(isset($precioCOR1)){
                     $precioCOR = $precioCOR1['price'];
@@ -552,7 +550,6 @@ class BackMarketController extends Controller{
                     }
                 }
 
-
             $productBat='NoHay';
             //si hay productos con barteria mandar conBat y si hay productos sin bateria mandar sinBat
             if($estadoCheckbox=='true' && $productoConBateria ==false && $productoSinBateria ==true){
@@ -561,8 +558,7 @@ class BackMarketController extends Controller{
             if($estadoCheckbox=='false' && $productoSinBateria ===false && $productoConBateria ===true){
                 $productBat = 'hayConBat';
             }
-            
-            
+               
             if($productosFiltrados){
                 $productosFiltradosPrecio = $productosFiltrados['price'];
             }else{
@@ -573,13 +569,6 @@ class BackMarketController extends Controller{
             }else{
                 $productosFiltradosSku = '';
             }
-
-
-            //SI NO EXISTE NINGUN PRODUCTO, ACTIVAR EL CHECKBOX DE LA BATERIA Y COMPPROBAR DE NUEVO
-
-
-
-
 
             //sacar el titulo del producto para mostrarlo
             $frase = $productosFiltradosSku;
@@ -618,8 +607,15 @@ class BackMarketController extends Controller{
             //la ponemos en minuscula
             $nombreImagenAPI = strtolower($nombreImagenAPI);
 
+            //obtenemos el stock total del producto
+            if($productosFiltrados){
+                $stock_total=$productosFiltrados['quantity'];
+            }else{
+                $stock_total=0;
+            }
+
             // Devolver los precios y estados de los productos filtrados como respuesta JSON
-            return response()->json(['titulo1'=>$tituloProducto,'capacidadActivar'=>$capacidadesUnicasArray, 'colorActivar'=>$coloresUnicosArray, 'imput' => $estadoCheckbox, 'titulo' => $parteExtraida, 'sku' => $productosFiltradosSku, 'precio' => $productosFiltradosPrecio,
+            return response()->json(['stock_total'=> $stock_total,'titulo1'=>$tituloProducto,'capacidadActivar'=>$capacidadesUnicasArray, 'colorActivar'=>$coloresUnicosArray, 'imput' => $estadoCheckbox, 'titulo' => $parteExtraida, 'sku' => $productosFiltradosSku, 'precio' => $productosFiltradosPrecio,
              'estado' => $estadoProducto, 'productoSinBateria' => $productoSinBateria, 'productoConBateria' => $productoConBateria,'precioCOR'=>$precioCOR,'precioBUE'=>$precioBUE,'precioIMP'=>$precioIMP,'productBat'=>$productBat, 'capacidad'=>$productoCapacidad, 'nombreIMG'=>$nombreImagenAPI]);
 
         } catch (\Exception $e) {

@@ -111,7 +111,7 @@
                                     src="https://i.ibb.co/f17NXrW/Rectangle-244.png" />
                             </div>
                         </div>
-                        <input name="titulo_imagen" value="{{ $nombreImagenAPI }}" class="hidden peer" required />
+                        <input name="titulo_imagen" value="{{ $nombreImagenAPI }}" class="hidden peer" readonly />
                         <div>
                             <!-- Aquí va el contenido de las imágenes del producto -->
                             {{-- <img src="producto1.jpg" alt="Producto 1" class="w-full">
@@ -123,10 +123,10 @@
                             <div class="product-details">
                                 <div id=titulo-botonCompra class="dark:text-white">
                                     <div id="titulo_sku" class="hidden">{{ $sku_title }}</div>
-                                    <input name="titulo_sku" value="{{ $sku_title }}" class="hidden peer" required />
-                                    <input name="cantidad_producto" value="1" class="hidden peer" required />
+                                    <input name="titulo_sku" value="{{ $sku_title }}" class="hidden peer" readonly />
+                                    <input name="cantidad_producto" value="1" class="hidden peer" readonly />
                                     <div id="title" class="mb-4 mt-4 lg:!mt-0 flex flex-col md:!flex-row lg:items-center justify-between">
-                                        <input name="titulo_producto" value="{{ $titulo }}" class="hidden peer" required />
+                                        <input name="titulo_producto" value="{{ $titulo }}" class="hidden peer" readonly />
                                         <h2 id="titulo_producto" class="text-2xl sm:!text-3xl font-bold m-auto">{{ $titulo }}</h2>
                                         <div id="precio_producto" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
                                             <div class="flex items-center mt-4">
@@ -134,7 +134,8 @@
                                                     class="previous-price text-xs lg:!text-sm font-semibold line-through mt-auto mr-2">
                                                     {{ number_format($precio, 2,",", ".") }}&nbsp;€ nuevo
                                                 </div>
-                                                <input name="precio_producto" value='' class="hidden peer" required />
+                                                <input name="precio_producto" value='' class="hidden peer" readonly />
+                                                <input name="stock_producto" value="{{ $stock }}" class="hidden peer" readonly />
                                                 <div class="current-price text-xl lg:!text-2xl font-semibold">
                                                     {{ number_format($precio* 0.95, 2,",", ".") }}&nbsp;€
                                                 </div>
@@ -1252,11 +1253,12 @@
                             $("input[name='precio_producto']").val(precioNuevoFormateado);
                             $("#titulo_sku").html(response.sku);
                             $("input[name='titulo_sku']").val(response.sku);
+                            $("input[name='stock_producto']").val(response.stock_total);
                             $("#titulo_producto").html(response.titulo);
                             $("input[name='titulo_producto']").val(response.titulo);
                             $(".imagenGrande").attr("src", './imagenes/'+response.nombreIMG+'.jpg');
                             $(".imagenPequena").attr("src", './imagenes/'+response.nombreIMG+'.jpg');
-                            $("input[name='titulo_imagen']").val('./imagenes/'+response.nombreIMG+'.jpg');
+                            $("input[name='titulo_imagen']").val(response.nombreIMG);
                             $(".imagenGrande").attr("alt", response.titulo);
                             $(".imagenPequeña").attr("alt", response.titulo);
 

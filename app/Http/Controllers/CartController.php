@@ -45,6 +45,7 @@ class CartController extends Controller{
             $estado = $request->input('estado');
             $capacidad = $request->input('capacidad');
             $color = $request->input('color');
+            $stock_total = $request->input('stock_producto');
 
             // Inicializar la variable productExists
             $productExists = false;
@@ -71,6 +72,7 @@ class CartController extends Controller{
                     'estado' => $estado,
                     'capacidad' => $capacidad,
                     'color' => $color,
+                    'stock_total'=>$stock_total,
                 ];
             }
 
@@ -91,6 +93,7 @@ class CartController extends Controller{
         $cart = session()->get('cart', []);
         $nueva_cantidad = 0;
         $puedeSumar=true;
+        $stock_total= $request->input('stock_total');
         foreach ($cart as $key => $item) {
             if ($item['titulo_sku'] === $sku) {
                 //Si la cantidad es menor que el stock disponible, se suma
@@ -108,7 +111,7 @@ class CartController extends Controller{
             }
         }
         redirect()->route('cart.index');
-        return response()->json(['sku'=> $sku, "carrito"=>$cart,'cantidad_actualizada' => $nueva_cantidad,'puedeSumar'=>$puedeSumar ]);
+        return response()->json(['stock_total'=>$stock_total, 'sku'=> $sku, "carrito"=>$cart,'cantidad_actualizada' => $nueva_cantidad,'puedeSumar'=>$puedeSumar ]);
     }
 
     public function remove(Request $request, $sku){
@@ -137,9 +140,19 @@ class CartController extends Controller{
         return response()->json(['sku'=> $sku, "carrito"=>$cart,'cantidad_actualizada' => $nueva_cantidad,'puedeRestar'=>$puedeRestar ]);
     }
 
-    public function clear(){
-         // Método para vaciar todo el carrito
-         session()->forget('cart');
-         return redirect()->route('cart.index');
+    public function clear(Request $request){
+        try {
+            // Borrar la cookie del carrito
+            $cookie = cookie()->forget('cart');
+            
+            // Limpiar el carrito de la sesión
+            session()->forget('cart');
+            
+            // Redirigir a la página del carrito con un mensaje de éxito
+            return redirect()->route('cart.index')->with('success', 'Carrito eliminado con éxito')->withCookie($cookie);
+        } catch (\Exception $e) {
+            // Si hay algún error, manejarlo apropiadamente
+            abort(500, 'Error al eliminar el carrito: ' . $e->getMessage());
+        }
     }
 }
