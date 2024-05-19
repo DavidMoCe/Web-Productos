@@ -16,13 +16,11 @@ class CartController extends Controller{
     }
 
     public function index(){
-
-        // Método para mostrar el contenido del carrito
+        // Obtener el contenido del carrito desde la sesión
         $cookieCart = session()->get('cart', []);
-        return view('carrito.cart', compact('cookieCart'));
 
-        // Pasar los datos de las sesiones activas a la vista
-        //return view('carrito.cart', ['sesionesActivas' => $sesionesActivas]);
+        // Pasar los datos del carrito a la vista
+        return view('carrito.cart', compact('cookieCart'));
     }
 
     // //prueba para mostrar carrito con el post
@@ -80,10 +78,9 @@ class CartController extends Controller{
             session()->put('cart', $cookieCart);
 
             // Crear una nueva cookie con el carrito actualizado
-            return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cookieCart)));
+            return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cookieCart)))->with('success', 'Producto agregado al carrito exitosamente.');
         } catch (\Exception $e) {
-            // Si hay algún error, manejarlo apropiadamente
-            abort(500, 'Error al agregar el producto al carrito: ' . $e->getMessage());
+            return redirect()->route('cart.index')->with('error', 'Error al agregar el producto al carrito: ' . $e->getMessage());
         }
     }
 
@@ -95,19 +92,46 @@ class CartController extends Controller{
         $puedeSumar=true;
         $stock_total= $request->input('stock_total');
         foreach ($cart as $key => $item) {
+            // if ($item['titulo_sku'] === $sku) {
+            //     //Si la cantidad es menor que el stock disponible, se suma
+            //     if($item['cantidad'] < 10){
+            //         // Actualizar la cantidad del producto en el carrito
+            //         $cart[$key]['cantidad'] += $cantidad_sumar;
+            //         $nueva_cantidad = $cart[$key]['cantidad'];
+            //         session()->put('cart', $cart);
+            //         $puedeSumar=true;
+            //         break;
+            //     }else{
+            //         $nueva_cantidad = $cart[$key]['cantidad'];
+            //         $puedeSumar=false;
+            //     }
+            // }
             if ($item['titulo_sku'] === $sku) {
-                //Si la cantidad es menor que el stock disponible, se suma
-                if($item['cantidad'] < 10){
-                    // Actualizar la cantidad del producto en el carrito
-                    $cart[$key]['cantidad'] += $cantidad_sumar;
-                    $nueva_cantidad = $cart[$key]['cantidad'];
-                    session()->put('cart', $cart);
-                    $puedeSumar=true;
-                    break;
-                }else{
-                    $nueva_cantidad = $cart[$key]['cantidad'];
-                    $puedeSumar=false;
+                // Calcular la cantidad máxima que se puede agregar respetando el stock disponible
+                $cantidad_maxima = $stock_total - $item['cantidad'];
+    
+                if ($cantidad_maxima > 0) {
+                    // Verificar si la cantidad a sumar excede la cantidad máxima permitida
+                    if ($cantidad_sumar <= $cantidad_maxima) {
+                        // Actualizar la cantidad del producto en el carrito
+                        $cart[$key]['cantidad'] += $cantidad_sumar;
+                        $nueva_cantidad = $cart[$key]['cantidad'];
+                        session()->put('cart', $cart);
+                        $puedeSumar = true;
+                    } else {
+                        // Si la cantidad a sumar excede la cantidad máxima permitida, establecer la nueva cantidad como la cantidad máxima permitida
+                        $cart[$key]['cantidad'] = $stock_total;
+                        $nueva_cantidad = $stock_total;
+                        session()->put('cart', $cart);
+                        $puedeSumar = false;
+                    }
+                } else {
+                    // Si el stock disponible es cero, no se puede agregar más cantidad
+                    $puedeSumar = false;
+                    $nueva_cantidad = $item['cantidad'];
                 }
+    
+                break;
             }
         }
         redirect()->route('cart.index');

@@ -29,6 +29,13 @@
                     </x-nav-link>
                 </div>
 
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <!-- (LINK) Ruta que he creado en el archivo web.php y que llama a la funcion redirect de LoginController -->
+                    <x-nav-link :href="route('cart.index')" :active="request()->routeIs('cart.index')">
+                        {{ __('Cart') }}
+                    </x-nav-link>
+                </div>
+
 
             </div>
 
@@ -107,6 +114,9 @@
             @endauth
             <x-responsive-nav-link :href="route('products')" :active="request()->routeIs('products') || request()->is('/')">
                 {{ __('Products') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('cart.index')" :active="request()->routeIs('cart')">
+                {{ __('Cart') }}
             </x-responsive-nav-link>
 
             @guest

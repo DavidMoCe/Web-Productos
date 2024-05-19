@@ -145,7 +145,7 @@
                                 <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
                                     <a id="enviarDatos" href={{ route('info_products',  ['producto' => $nombreTelefono, 'capacidad' => $capacidad, 'color' => $color]) }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
                                         <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit m-1">
-                                            <img src="./imagenes/{{$nombreImagenAPI}}.jpg" alt="{{ $productoAPI2['title'] }}" class="h-full w-full object-cover object-center">
+                                            <img src="./imagenes/{{$nombreImagenAPI}}.jpg" alt="{{ $productoAPI2['title'] }}" class="h-full w-full object-cover object-center" decoding="async" loading="lazy">
                                         </div>
                                         <div class="col-span-2">
                                             <h3 class="mt-4 text-base text-gray-700 font-bold">{{$nombreTelefono}}</h3>
