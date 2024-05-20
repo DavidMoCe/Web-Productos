@@ -26,11 +26,6 @@ class CartController extends Controller{
         return view('carrito.cart', compact('cookieCart'));
     }
 
-    // //prueba para mostrar carrito con el post
-    // public function mostrar(Request $request){
-    //     return view('carrito.cart', ['datos' => $request->all()]);
-    // }
-
     //añadir producto al carrito
     public function add(Request $request){
         try {
@@ -91,84 +86,53 @@ class CartController extends Controller{
         // Método para actualizar la cantidad de un elemento en el carrito
         $cantidad_sumar = $request->input('cantidad_sumar');
         $cart = session()->get('cart', []);
-        $nueva_cantidad = 0;
-        $puedeSumar=true;
-        $stock_total= $request->input('stock_total');
         foreach ($cart as $key => $item) {
-            // if ($item['titulo_sku'] === $sku) {
-            //     //Si la cantidad es menor que el stock disponible, se suma
-            //     if($item['cantidad'] < 10){
-            //         // Actualizar la cantidad del producto en el carrito
-            //         $cart[$key]['cantidad'] += $cantidad_sumar;
-            //         $nueva_cantidad = $cart[$key]['cantidad'];
-            //         session()->put('cart', $cart);
-            //         $puedeSumar=true;
-            //         break;
-            //     }else{
-            //         $nueva_cantidad = $cart[$key]['cantidad'];
-            //         $puedeSumar=false;
-            //     }
-            // }
-            if ($item['titulo_sku'] === $sku) {
-                // Calcular la cantidad máxima que se puede agregar respetando el stock disponible
-                $cantidad_maxima = $stock_total - $item['cantidad'];
-    
-                if ($cantidad_maxima > 0) {
-                    // Verificar si la cantidad a sumar excede la cantidad máxima permitida
-                    if ($cantidad_sumar <= $cantidad_maxima) {
-                        // Actualizar la cantidad del producto en el carrito
-                        $cart[$key]['cantidad'] += $cantidad_sumar;
-                        $nueva_cantidad = $cart[$key]['cantidad'];
-                        session()->put('cart', $cart);
-                        $puedeSumar = true;
-                    } else {
-                        // Si la cantidad a sumar excede la cantidad máxima permitida, establecer la nueva cantidad como la cantidad máxima permitida
-                        $cart[$key]['cantidad'] = $stock_total;
-                        $nueva_cantidad = $stock_total;
-                        session()->put('cart', $cart);
-                        $puedeSumar = false;
-                    }
-                } else {
-                    // Si el stock disponible es cero, no se puede agregar más cantidad
-                    $puedeSumar = false;
-                    $nueva_cantidad = $item['cantidad'];
-                }
-    
-                break;
+            if ($item['titulo_sku'] === $sku) {    
+                // Actualizar la cantidad del producto en el carrito
+                $cart[$key]['cantidad'] = $cantidad_sumar;
+                session()->put('cart', $cart);
             }
         }
-        redirect()->route('cart.index');
-        return response()->json(['stock_total'=>$stock_total, 'sku'=> $sku, "carrito"=>$cart,'cantidad_actualizada' => $nueva_cantidad,'puedeSumar'=>$puedeSumar ]);
+        //redirect()->route('cart.index');
+        return response()->json(['sku'=> $sku, "carrito"=>$cart]);
     }
 
-    public function remove(Request $request, $sku){
-        // Método para eliminar un elemento del carrito
-        $cantidad_restar = $request->input('cantidad_restar');
-        $cart = session()->get('cart', []);
-        $nueva_cantidad = 0;
-        $puedeRestar=true;
-        foreach ($cart as $key => $item) {
-            if ($item['titulo_sku'] === $sku) {
-                //Si la cantidad es mayor que 0, se resta
-                if($item['cantidad'] > 1){
-                    // Actualizar la cantidad del producto en el carrito
-                    $cart[$key]['cantidad'] -= $cantidad_restar;
-                    $nueva_cantidad = $cart[$key]['cantidad'];
-                    session()->put('cart', $cart);
-                    $puedeRestar=true;
+    public function remove($sku){
+        try {
+            // Obtener el carrito de la sesión
+            $cart = session()->get('cart', []);
+    
+            // Encuentra el índice del producto con el SKU dado
+            $index = null;
+            foreach ($cart as $key => $item) {
+                if ($item['titulo_sku'] === $sku) {
+                    $index = $key;
                     break;
-                }else{
-                    $nueva_cantidad = $cart[$key]['cantidad'];
-                    $puedeRestar=false;
                 }
             }
+    
+            // Verifica si se encontró el producto
+            if (!is_null($index)) {
+                // Elimina el producto del carrito
+                unset($cart[$index]);
+                // Reindexa el arreglo para evitar índices faltantes
+                $cart = array_values($cart);
+                // Actualiza el carrito en la sesión
+                session()->put('cart', $cart);
+    
+                // Actualiza la cookie del carrito
+                return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cart)))->with('success', 'El producto ha sido eliminado del carrito.');
+            } else {
+                return redirect()->route('cart.index')->with('error', 'El producto no se encontró en el carrito.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('cart.index')->with('error', 'Error al eliminar el producto del carrito: ' . $e->getMessage());
         }
-        redirect()->route('cart.index');
-        return response()->json(['sku'=> $sku, "carrito"=>$cart,'cantidad_actualizada' => $nueva_cantidad,'puedeRestar'=>$puedeRestar ]);
     }
 
 
-    
+
+
     public function clear(Request $request){
         try {
             // Borrar la cookie del carrito

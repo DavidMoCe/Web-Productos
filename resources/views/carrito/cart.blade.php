@@ -114,7 +114,7 @@
                                                         <div class="">
                                                             <div class="relative inline-block w-40" has-selected-option="false">
                                                                 <select data-test="quantity-selector" aria-label="Cantidad" class="font-bold border-none py-2 pl-4 pr-8 rounded-md leading-tight mb-4">
-                                                                    <option disabled hidden selected class="">Cantidad</option>
+                                                                    <option disabled hidden selected class="">1</option>
                                                                     @for ($i = 1; $i <= $producto['stock_total']; $i++)
                                                                         <option value="{{ $i }}" class="">{{ $i }}</option>
                                                                     @endfor
@@ -128,13 +128,13 @@
                                                         </div>
                                                     </span>
                                                 </span>
-                                                <button class="rounded-sm relative inline-flex h-10 max-w-full cursor-pointer items-center justify-center px-4 no-underline disabled:cursor-not-allowed motion-safe:transition motion-safe:duration-300 motion-safe:ease-in border border-solid ml-4" data-qa="delete-item-button" type="button">
+                                                <a href="{{ route('cart.remove', ['sku' => $producto['titulo_sku']]) }}" class="eliminar-btn rounded-sm relative inline-flex h-10 max-w-full cursor-pointer items-center justify-center px-4 no-underline motion-safe:transition motion-safe:duration-300 motion-safe:ease-in border border-solid ml-4">
                                                     <span class="flex items-center truncate">
                                                         <span class="flex items-center space-x-8 truncate visible">
-                                                            <span class=" truncate">Suprimir</span>
+                                                            <span class="truncate">Suprimir</span>
                                                         </span>
                                                     </span>
-                                                </button>
+                                                </a>                                                
                                             </div>
                                         </div>
 
@@ -197,44 +197,20 @@
             <script>
                 $(document).ready(function() {
                     // Incrementar cantidad
-                    $('.increment-btn').click(function() {
+                    $('#quantity-selector').change(function() {
+                        var cantidadSeleccionada = $(this).val();
                         var productSku = $(this).data('product-sku');
-                        var stock_total = $(this).closest('tr').find("input[name='stock_producto']").val();
                         $.ajax({
                             url: "{{ route('cart.update', ['sku' => ':sku']) }}".replace(':sku', productSku),
                             type: 'POST',
                             data: { 
-                                cantidad_sumar:1,
-                                stock_total: stock_total
+                                cantidad_sumar: cantidadSeleccionada
                             },
                             headers: {
                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                             },
                             success: function(response) {
                                console.log(response);
-                               $("input[id='"+response.sku+"']").val(response.cantidad_actualizada);
-                            },
-                            error: function(xhr, status, error) {
-                                console.error(xhr.responseText);
-                            }
-                        });
-                    });
-
-                    // Decrementar cantidad
-                    $('.decrement-btn').click(function() {
-                        var productSku = $(this).data('product-sku');
-                        $.ajax({
-                            url: "{{ route('cart.remove', ['sku' => ':sku']) }}".replace(':sku', productSku),
-                            type: 'POST',
-                            data: { 
-                                cantidad_restar:1
-                            },
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                                console.log(response);
-                                $("input[id='"+response.sku+"']").val(response.cantidad_actualizada);
                             },
                             error: function(xhr, status, error) {
                                 console.error(xhr.responseText);

@@ -50,7 +50,7 @@ Route::post('/peticionProductos',[BackMarketController::class,'peticionProductos
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{sku}', [CartController::class, 'update'])->name('cart.update');
-Route::post('/cart/remove/{sku}', [CartController::class, 'remove'])->name('cart.remove');
+Route::get('/cart/remove/{sku}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 
