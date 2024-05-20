@@ -105,35 +105,28 @@
                                                             <span class="">2 años de garantía comercial</span>
                                                         </button>
                                                     </div>
-                                                    <div class="font-bold" data-qa="price">433,00&nbsp;€</div>
+                                                    <div class="font-bold" data-qa="price">{{ $producto['precio_producto'] }}</div>
                                                 </div>
                                             </div>
                                             <div class="my-20 flex justify-between md:my-0">
                                                 <span class="w-60">
                                                     <span aria-expanded="false" aria-haspopup="true">
                                                         <div class="">
-                                                            <div class="rounded-md relative inline-block h-32 transition-colors " has-selected-option="true">
-                                                                <div class="h-full">
-                                                                    <select data-test="quantity-selector" aria-label="Cantidad" class="rounded-sm w-full cursor-pointer appearance-none border-0 bg-transparent text-inherit outline-none font-bold h-full pl-12 pr-40">
-                                                                        <option id="quantity-3131376-label-option" class="" disabled="" hidden="">Cantidad</option>
-                                                                        <option class="" value="1-0">1</option>
-                                                                        <option class="" value="2-1">2</option>
-                                                                        <option class="" value="3-2">3</option>
-                                                                    </select>
-                                                                </div>
-                                                                <div class="pointer-events-none absolute inset-y-0 right-8 flex select-none items-center">
-                                                                    <svg aria-hidden="true" fill="currentColor" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg" class="">
-                                                                        <path d="M6.977 9.503a.5.5 0 0 1 .855-.355l4.155 4.16 4.16-4.16a.5.5 0 1 1 .705.71l-4.5 4.5a.5.5 0 0 1-.705 0l-4.5-4.5a.5.5 0 0 1-.17-.355"></path>
-                                                                    </svg>
-                                                                </div>
+                                                            <div class="relative inline-block w-40" has-selected-option="false">
+                                                                <select data-test="quantity-selector" aria-label="Cantidad" class="font-bold border-none py-2 pl-4 pr-8 rounded-md leading-tight mb-4">
+                                                                    <option disabled hidden selected class="">Cantidad</option>
+                                                                    @for ($i = 1; $i <= $producto['stock_total']; $i++)
+                                                                        <option value="{{ $i }}" class="">{{ $i }}</option>
+                                                                    @endfor
+                                                                </select>
+                                                                
+                                                                {{-- <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6.977 9.503a.5.5 0 0 1 .855-.355l4.155 4.16 4.16-4.16a.5.5 0 1 1 .705.71l-4.5 4.5a.5.5 0 0 1-.705 0l-4.5-4.5a.5.5 0 0 1-.17-.355"></path></svg>
+                                                                </div> --}}
                                                             </div>
+                                                            
                                                         </div>
                                                     </span>
-                                                    <div class="" style="display: none;">
-                                                        <div limit="10" class="mood-inverse rounded-sm  relative inline-block max-w-224 px-16 py-12 text-center m-5">
-                                                            <div class="absolute" data-popper-arrow=""></div>
-                                                        </div>
-                                                    </div>
                                                 </span>
                                                 <button class="rounded-sm relative inline-flex h-10 max-w-full cursor-pointer items-center justify-center px-4 no-underline disabled:cursor-not-allowed motion-safe:transition motion-safe:duration-300 motion-safe:ease-in border border-solid ml-4" data-qa="delete-item-button" type="button">
                                                     <span class="flex items-center truncate">
@@ -270,6 +263,8 @@
                         });
                     });
                 });
+
+                
 
 
 

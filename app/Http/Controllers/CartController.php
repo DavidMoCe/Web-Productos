@@ -18,7 +18,10 @@ class CartController extends Controller{
     public function index(){
         // Obtener el contenido del carrito desde la sesión
         $cookieCart = session()->get('cart', []);
-
+        // Verificar si la cookie 'cart' está presente y cargar los datos
+        if (empty($cookieCart)) {
+            $cookieCart = json_decode(request()->cookie('cart'), true) ?: [];
+        }
         // Pasar los datos del carrito a la vista
         return view('carrito.cart', compact('cookieCart'));
     }
@@ -164,6 +167,8 @@ class CartController extends Controller{
         return response()->json(['sku'=> $sku, "carrito"=>$cart,'cantidad_actualizada' => $nueva_cantidad,'puedeRestar'=>$puedeRestar ]);
     }
 
+
+    
     public function clear(Request $request){
         try {
             // Borrar la cookie del carrito
