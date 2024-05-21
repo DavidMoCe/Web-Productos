@@ -34,7 +34,6 @@
                     $precio_bajo = $info_producto->min('price');
                     return $producto['price'] == $precio_bajo;
                 }
-                
                 if(isset($mas_popular) && $mas_popular == 'si'){
                     $cantidad_minima = $info_producto->min('quantity');
                     return $producto['quantity'] == $cantidad_minima;
@@ -42,7 +41,6 @@
                 }
                 // Si mejor_precio no está definida o no es 'si', filtrar solo por capacidad y color
                 return $matchCapacidad && $matchColor;
-
             });
             
             // Verificar si se encontró un producto con el título que contiene la cantidad y muestra sus datos
@@ -77,9 +75,7 @@
             //quitamos los espacios
             preg_match('/(\S*\s?){2}/', $nombreTelefonoIMG, $matches);
             $nombreImagenAPI = isset($matches[0]) ? trim($matches[0]) : '';
-
             preg_match('/\s*-\s*[\p{L}\s]+?(?=\s*-)/', $restoFraseIMG, $matches);
-
             $nombreImagenAPI .= isset($matches[0]) ? trim($matches[0]) : $nombreImagenAPI;
             $nombreImagenAPI = str_replace(' ', '', $nombreImagenAPI);
             //la ponemos en minuscula
@@ -112,13 +108,6 @@
                             </div>
                         </div>
                         <input name="titulo_imagen" value="{{ $nombreImagenAPI }}" class="hidden peer" readonly />
-                        <div>
-                            <!-- Aquí va el contenido de las imágenes del producto -->
-                            {{-- <img src="producto1.jpg" alt="Producto 1" class="w-full">
-                            <img src="producto2.jpg" alt="Producto 2" class="w-full"> --}}
-                            <!-- Agrega más imágenes según sea necesario -->
-                        </div>
-
                         <div class="lg:mx-4 xl:w-3/4 lg:w-1/2 lg:ml-8 lg:ml-4">
                             <div class="product-details">
                                 <div id=titulo-botonCompra class="dark:text-white">
@@ -130,8 +119,7 @@
                                         <h2 id="titulo_producto" class="text-2xl sm:!text-3xl font-bold m-auto">{{ $titulo }}</h2>
                                         <div id="precio_producto" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
                                             <div class="flex items-center mt-4">
-                                                <div
-                                                    class="previous-price text-xs lg:!text-sm font-semibold line-through mt-auto mr-2">
+                                                <div class="previous-price text-xs lg:!text-sm font-semibold line-through mt-auto mr-2">
                                                     {{ number_format($precio, 2,",", ".") }}&nbsp;€ nuevo
                                                 </div>
                                                 <input name="precio_producto" value='' class="hidden peer" readonly />
@@ -142,9 +130,7 @@
                                             </div>
                                             <div class="iva text-xs lg:text-sm ml-auto">IVA incluido*</div>
                                         </div>
-
                                     </div>
-
 
                                     <div class="actions mb-4 flex flex-row">
                                         <div class="opinions hidden lg:!block mr-20 mr-auto">
@@ -1026,6 +1012,7 @@
                     verde: 'rgb(217, 239, 213)',
                     rosa: 'rgb(252, 231, 231)',
                     medianoche: 'rgb(24, 32, 40)',
+                    gris: 'rgb(82, 81, 79)',
                     'blanco estrella': 'rgb(238, 233, 229)',
                     'titanio natural': 'rgb(153, 150, 145)',
                     'titanio azul': 'rgb(72, 76, 85)',
@@ -1396,10 +1383,6 @@
                 });
             }
             
-
-
-
-
         </script>
     </x-app-layout>
 </body>

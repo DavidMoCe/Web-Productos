@@ -83,18 +83,34 @@ class CartController extends Controller{
     }
 
     public function update(Request $request, $sku){
-        // Método para actualizar la cantidad de un elemento en el carrito
-        $cantidad_sumar = $request->input('cantidad_sumar');
-        $cart = session()->get('cart', []);
-        foreach ($cart as $key => $item) {
-            if ($item['titulo_sku'] === $sku) {    
-                // Actualizar la cantidad del producto en el carrito
-                $cart[$key]['cantidad'] = $cantidad_sumar;
-                session()->put('cart', $cart);
+        try {
+            // Método para actualizar la cantidad de un elemento en el carrito
+            $cantidad_sumar = $request->input('cantidad_sumar');
+            if (!is_numeric($cantidad_sumar) || $cantidad_sumar <= 0) {
+                throw new \InvalidArgumentException('La cantidad sumar debe ser un número válido y mayor que cero.');
             }
+            $cart = session()->get('cart', []);
+            $productoEncontrado = false;
+
+            foreach ($cart as $key => $item) {
+                if ($item['titulo_sku'] === $sku) {    
+                    // Actualizar la cantidad del producto en el carrito
+                    $cart[$key]['cantidad'] = $cantidad_sumar;
+                    $productoEncontrado = true;
+                    break;
+                }
+            }
+
+            if (!$productoEncontrado) {
+                throw new \RuntimeException('El producto con SKU ' . $sku . ' no se encontró en el carrito.');
+            }
+            session()->put('cart', $cart);
+
+            //redirect()->route('cart.index');
+            return response()->json(['cantidad_seleccionada'=>$cantidad_sumar,'cantidad_carrito'=>$cart[0]['cantidad'] ,'sku' => $sku, 'carrito' => $cart])->withCookie(cookie()->forever('cart', json_encode($cart)));
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al actualizar el producto en el carrito: ' . $e->getMessage()], 500);
         }
-        //redirect()->route('cart.index');
-        return response()->json(['sku'=> $sku, "carrito"=>$cart]);
     }
 
     public function remove($sku){
@@ -129,9 +145,6 @@ class CartController extends Controller{
             return redirect()->route('cart.index')->with('error', 'Error al eliminar el producto del carrito: ' . $e->getMessage());
         }
     }
-
-
-
 
     public function clear(Request $request){
         try {

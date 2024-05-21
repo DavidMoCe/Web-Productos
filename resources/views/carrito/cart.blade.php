@@ -17,11 +17,107 @@
         @vite('resources/css/app.css')
 
         <!-- <link href="{!! asset('css/styles.css') !!}" rel="stylesheet" /> -->
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                // Función para calcular el total
+                function calcularTotal() {
+                    let total = 0;
+                    document.querySelectorAll('.cart-product').forEach(producto => {
+                        const precio = parseFloat(producto.dataset.productPrice.replace(/[^\d.,]/g, '').replace(',', '.'));
+                        const cantidad = parseInt(producto.querySelector('.cantidad_selector').value);
+                        total += precio * cantidad;
+                    });
+                     // Formatear el total en euros con separador de miles y dos decimales
+                    const formatterEuro = new Intl.NumberFormat("es-ES", {
+                        style: "currency",
+                        currency: "EUR",
+                        minimumFractionDigits: 2,
+                        // Especificar separador de miles
+                        useGrouping: true,
+                    });
+                    const formattedTotal = formatterEuro.format(total);
+                    document.querySelector('#total-price').textContent = `${formattedTotal}`;
+                    document.querySelector('#subTotal-price').textContent = `${formattedTotal}`;
+                }
+
+                // Llamar a la función al cargar la página
+                calcularTotal();
+                
+                // Incrementar cantidad
+                $('.cantidad_selector').change(function() {
+                    var cantidadSeleccionada = $(this).val();
+                    var productSku = $(this).data('product-sku');
+                    $.ajax({
+                        url: "{{ route('cart.update', ['sku' => ':sku']) }}".replace(':sku', productSku),
+                        type: 'POST',
+                        data: { 
+                            cantidad_sumar: cantidadSeleccionada
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            calcularTotal();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+                });
+
+                // Botón para vaciar el carrito
+                $('#clear-cart-btn').click(function() {
+                    $.ajax({
+                        url: "{{ route('cart.clear') }}",
+                        type: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            //alert('Carrito eliminado con éxito');
+                            // Redirigir o actualizar la página para reflejar el carrito vacío
+                            window.location.href = "{{ route('cart.index') }}";
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(xhr.responseText);
+                            alert('Error al eliminar el carrito');
+                        }
+                    });
+                });
+            });
+        </script>
+
     </head>
     <body>
         <x-app-layout>
             @php
-                print_r(session('cart'));
+                // print_r(session('cart'));
+
+                function clasificarEstado($frase) {
+                    preg_match('/\w+$/', $frase, $coincidencias);
+
+                    if (isset($coincidencias[0])) {
+                        $ultima_palabra = $coincidencias[0];
+                        switch (strtolower($ultima_palabra)) {
+                            case 'sta':
+                            case 'cor':
+                                return 'Correcto';
+                            case 'bue':
+                            case 'mbu':
+                                return 'Muy bueno';
+                            case 'imp':
+                                return 'Impecable';
+                            default:
+                                return 'Desconocido';
+                        }
+                    } else {
+                        return 'Desconocido';
+                    }
+                }
             @endphp
             <x-slot name="header">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -30,121 +126,58 @@
             </x-slot>
             <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
                 <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">                      
-                    <div class="container p-8 mx-auto">
+                    <div class="container pt-4 p-8 mx-auto">
                         <div class="w-full overflow-x-auto">
                             @if (count($cookieCart) > 0)
-                                {{-- <table class="w-full shadow-inner">
-                                    <thead>
-                                    <tr class="bg-gray-100">
-                                        <th class="px-6 py-3 font-bold whitespace-nowrap">Image</th>
-                                        <th class="px-6 py-3 font-bold whitespace-nowrap">Product</th>
-                                        <th class="px-6 py-3 font-bold whitespace-nowrap">Qty</th>
-                                        <th class="px-6 py-3 font-bold whitespace-nowrap">Price</th>
-                                        <th class="px-6 py-3 font-bold whitespace-nowrap">Remove</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody> --}}
-                                    @foreach ($cookieCart as $producto)
-                                        {{-- <tr>
-                                            <td>
-                                                <div class="flex justify-center">
-                                                    <img src="./imagenes/{{ $producto['titulo_imagen'] }}.jpg" class="object-cover h-28 w-28 rounded-2xl" alt="{{ $producto['titulo_imagen'] }}"/>
-                                                </div>
-                                            </td>
-                                            <td class="p-4 px-6 text-center whitespace-nowrap">
-                                                <div class="flex flex-col items-center justify-center">
-                                                    <h2 class="font-bold">{{ $producto['titulo_producto'] }}</h2>
-                                                </div>
-                                            </td>
-                                            <td class="p-4 px-6 text-center whitespace-nowrap">
-                                                <input name="stock_producto" value="{{ $producto['stock_total'] }}" class="hidden peer" readonly />
-                                                <div>
-                                                    <button class="decrement-btn" data-product-sku="{{ $producto['titulo_sku'] }}">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="inline-flex w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                        </svg>
-                                                    </button>
-                                                        <input type="text" name="cantidad" id="{{ $producto['titulo_sku'] }}" value="{{ $producto['cantidad'] }}" class="w-12 text-center bg-gray-100 outline-none"/>
-                                                    <button class="increment-btn" data-product-sku="{{ $producto['titulo_sku'] }}">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="inline-flex w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                            <td class="p-4 px-6 text-center whitespace-nowrap">{{ $producto['precio_producto'] }}</td>
-                                            <td class="p-4 px-6 text-center whitespace-nowrap">
-                                                <button>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                    </svg>
-                                                </button>
-                                            </td>
-                                        </tr> --}}
-
+                                @foreach ($cookieCart as $producto)
                         {{--------------------------------------------------------------------------------------------------------------------------------------------------}}
-                            
-                                        <div class="mb-32 w-full md:mb-10 md:flex md:items-start border-b-2 border-gray-300 pb-4" data-test="cart-product">
-                                            <div class="flex grow items-start overflow-hidden">
-                                                <a href="#scroll=false" rel="noreferrer noopener" >
-                                                    <img class="h-60 w-60 max-w-60 cursor-pointer align-top md:h-[110px] md:w-[110px] md:max-w-[110px] h-auto max-h-full max-w-full leading-none" alt="{{ $producto['titulo_imagen'] }}" height="60" decoding="async" loading="lazy" sizes="100vw" src="./imagenes/{{ $producto['titulo_imagen'] }}.jpg" width="60">
+                                    <div class="mb-32 w-full md:mb-6 md:mt-4 md:flex md:items-start border-b-2 border-gray-200 pb-4 cart-product" data-product-price="{{ $producto['precio_producto'] }}" data-product-sku="{{ $producto['titulo_sku'] }}">
+                                        <div class="flex grow items-start overflow-hidden">
+                                            <a href="#scroll=false" rel="noreferrer noopener" >
+                                                <img class="h-60 w-60 max-w-60 cursor-pointer align-top md:h-[110px] md:w-[110px] md:max-w-[110px] h-auto max-h-full max-w-full leading-none" alt="{{ $producto['titulo_imagen'] }}" height="60" decoding="async" loading="lazy" sizes="100vw" src="./imagenes/{{ $producto['titulo_imagen'] }}.jpg" width="60">
+                                            </a>
+                                            <div class="ml-6 inline-block md:ml-10">
+                                                <a href="#scroll=false" rel="noreferrer noopener" class="rounded-md cursor-pointer no-underline hover:underline">
+                                                    <div class="font-bold">{{ $producto['titulo_producto'] }}</div>
                                                 </a>
-                                                <div class="ml-6 inline-block md:ml-10">
-                                                    <a href="#scroll=false" rel="noreferrer noopener" class="rounded-md  cursor-pointer no-underline hover:underline">
-                                                        <div class="font-bold">{{ $producto['titulo_producto'] }}</div>
-                                                    </a>
-                                                    <div class="flex">
-                                                        <p class="">Aspecto</p>
-                                                        <p class=" ml-4">Correcto</p>
-                                                    </div>
-                                                    <div role="note">
-                                                        <p class="">Incluye: Cable cargador</p>
-                                                    </div>
-                                                    <div class="mb-8 flex md:my-8">
-                                                        <button class="rounded-md  cursor-pointer underline" type="button">
-                                                            <span class="">2 años de garantía comercial</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="font-bold" data-qa="price">{{ $producto['precio_producto'] }}</div>
+                                                <div class="flex">
+                                                    <p class="text-gray-700">Aspecto</p>
+                                                    <p class="text-gray-700 ml-2">{{ clasificarEstado($producto['titulo_sku']) }}</p>
                                                 </div>
-                                            </div>
-                                            <div class="my-20 flex justify-between md:my-0">
-                                                <span class="w-60">
-                                                    <span aria-expanded="false" aria-haspopup="true">
-                                                        <div class="">
-                                                            <div class="relative inline-block w-40" has-selected-option="false">
-                                                                <select data-test="quantity-selector" aria-label="Cantidad" class="font-bold border-none py-2 pl-4 pr-8 rounded-md leading-tight mb-4">
-                                                                    <option disabled hidden selected class="">1</option>
-                                                                    @for ($i = 1; $i <= $producto['stock_total']; $i++)
-                                                                        <option value="{{ $i }}" class="">{{ $i }}</option>
-                                                                    @endfor
-                                                                </select>
-                                                                
-                                                                {{-- <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6.977 9.503a.5.5 0 0 1 .855-.355l4.155 4.16 4.16-4.16a.5.5 0 1 1 .705.71l-4.5 4.5a.5.5 0 0 1-.705 0l-4.5-4.5a.5.5 0 0 1-.17-.355"></path></svg>
-                                                                </div> --}}
-                                                            </div>
-                                                            
-                                                        </div>
-                                                    </span>
-                                                </span>
-                                                <a href="{{ route('cart.remove', ['sku' => $producto['titulo_sku']]) }}" class="eliminar-btn rounded-sm relative inline-flex h-10 max-w-full cursor-pointer items-center justify-center px-4 no-underline motion-safe:transition motion-safe:duration-300 motion-safe:ease-in border border-solid ml-4">
-                                                    <span class="flex items-center truncate">
-                                                        <span class="flex items-center space-x-8 truncate visible">
-                                                            <span class="truncate">Suprimir</span>
-                                                        </span>
-                                                    </span>
-                                                </a>                                                
+                                                <div role="note">
+                                                    <p class="text-gray-700">Incluye: Cable cargador</p>
+                                                </div>
+                                                <div class="mb-8 flex md:my-4">
+                                                    <button class="rounded-md  cursor-pointer underline" type="button">
+                                                        <span class="text-gray-600 font-bold">2 años de garantía comercial</span>
+                                                    </button>
+                                                </div>
+                                                <div class="font-bold" data-qa="price">{{ $producto['precio_producto'] }}</div>
                                             </div>
                                         </div>
-
-
+                                        <div class="my-20 flex justify-between md:my-0">
+                                            <span aria-expanded="false" aria-haspopup="true">
+                                                <div class="">
+                                                    <div class="relative inline-block" has-selected-option="false">
+                                                        <select data-product-sku="{{ $producto['titulo_sku'] }}" aria-label="Cantidad" class="cantidad_selector cursor-pointer font-bold bg-gray-200 transition duration-100 ease-in hover:bg-gray-300 border border-none focus:ring-gray-400 focus:ring-2 py-2 pl-4 pr-10 rounded-md leading-tight">
+                                                            @for ($i = 1; $i <= $producto['stock_total']; $i++)
+                                                                <option class="bg-white" value="{{ $i }}" {{ $i == $producto['cantidad'] ? 'selected' : '' }}>{{ $i }}</option>
+                                                            @endfor
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </span>
+                                            <a href="{{ route('cart.remove', ['sku' => $producto['titulo_sku']]) }}" class="eliminar-btn font-bold rounded-md relative inline-flex cursor-pointer items-center justify-center px-3 no-underline transition duration-300 ease-in border border-solid ml-3 text-red-700 border-red-600 hover:bg-red-50">
+                                                <span class="flex items-center truncate">
+                                                    <span class="flex items-center space-x-8 truncate visible">
+                                                        <span class="truncate">Suprimir</span>
+                                                    </span>
+                                                </span>
+                                            </a>                                                
+                                        </div>
+                                    </div>
                         {{--------------------------------------------------------------------------------------------------------------------------------------------------}}
-
-
-                                    @endforeach
-                                    {{-- </tbody>
-                                </table> --}}
+                                @endforeach
     
                                 {{-- <div class="lg:w-2/4">
                                     <div class="mt-4">
@@ -157,33 +190,33 @@
                                             </button>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="mt-4">
-                                    <div class="py-4 rounded-md shadow">
-                                        <h3 class="text-xl font-bold text-blue-600">Order Summary</h3>
-                                        <div class="flex justify-between px-4">
+                                </div> --}}
+                                <div class="">
+                                    <div class="rounded-md">
+                                        {{-- <h3 class="text-xl font-bold text-blue-600">Order Summary</h3> --}}
+                                        <div class="flex justify-between px-4 pb-2">
                                             <span class="font-bold">Subtotal</span>
-                                            <span class="font-bold">$35.25</span>
+                                            <span class="font-bold" id="subTotal-price">0,00 €</span>
                                         </div>
-                                        <div class="flex justify-between px-4">
+                                        {{-- <div class="flex justify-between px-4">
                                             <span class="font-bold">Discount</span>
                                             <span class="font-bold text-red-600">- $5.00</span>
                                         </div>
                                         <div class="flex justify-between px-4">
                                             <span class="font-bold">Sales Tax</span>
                                             <span class="font-bold">$2.25</span>
-                                        </div>
-                                        <div class="flex items-center justify-between px-4 py-2 mt-3 border-t-2">
+                                        </div> --}}
+                                        <div class="flex items-center justify-between px-4 py-3 mt-4 border-t-2 border-gray-400 border-dotted">
                                             <span class="text-xl font-bold">Total</span>
-                                            <span class="text-2xl font-bold">$37.50</span>
+                                            <span class="text-2xl font-bold" id="total-price">0,00 €</span>
                                         </div>
                                     </div>
-                                </div> --}}
+                                </div>
                                 <div class="mt-4">
                                     <button class="w-full py-2 text-center text-white bg-blue-500 rounded-md shadow hover:bg-blue-600">
                                         Proceed to Checkout
                                     </button>
-                                    <button id="clear-cart-btn">Vaciar Carrito</button>
+                                    {{-- <button id="clear-cart-btn">Vaciar Carrito</button> --}}
                                 </div>
                             @else
                                 <p>El carrito está vacío.</p>
@@ -193,58 +226,7 @@
                 </div>
             </div>
             {{-- incluir jquery --}}
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script>
-                $(document).ready(function() {
-                    // Incrementar cantidad
-                    $('#quantity-selector').change(function() {
-                        var cantidadSeleccionada = $(this).val();
-                        var productSku = $(this).data('product-sku');
-                        $.ajax({
-                            url: "{{ route('cart.update', ['sku' => ':sku']) }}".replace(':sku', productSku),
-                            type: 'POST',
-                            data: { 
-                                cantidad_sumar: cantidadSeleccionada
-                            },
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                               console.log(response);
-                            },
-                            error: function(xhr, status, error) {
-                                console.error(xhr.responseText);
-                            }
-                        });
-                    });
-
-                    // Botón para vaciar el carrito
-                    $('#clear-cart-btn').click(function() {
-                        $.ajax({
-                            url: "{{ route('cart.clear') }}",
-                            type: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            success: function(response) {
-                                console.log(response);
-                                //alert('Carrito eliminado con éxito');
-                                // Redirigir o actualizar la página para reflejar el carrito vacío
-                                window.location.href = "{{ route('cart.index') }}";
-                            },
-                            error: function(xhr, status, error) {
-                                console.error(xhr.responseText);
-                                alert('Error al eliminar el carrito');
-                            }
-                        });
-                    });
-                });
-
-                
-
-
-
-            </script>
+           
         </x-app-layout>
     </body>
 </html>
