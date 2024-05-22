@@ -6,15 +6,31 @@ use Illuminate\Http\Request;
 
 use App\BackMarketApi; // Asegúrate de importar la clase BackMarketApi
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller{
     protected $backMarketApi;
-
-     // Constructor para inyectar la instancia de BackMarketApi
-     public function __construct(BackMarketApi $backMarketApi){
+    protected $backMarketController;
+    // Constructor para inyectar la instancia de BackMarketApi y BackMarketController
+    public function __construct(BackMarketApi $backMarketApi, BackMarketController $backMarketController){
         $this->backMarketApi = $backMarketApi;
+        $this->backMarketController = $backMarketController;
     }
-
+    //Asociar el carrito con el usuario
+    // public function associateCartWithUser(){
+    //     $user = Auth::user(); // Obtener al usuario autenticado
+    //     if ($user) {
+    //         $cart = session()->get('cart', []); // Obtener el carrito actual de la sesión
+    //         // Crear o actualizar el carrito asociado con el usuario
+    //         $user->cart()->updateOrCreate([], ['items' => json_encode($cart)]);
+    //         // Limpiar el carrito de la sesión
+    //         dd($cart);
+    //         session()->forget('cart');
+    //         // Borrar la cookie del carrito
+    //         $cookie = cookie()->forget('cart');
+    //     }
+    // }
+    //Mostrar la vista del carrito
     public function index(){
         // Obtener el contenido del carrito desde la sesión
         $cookieCart = session()->get('cart', []);
@@ -22,16 +38,65 @@ class CartController extends Controller{
         if (empty($cookieCart)) {
             $cookieCart = json_decode(request()->cookie('cart'), true) ?: [];
         }
+        // Verificar el stock del carrito antes de mostrarlo al usuario
+        $cookieCart = $this->verificarStockCarrito($cookieCart);
+        //dd($cookieCart);
         // Pasar los datos del carrito a la vista
         return view('carrito.cart', compact('cookieCart'));
     }
-
+    //comprobar el stock de los productos del carrito
+    public function verificarStockCarrito($carrito){
+        try {
+            // Recorrer los productos del carrito para verificar el stock
+            foreach ($carrito as &$item) {
+                // Obtener todos los productos en línea desde BackMarketController
+                $producto = $this->backMarketController->mostrarUnProducto($item['titulo_sku']);
+                //$producto = $productosEnLinea->firstWhere('sku', $item['titulo_sku']);
+                if ($producto && $producto['quantity'] > 0) {
+                    // Si hay stock disponible, actualiza la cantidad en el carrito
+                    $item['stock_total'] = $producto['quantity'];
+                    $item['mensaje_stock'] = "HayStock";
+                    //$item['mensaje_stock'] = "Hay {$producto['quantity']} disponibles";
+                } else {
+                    // Si no hay stock disponible, establece el stock en 0 y agrega un mensaje
+                    $item['stock_total'] = 0;
+                    $item['mensaje_stock'] = "NoStock";
+                }
+            }
+            //si el usuario tiene sesion iniciada, se guarda en el carrito
+            // $this->associateCartWithUser();
+            return $carrito;
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
+        }
+    }
+    //comprobar stock de un producto solo
+    public function verificarStockProducto($productoSku){
+        try {
+            // Obtener todos los productos en línea desde BackMarketController
+            $producto = $this->backMarketController->mostrarUnProducto($productoSku);
+            //$producto = $productosEnLinea->firstWhere('sku', $item['titulo_sku']);
+            if ($producto && $producto['quantity'] > 0) {
+                // Si hay stock disponible, actualiza la cantidad en el carrito
+                $item['stock_total'] = $producto['quantity'];
+                $item['mensaje_stock'] = "HayStock";
+                //$item['mensaje_stock'] = "Hay {$producto['quantity']} disponibles";
+            } else {
+                // Si no hay stock disponible, establece el stock en 0 y agrega un mensaje
+                $item['stock_total'] = 0;
+                $item['mensaje_stock'] = "NoStock";
+            }
+    
+            return $producto;
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
+        }
+    }
     //añadir producto al carrito
     public function add(Request $request){
         try {
             // Verificar si hay una cookie de carrito
             $cookieCart = json_decode($request->cookie('cart'), true) ?: [];
-
             // Obtener los datos del formulario POST
             $tituloImagen = $request->input('titulo_imagen');
             $tituloSku = $request->input('titulo_sku');
@@ -42,20 +107,21 @@ class CartController extends Controller{
             $capacidad = $request->input('capacidad');
             $color = $request->input('color');
             $stock_total = $request->input('stock_producto');
-
             // Inicializar la variable productExists
             $productExists = false;
-
             // Verificar si el producto ya está en el carrito
             foreach ($cookieCart as &$item) {
                 if ($item['titulo_sku'] === $tituloSku) {
-                    // Si el producto ya está en el carrito, aumentar la cantidad y actualizar el carrito en la sesión
-                    $item['cantidad'] += $cantidadProducto;
+                    //si hay mas stock de ese producto, se suma si no se queda igual
+                    $productoCarrito = $this->verificarStockProducto($tituloSku);
+                    if($productoCarrito['quantity']>=$item['cantidad']){
+                        // Si el producto ya está en el carrito, aumentar la cantidad y actualizar el carrito en la sesión
+                        $item['cantidad'] += $cantidadProducto;
+                    }
                     $productExists = true;
-                    break;
+                    break;   
                 }
             }
-
             // Si el producto no está en el carrito, agregarlo
             if (!$productExists) {
                 // Añadir el producto al carrito
@@ -71,17 +137,17 @@ class CartController extends Controller{
                     'stock_total'=>$stock_total,
                 ];
             }
-
             // Actualizar el carrito en la sesión
             session()->put('cart', $cookieCart);
-
+            //si el usuario tiene sesion iniciada, se guarda en el carrito
+            //$this->associateCartWithUser();
             // Crear una nueva cookie con el carrito actualizado
             return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cookieCart)))->with('success', 'Producto agregado al carrito exitosamente.');
         } catch (\Exception $e) {
             return redirect()->route('cart.index')->with('error', 'Error al agregar el producto al carrito: ' . $e->getMessage());
         }
     }
-
+    //actualizar el stock
     public function update(Request $request, $sku){
         try {
             // Método para actualizar la cantidad de un elemento en el carrito
@@ -91,16 +157,18 @@ class CartController extends Controller{
             }
             $cart = session()->get('cart', []);
             $productoEncontrado = false;
-
             foreach ($cart as $key => $item) {
-                if ($item['titulo_sku'] === $sku) {    
-                    // Actualizar la cantidad del producto en el carrito
-                    $cart[$key]['cantidad'] = $cantidad_sumar;
-                    $productoEncontrado = true;
+                if ($item['titulo_sku'] === $sku) {  
+                    //si hay mas stock de ese producto, se suma si no se queda igual
+                    $productoCarrito = $this->verificarStockProducto($sku);
+                    if($productoCarrito['quantity']>= $item['cantidad']){  
+                        // Actualizar la cantidad del producto en el carrito
+                        $cart[$key]['cantidad'] = $cantidad_sumar;
+                        $productoEncontrado = true;
+                    }
                     break;
                 }
             }
-
             if (!$productoEncontrado) {
                 throw new \RuntimeException('El producto con SKU ' . $sku . ' no se encontró en el carrito.');
             }
@@ -112,7 +180,7 @@ class CartController extends Controller{
             return response()->json(['error' => 'Error al actualizar el producto en el carrito: ' . $e->getMessage()], 500);
         }
     }
-
+    //eliminar el producto del carrito
     public function remove($sku){
         try {
             // Obtener el carrito de la sesión
@@ -126,7 +194,6 @@ class CartController extends Controller{
                     break;
                 }
             }
-    
             // Verifica si se encontró el producto
             if (!is_null($index)) {
                 // Elimina el producto del carrito
@@ -135,7 +202,12 @@ class CartController extends Controller{
                 $cart = array_values($cart);
                 // Actualiza el carrito en la sesión
                 session()->put('cart', $cart);
-    
+                // Si el carrito está vacío después de eliminar el producto, también eliminamos la sesión del carrito
+                if (empty($cart)) {
+                    session()->forget('cart');
+                    $cookie = cookie()->forget('cart');
+                    return redirect()->route('cart.index')->with('success', 'Carrito eliminado con éxito')->withCookie($cookie);
+                }
                 // Actualiza la cookie del carrito
                 return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cart)))->with('success', 'El producto ha sido eliminado del carrito.');
             } else {
@@ -145,7 +217,7 @@ class CartController extends Controller{
             return redirect()->route('cart.index')->with('error', 'Error al eliminar el producto del carrito: ' . $e->getMessage());
         }
     }
-
+    //vaciar carrito
     public function clear(Request $request){
         try {
             // Borrar la cookie del carrito
@@ -160,5 +232,9 @@ class CartController extends Controller{
             // Si hay algún error, manejarlo apropiadamente
             abort(500, 'Error al eliminar el carrito: ' . $e->getMessage());
         }
+    }
+    //realizar pedido
+    public function checkOut(){
+
     }
 }

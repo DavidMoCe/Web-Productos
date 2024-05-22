@@ -24,22 +24,25 @@
                 // Función para calcular el total
                 function calcularTotal() {
                     let total = 0;
-                    document.querySelectorAll('.cart-product').forEach(producto => {
-                        const precio = parseFloat(producto.dataset.productPrice.replace(/[^\d.,]/g, '').replace(',', '.'));
-                        const cantidad = parseInt(producto.querySelector('.cantidad_selector').value);
-                        total += precio * cantidad;
-                    });
-                     // Formatear el total en euros con separador de miles y dos decimales
-                    const formatterEuro = new Intl.NumberFormat("es-ES", {
-                        style: "currency",
-                        currency: "EUR",
-                        minimumFractionDigits: 2,
-                        // Especificar separador de miles
-                        useGrouping: true,
-                    });
-                    const formattedTotal = formatterEuro.format(total);
-                    document.querySelector('#total-price').textContent = `${formattedTotal}`;
-                    document.querySelector('#subTotal-price').textContent = `${formattedTotal}`;
+                    const productos = document.querySelectorAll('.cart-product');
+                    if (productos.length > 0) {
+                        productos.forEach(producto => {
+                            const precio = parseFloat(producto.dataset.productPrice.replace(/[^\d.,]/g, '').replace(',', '.'));
+                            const cantidad = parseInt(producto.querySelector('.cantidad_selector').value);
+                            total += precio * cantidad;
+                        });
+                        // Formatear el total en euros con separador de miles y dos decimales
+                        const formatterEuro = new Intl.NumberFormat("es-ES", {
+                            style: "currency",
+                            currency: "EUR",
+                            minimumFractionDigits: 2,
+                            // Especificar separador de miles
+                            useGrouping: true,
+                        });
+                        const formattedTotal = formatterEuro.format(total);
+                        document.querySelector('#total-price').textContent = `${formattedTotal}`;
+                        document.querySelector('#subTotal-price').textContent = `${formattedTotal}`;
+                    }
                 }
 
                 // Llamar a la función al cargar la página
@@ -96,7 +99,6 @@
         <x-app-layout>
             @php
                 // print_r(session('cart'));
-
                 function clasificarEstado($frase) {
                     preg_match('/\w+$/', $frase, $coincidencias);
 
@@ -156,17 +158,25 @@
                                             </div>
                                         </div>
                                         <div class="my-20 flex justify-between md:my-0">
-                                            <span aria-expanded="false" aria-haspopup="true">
-                                                <div class="">
+                                            @if( $producto['mensaje_stock']==="NoStock")
+                                                <span aria-expanded="false" aria-haspopup="true">
                                                     <div class="relative inline-block" has-selected-option="false">
-                                                        <select data-product-sku="{{ $producto['titulo_sku'] }}" aria-label="Cantidad" class="cantidad_selector cursor-pointer font-bold bg-gray-200 transition duration-100 ease-in hover:bg-gray-300 border border-none focus:ring-gray-400 focus:ring-2 py-2 pl-4 pr-10 rounded-md leading-tight">
+                                                        <select data-product-sku="{{ $producto['titulo_sku'] }}" aria-label="Cantidad" class="cantidad_selector cursor-pointer text-red-700 font-bold bg-red-50 border-none py-2 pl-4 pr-10 rounded-md leading-tight" disabled>
+                                                            <option class="bg-white" value="0" selected>No hay Stock</option>
+                                                        </select>
+                                                    </div>
+                                                </span>                                            
+                                            @else
+                                                <span aria-expanded="false" aria-haspopup="true">
+                                                    <div class="relative inline-block" has-selected-option="false">
+                                                        <select data-product-sku="{{ $producto['titulo_sku'] }}" aria-label="Cantidad" class="cantidad_selector cursor-pointer font-bold transition duration-50 ease-in bg-gray-100 hover:bg-gray-200 border border-none focus:ring-gray-300 focus:ring-2 py-2 pl-4 pr-10 rounded-md leading-tight">
                                                             @for ($i = 1; $i <= $producto['stock_total']; $i++)
                                                                 <option class="bg-white" value="{{ $i }}" {{ $i == $producto['cantidad'] ? 'selected' : '' }}>{{ $i }}</option>
                                                             @endfor
                                                         </select>
                                                     </div>
-                                                </div>
-                                            </span>
+                                                </span>
+                                            @endif
                                             <a href="{{ route('cart.remove', ['sku' => $producto['titulo_sku']]) }}" class="eliminar-btn font-bold rounded-md relative inline-flex cursor-pointer items-center justify-center px-3 no-underline transition duration-300 ease-in border border-solid ml-3 text-red-700 border-red-600 hover:bg-red-50">
                                                 <span class="flex items-center truncate">
                                                     <span class="flex items-center space-x-8 truncate visible">
@@ -225,8 +235,6 @@
                     </div>
                 </div>
             </div>
-            {{-- incluir jquery --}}
-           
         </x-app-layout>
     </body>
 </html>

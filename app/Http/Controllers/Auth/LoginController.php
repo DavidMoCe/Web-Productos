@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redirect;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Http\Controllers\CartController;
 
 
 class LoginController extends Controller
@@ -29,8 +30,13 @@ class LoginController extends Controller
 
             // Eliminar la cookie del carrito ahora que los datos han sido transferidos a la sesión del usuario
             return Redirect::route('dashboard')->withCookie(cookie()->forget('cart'));
-            }
-
+        }
     }
+
+    protected function authenticated(Request $request, $user){
+        // Llamar al método para asociar el carrito con el usuario
+        app(CartController::class)->associateCartWithUser();
+    }
+
 
 }

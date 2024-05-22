@@ -76,9 +76,7 @@ class BackMarketController extends Controller{
         }
     }    
 
-
     // Parte de administrador
-
     // Método para mostrar los móviles que tenemos en backMarket
     public function obtenerMoviles(){
         try{
@@ -135,7 +133,6 @@ class BackMarketController extends Controller{
 
         return view('admin.stock',['productos' => $productosFiltrados]);
     }
-
 
     // Parte de detalles del producto
     public function OntenerUnProducto(Request $request){
@@ -272,7 +269,6 @@ class BackMarketController extends Controller{
             $productoSinBateria= false;
             $productoConBateria= false;
 
-            
                 //si el checkbox esta marcado
                 if($estadoCheckbox==='true'){
                     //comprobamos si existe el producto con NEWBATTERY
@@ -355,7 +351,6 @@ class BackMarketController extends Controller{
                         } 
                         return $nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') !== false || strpos($producto['sku'], 'NEW BATTERY') !== false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                     });
-
                     //obtener los colores disponibles en una determinada capacidad
                         // Filtrar productos para obtener los que coinciden con el título del producto y ciertas condiciones de SKU
                         $coloresProducto = collect($productosColeccion)->filter(function ($producto) use ($tituloProducto, $productoCapacidad) {
@@ -398,7 +393,6 @@ class BackMarketController extends Controller{
                         // Convertir la colección en un array y eliminar duplicados
                         $capacidadesUnicasArray = $capacidadesUnicas->unique()->values()->toArray();
                     //
-
                 }else{
                     if($estadoProducto === "estado_correcto"){
                         // Filtrar productos que coincidan con el título y NO tengan en el sku NEWBATTERY
@@ -477,7 +471,6 @@ class BackMarketController extends Controller{
                         } 
                         return $nombreTelefono === $tituloProducto && strpos($producto['sku'], 'IMP') && (strpos($producto['sku'], 'NEWBATTERY') === false && strpos($producto['sku'], 'NEW BATTERY') === false) && (strpos($producto['sku'], $productoCapacidad) !== false) && (strpos($producto['sku'], $productoColor) !== false);
                     });
-
                     //obtener los colores disponibles en una determinada capacidad
                         // Filtrar productos para obtener los que coinciden con el título del producto y ciertas condiciones de SKU
                         $coloresProducto = collect($productosColeccion)->filter(function ($producto) use ($tituloProducto, $productoCapacidad) {
@@ -520,7 +513,6 @@ class BackMarketController extends Controller{
                         // Convertir la colección en un array y eliminar duplicados
                         $capacidadesUnicasArray = $capacidadesUnicas->unique()->values()->toArray();
                     //
-
                 }
                 //si existe el producto en los estados, se pone el precio si no se pone 0
                 if(isset($precioCOR1)){
@@ -621,6 +613,20 @@ class BackMarketController extends Controller{
         } catch (\Exception $e) {
             // Manejar cualquier excepción que pueda ocurrir durante la solicitud
             return response()->json(['noStock' => 'No hay productos','error' => $e->getMessage()], 500);
+        }
+    }
+
+    //parte carrito
+    public function mostrarUnProducto($sku){
+        try {
+            // Hacer una solicitud a la API de BackMarket para obtener detalles del producto
+            $producto = $this->backMarketApi->apiGet('listings/detail?sku='.$sku);
+            // Devolver los detalles del producto
+            return $producto;
+           
+        } catch (\Exception $e) {
+            // Manejar errores y devolver una respuesta vacía o un mensaje de error según corresponda
+            return  null;
         }
     }
 }

@@ -1325,7 +1325,6 @@
                                 });
                             });
                         }
-
                         // Respuesta JSON recibida que contiene los colores a activar
                         var coloresActivar = response.colorActivar;
                         $('#color-list li').each(function() {
@@ -1342,7 +1341,6 @@
                                 $(this).find('span').removeClass('font-bold');
                             }
                         });
-
                         // Respuesta JSON recibida que contiene las capacidades a activar
                         var capacidadesActivar = response.capacidadActivar;
                         $('#capacity-list li').each(function() {
@@ -1353,15 +1351,12 @@
                                 $(this).removeClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
                                 $(this).find('input[type="radio"]').prop('disabled', false);
                                 $(this).find('span').addClass('font-bold');
-
                             }else{
                                 $(this).addClass('pointer-events-none opacity-85 bg-stone-100 border-stone-700');
                                 $(this).find('input[type="radio"]').prop('disabled', true);
                                 $(this).find('span').removeClass('font-bold');
                             }
                         });
-
-
                         // Verificar si hayStock es igual a "no"
                         if (response.productBat == "NoHay") {
                             // Agregar una clase al label
