@@ -33,10 +33,10 @@ class LoginController extends Controller
         }
     }
 
-    protected function authenticated(Request $request, $user){
-        // Llamar al método para asociar el carrito con el usuario
-        app(CartController::class)->associateCartWithUser();
-    }
+    // protected function authenticated(Request $request, $user){
+    //     // Llamar al método para asociar el carrito con el usuario
+    //     app(CartController::class)->associateCartWithUser();
+    // }
 
 
 }

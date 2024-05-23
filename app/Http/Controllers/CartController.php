@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\BackMarketApi; // Asegúrate de importar la clase BackMarketApi
 use Illuminate\Support\Facades\DB;
+use App\Mail\OrderProcessed;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller{
@@ -16,6 +18,8 @@ class CartController extends Controller{
         $this->backMarketApi = $backMarketApi;
         $this->backMarketController = $backMarketController;
     }
+
+
     //Asociar el carrito con el usuario
     // public function associateCartWithUser(){
     //     $user = Auth::user(); // Obtener al usuario autenticado
@@ -30,6 +34,8 @@ class CartController extends Controller{
     //         $cookie = cookie()->forget('cart');
     //     }
     // }
+
+
     //Mostrar la vista del carrito
     public function index(){
         // Obtener el contenido del carrito desde la sesión
@@ -63,8 +69,16 @@ class CartController extends Controller{
                     $item['mensaje_stock'] = "NoStock";
                 }
             }
+
+
+
+
             //si el usuario tiene sesion iniciada, se guarda en el carrito
             // $this->associateCartWithUser();
+
+
+
+
             return $carrito;
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
@@ -139,8 +153,14 @@ class CartController extends Controller{
             }
             // Actualizar el carrito en la sesión
             session()->put('cart', $cookieCart);
+
+
+
+
             //si el usuario tiene sesion iniciada, se guarda en el carrito
             //$this->associateCartWithUser();
+
+
             // Crear una nueva cookie con el carrito actualizado
             return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cookieCart)))->with('success', 'Producto agregado al carrito exitosamente.');
         } catch (\Exception $e) {
@@ -175,7 +195,7 @@ class CartController extends Controller{
             session()->put('cart', $cart);
 
             //redirect()->route('cart.index');
-            return response()->json(['cantidad_seleccionada'=>$cantidad_sumar,'cantidad_carrito'=>$cart[0]['cantidad'] ,'sku' => $sku, 'carrito' => $cart])->withCookie(cookie()->forever('cart', json_encode($cart)));
+            return response()->json(['cantidad_seleccionada'=>$cantidad_sumar,'sku' => $sku, 'carrito' => $cart])->withCookie(cookie()->forever('cart', json_encode($cart)));
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al actualizar el producto en el carrito: ' . $e->getMessage()], 500);
         }
@@ -234,7 +254,33 @@ class CartController extends Controller{
         }
     }
     //realizar pedido
-    public function checkOut(){
+    public function processOrder(Request $request){
+        try {
+            // Supongamos que obtienes los detalles del pedido de la solicitud
+            $orderDetails = $request->all();
 
+            // Aquí tendrías lógica para procesar el pedido y obtener los detalles del pedido
+
+            // Supongamos que tienes los detalles del pedido en las variables $userId y $orderDetails
+
+            // Insertar los detalles del pedido en la base de datos
+            // DB::table('orders')->insert([
+            //     'user_id' => $userId, // Asignar el ID del usuario actual
+            //     // Asignar otros detalles del pedido, como los productos, el total, etc.
+            //     // 'total' => $orderDetails['total'],
+            //     // Otros detalles del pedido
+            //     'created_at' => now(), // Opcional: agregar la fecha y hora actual
+            //     'updated_at' => now(), // Opcional: agregar la fecha y hora actual
+            // ]);
+
+            // Envía un correo electrónico al usuario para notificarle que su pedido ha sido procesado
+            Mail::to(Auth::user()->email)->send(new OrderProcessed($orderDetails));
+
+            // Retorna una respuesta apropiada, como una redirección a una página de confirmación o un mensaje JSON
+            return response()->json(['message' => 'Pedido procesado correctamente.','hola'=>$orderDetails]);
+        } catch (\Exception $e) {
+            // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
+            return response()->json(['error' => 'Error al procesar el pedido: ' . $e->getMessage()], 500);
+        }
     }
 }
