@@ -249,7 +249,7 @@
                                             
                                             <input type="hidden" name="total" id="total" value="0">
                                             <button class="w-full py-2 text-center text-white bg-blue-500 rounded-md shadow hover:bg-blue-600">
-                                                Proceed to Checkout
+                                                {{ __('Process order') }}
                                             </button>
                                         
                                         {{-- <button id="clear-cart-btn">Vaciar Carrito</button> --}}
