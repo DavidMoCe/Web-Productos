@@ -117,6 +117,7 @@ class CartController extends Controller{
             $cantidadProducto = $request->input('cantidad_producto');
             $tituloProducto = $request->input('titulo_producto');
             $precioProducto = $request->input('precio_producto');
+            $precioProducto_antiguo = $request->input('precio_producto_antiguo');
             $estado = $request->input('estado');
             $capacidad = $request->input('capacidad');
             $color = $request->input('color');
@@ -145,6 +146,7 @@ class CartController extends Controller{
                     'cantidad' => $cantidadProducto,
                     'titulo_producto' => $tituloProducto,
                     'precio_producto' => $precioProducto,
+                    'precio_producto_antiguo' => $precioProducto_antiguo,
                     'estado' => $estado,
                     'capacidad' => $capacidad,
                     'color' => $color,

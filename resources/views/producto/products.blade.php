@@ -24,7 +24,7 @@
                 </h2>
             </x-slot>
 
-            <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+            <div class="mx-auto max-w-2xl px-4 py-10 md:!py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
                 @if ( (!isset($productos) && !isset($productosAPI)))
                     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -33,7 +33,7 @@
                     </div>
                 @endif
                 {{-----------------------------------------REALIZAR CAMBIOS, ENFOCANDOME EN LA APPI-------------------}}
-                <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 xl:gap-x-8">
+                <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 xl:gap-x-8">
                     @if (isset($productos))
                         <!-- obtenemos los productos de la BD -->
                         @foreach($productos as $producto)
@@ -53,7 +53,7 @@
 
                             <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
                                 <a href='info_products' rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
-                                    <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit m-1">
+                                    <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit pr-3">
                                         <img src="./imagenes/{{$nombreImagen}}.jpg" alt="{{ $producto->nombre." ".$producto->descripcion }}" class="h-full w-full object-cover object-center">
                                     </div>
                                     <div class="col-span-2">
@@ -81,10 +81,10 @@
                                             Desde
                                         </span> 
                                         <div>
-                                            <span class="text-primary body-2-bold text-sm font-medium text-black-900">
+                                            <span class="text-sm font-medium text-black-900">
                                                 <b> {{ str_replace('.', ',', number_format($producto->precioD * 0.95, 2)) }}&nbsp;€</b>
                                             </span>
-                                            <span class="text-primary-light line-through body-2-light text-sm font-medium text-gray-600">
+                                            <span class="line-through text-sm font-medium text-gray-600">
                                                 {{ str_replace('.', ',', number_format($producto->precioA, 2)) }}&nbsp;€
                                                 <span>
                                                     nuevo

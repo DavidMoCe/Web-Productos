@@ -100,7 +100,7 @@
     <body>
         <x-app-layout>
             @php
-                // print_r(session('cart'));
+                //print_r(session('cart'));
                 function clasificarEstado($frase) {
                     preg_match('/\w+$/', $frase, $coincidencias);
 
@@ -128,27 +128,28 @@
                     {{ __('Cart') }}
                 </h2>
             </x-slot>
-            <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-                <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">                      
-                    <div class="container pt-4 p-8 mx-auto">
+            <div class="mx-auto max-w-2xl px-4 py-10 md:px-6 md:!py-16 lg:max-w-7xl lg:px-8">
+                <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
+                    <div class="container md:pt-4 md:p-8 mx-auto">
                         <div class="w-full overflow-x-auto">
                             @if (count($cookieCart) > 0)
                                 <form action="{{ route('cart.processOrder') }}" method="POST">
                                     @csrf
                                     @foreach ($cookieCart as $producto)
                             {{--------------------------------------------------------------------------------------------------------------------------------------------------}}
-                                        <input type="hidden" name="productos[{{ $loop->index }}][sku_producto]" value="{{ $producto['titulo_sku'] }}">
-                                        <input type="hidden" name="productos[{{ $loop->index }}][titulo_producto]" value="{{ $producto['titulo_producto'] }}">
-                                        <input type="hidden" name="productos[{{ $loop->index }}][estado_producto]" value="{{ clasificarEstado($producto['titulo_sku']) }}">
-                                        <input type="hidden" name="productos[{{ $loop->index }}][precio_producto]" value="{{ $producto['precio_producto'] }}">
-                                        <input type="hidden" id="cantidad_producto" name="productos[{{ $loop->index }}][cantidad_producto]" value="{{ $producto['cantidad'] }}">
-
-                                        <div class="mb-32 w-full md:mb-6 md:mt-4 md:flex md:items-start border-b-2 border-gray-200 pb-4 cart-product" data-product-price="{{ $producto['precio_producto'] }}" data-product-sku="{{ $producto['titulo_sku'] }}">
+                                        @if( $producto['mensaje_stock']!="NoStock")
+                                            <input type="hidden" name="productos[{{ $loop->index }}][sku_producto]" value="{{ $producto['titulo_sku'] }}">
+                                            <input type="hidden" name="productos[{{ $loop->index }}][titulo_producto]" value="{{ $producto['titulo_producto'] }}">
+                                            <input type="hidden" name="productos[{{ $loop->index }}][estado_producto]" value="{{ clasificarEstado($producto['titulo_sku']) }}">
+                                            <input type="hidden" name="productos[{{ $loop->index }}][precio_producto]" value="{{ $producto['precio_producto'] }}">
+                                            <input type="hidden" id="cantidad_producto" name="productos[{{ $loop->index }}][cantidad_producto]" value="{{ $producto['cantidad'] }}">
+                                        @endif
+                                        <div class="mb-7 w-full md:mt-4 md:flex md:items-start border-b-2 border-gray-200 pb-4 cart-product" data-product-price="{{ $producto['precio_producto'] }}" data-product-sku="{{ $producto['titulo_sku'] }}">
                                             <div class="flex grow items-start overflow-hidden">
                                                 <a href="#scroll=false" rel="noreferrer noopener" >
-                                                    <img class="h-60 w-60 max-w-60 cursor-pointer align-top md:h-[110px] md:w-[110px] md:max-w-[110px] h-auto max-h-full max-w-full leading-none" alt="{{ $producto['titulo_imagen'] }}" height="60" decoding="async" loading="lazy" sizes="100vw" src="./imagenes/{{ $producto['titulo_imagen'] }}.jpg" width="60">
+                                                    <img class="w-14 md:w-28 max-w-60 cursor-pointer align-top leading-none" alt="{{ $producto['titulo_imagen'] }}" decoding="async" loading="lazy" src="./imagenes/{{ $producto['titulo_imagen'] }}.jpg">
                                                 </a>
-                                                <div class="ml-6 inline-block md:ml-10">
+                                                <div class="ml-4 inline-block md:ml-10">
                                                     <a href="#scroll=false" rel="noreferrer noopener" class="rounded-md cursor-pointer no-underline hover:underline">
                                                         <div class="font-bold">{{ $producto['titulo_producto'] }}</div>
                                                     </a>
@@ -159,18 +160,29 @@
                                                     <div role="note">
                                                         <p class="text-gray-700">Incluye: Cable cargador</p>
                                                     </div>
-                                                    <div class="mb-8 flex md:my-4">
+                                                    <div class="mb-2 flex md:my-4">
                                                         <button class="rounded-md  cursor-pointer underline" type="button">
                                                             <span class="text-gray-600 font-bold">2 años de garantía comercial</span>
                                                         </button>
                                                     </div>
-                                                    <div class="font-bold" data-qa="price">{{ $producto['precio_producto'] }}</div>
+                                                    {{-- <div class="font-bold" data-qa="price">{{ $producto['precio_producto'] }}</div> --}}
+                                                    <div class="md:mb-2">
+                                                        <span class="font-medium text-black-900">
+                                                            <b> {{ $producto['precio_producto'] }}</b>
+                                                        </span>
+                                                        <span class="line-through text-sm font-medium text-gray-600">
+                                                            {{ $producto['precio_producto_antiguo'] }}
+                                                            <span>
+                                                                nuevo
+                                                            </span>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="my-20 flex justify-between md:my-0">
+                                            <div class="mt-6 mb-4 flex justify-between md:my-0">
                                                 @if( $producto['mensaje_stock']==="NoStock")
                                                     <span aria-expanded="false" aria-haspopup="true">
-                                                        <div class="relative inline-block" has-selected-option="false">
+                                                        <div class="relative inline-block ml-1" has-selected-option="false">
                                                             <select data-product-sku="{{ $producto['titulo_sku'] }}" aria-label="Cantidad" class="cantidad_selector cursor-pointer text-red-700 font-bold bg-red-50 border-none py-2 pl-4 pr-10 rounded-md leading-tight" disabled>
                                                                 <option class="bg-white" value="0" selected>No hay Stock</option>
                                                             </select>
@@ -178,7 +190,7 @@
                                                     </span>                                            
                                                 @else
                                                     <span aria-expanded="false" aria-haspopup="true">
-                                                        <div class="relative inline-block" has-selected-option="false">
+                                                        <div class="relative inline-block ml-1" has-selected-option="false">
                                                             <select data-product-sku="{{ $producto['titulo_sku'] }}" aria-label="Cantidad" class="cantidad_selector cursor-pointer font-bold transition duration-50 ease-in bg-gray-100 hover:bg-gray-200 border border-none focus:ring-gray-300 focus:ring-2 py-2 pl-4 pr-10 rounded-md leading-tight">
                                                                 @for ($i = 1; $i <= $producto['stock_total']; $i++)
                                                                     <option class="bg-white" value="{{ $i }}" {{ $i == $producto['cantidad'] ? 'selected' : '' }}>{{ $i }}</option>
@@ -211,7 +223,7 @@
                                             </div>
                                         </div>
                                     </div> --}}
-                                    <div class="">
+                                    <div class="-mt-3 md:mt-0">
                                         <div class="rounded-md">
                                             {{-- <h3 class="text-xl font-bold text-blue-600">Order Summary</h3> --}}
                                             <div class="flex justify-between px-4 pb-2">
@@ -226,7 +238,7 @@
                                                 <span class="font-bold">Sales Tax</span>
                                                 <span class="font-bold">$2.25</span>
                                             </div> --}}
-                                            <div class="flex items-center justify-between px-4 py-3 mt-4 border-t-2 border-gray-400 border-dotted">
+                                            <div class="flex items-center justify-between px-4 py-3 mt-2 md:mt-4 border-t-2 border-gray-400 border-dotted">
                                                 <span class="text-xl font-bold">Total</span>
                                                 <span class="text-2xl font-bold" id="total-price">0,00 €</span>
                                             </div>
