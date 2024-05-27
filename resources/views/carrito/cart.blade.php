@@ -27,7 +27,17 @@
                     const productos = document.querySelectorAll('.cart-product');
                     if (productos.length > 0) {
                         productos.forEach(producto => {
-                            const precio = parseFloat(producto.dataset.productPrice.replace(/[^\d.,]/g, '').replace(',', '.'));
+                            // Seleccionar el elemento que contiene el precio
+                            const precioElemento = producto.querySelector('[data-qa="price"]');
+                            // Extraer el texto del precio, eliminar el símbolo de moneda y los espacios
+                            let precioTexto = precioElemento.textContent.replace('€', '').replace(/\s/g, '');
+                            // Reemplazar los puntos de los miles por nada
+                            precioTexto = precioTexto.replace(/\./g, '');
+                            // Reemplazar la coma decimal por un punto
+                            precioTexto = precioTexto.replace(',', '.');
+                            // Convertir el precio a número flotante
+                            const precio = parseFloat(precioTexto);
+                            // Obtener la cantidad del selector correspondiente
                             const cantidad = parseInt(producto.querySelector('.cantidad_selector').value);
                             total += precio * cantidad;
                         });
@@ -64,8 +74,9 @@
                         },
                         success: function(response) {
                             console.log(response);
-                            calcularTotal();
+                            
                             document.querySelector('#cantidad_producto').value= response.cantidad_seleccionada;
+                            calcularTotal();
                         },
                         error: function(xhr, status, error) {
                             console.error(xhr.responseText);

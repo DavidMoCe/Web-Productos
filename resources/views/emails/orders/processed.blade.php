@@ -11,28 +11,29 @@ Thanks,<br>
 {{ config('app.name') }}
 </x-mail::message> --}}
 
-@component('mail::message')
+{{-- @component('mail::message')
     # Order Received
     
 
     Thank you for your order! Below is a summary of the items in your cart:
 
-    {{-- @foreach ($cartItems as $item)
-    **{{ $item['title'] }}**
-    - Price: ${{ number_format($item['price'], 2) }}
-    - Quantity: {{ $item['quantity'] }}
-    @endforeach --}}
+    @foreach ($orderDetails['productos'] as $item)
+    **{{ $item['titulo_producto'] }}**
+    - Estado: {{$item['estado_producto']}}
+    - Precio: {{ $item['precio_producto']}}
+    - Cantidad: {{ $item['cantidad_producto'] }}
+    @endforeach
 
-    Total: ${{ $orderDetails['total'] }}
+    Total: {{ $orderDetails['total'] }}
 
     We will process your order shortly.
 
     Thank you for shopping with us!
 
     Thanks,{{ config('app.name') }}
-@endcomponent
+@endcomponent --}}
 
-{{-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -40,9 +41,15 @@ Thanks,<br>
     <title>Order Received</title>
     <!-- Agrega la URL del archivo CSS compilado de Tailwind -->
     <style>
-        div{
-            background-color: #edf2f7;
+        .fondo{
+            background-color: #bbcdde;
         }
+
+        .fondo-div{
+            background-color: #ffffff;
+            margin: 0 auto;
+        }
+
         .text-green-500 {
             color: #38a169;
         }
@@ -67,25 +74,22 @@ Thanks,<br>
     </style>
 </head>
 <body>
-    <div class="container mx-auto">
-        <h1 class="text-green-500 text-3xl font-bold mb-4">Order Received</h1>
-
-        <p class="text-lg">Thank you for your order! Below is a summary of the items in your cart:</p> --}}
-
-        {{-- @foreach ($cartItems as $item)
-        <p class="text-base"><strong>{{ $item['title'] }}</strong></p>
-        <p class="text-base">- Price: ${{ number_format($item['price'], 2) }}</p>
-        <p class="text-base">- Quantity: {{ $item['quantity'] }}</p>
-        @endforeach --}}
-
-        {{-- <p class="text-lg font-bold">Total: $688.75</p>
-
-        <p class="text-lg">We will process your order shortly.</p>
-
-        <p class="text-lg">Thank you for shopping with us!</p>
-
-        <p class="text-lg">Thanks,TouchPhone</p>
+    <div class="fondo container mx-auto">
+        <div id="contenido" class="fondo-div">
+            <h1 class="text-green-500 text-3xl font-bold mb-4">Order Received</h1>
+            <p class="text-lg">Thank you for your order! Below is a summary of the items in your cart:</p>
+            @foreach ($orderDetails['productos'] as $item)
+            <p class="text-base"><strong>{{ $item['titulo_producto'] }}</strong></p>
+            <p class="text-base">- Precio: {{ $item['precio_producto']}}</p>
+            <p class="text-base">- Estado: {{$item['estado_producto']}}</p>
+            <p class="text-base">- Cantidad: {{ $item['cantidad_producto'] }}</p>
+            @endforeach
+            <p class="text-lg font-bold">Total: {{ $orderDetails['total'] }}</p>
+            <p class="text-lg">We will process your order shortly.</p>
+            <p class="text-lg">Thank you for shopping with us!</p>
+            <p class="text-lg">Thanks,TouchPhone</p>
+        </div>
     </div>
 </body>
-</html> --}}
+</html>
 

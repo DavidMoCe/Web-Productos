@@ -128,7 +128,7 @@ class CartController extends Controller{
                 if ($item['titulo_sku'] === $tituloSku) {
                     //si hay mas stock de ese producto, se suma si no se queda igual
                     $productoCarrito = $this->verificarStockProducto($tituloSku);
-                    if($productoCarrito['quantity']>=$item['cantidad']){
+                    if($productoCarrito['quantity']>$item['cantidad']){
                         // Si el producto ya está en el carrito, aumentar la cantidad y actualizar el carrito en la sesión
                         $item['cantidad'] += $cantidadProducto;
                     }
@@ -179,8 +179,9 @@ class CartController extends Controller{
             $productoEncontrado = false;
             foreach ($cart as $key => $item) {
                 if ($item['titulo_sku'] === $sku) {  
-                    //si hay mas stock de ese producto, se suma si no se queda igual
+                    //se verifica el stock del producto
                     $productoCarrito = $this->verificarStockProducto($sku);
+                    //si hay mas stock de ese producto se suma, si no se queda igual
                     if($productoCarrito['quantity']>= $item['cantidad']){  
                         // Actualizar la cantidad del producto en el carrito
                         $cart[$key]['cantidad'] = $cantidad_sumar;
