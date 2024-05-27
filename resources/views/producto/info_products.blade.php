@@ -123,6 +123,7 @@
                                                     {{ number_format($precio, 2,",", ".") }}&nbsp;€ nuevo
                                                 </div>
                                                 <input name="precio_producto" value='' class="hidden peer" readonly />
+                                                <input name="precio_producto_antiguo" value='' class="hidden peer" readonly />
                                                 <input name="stock_producto" value="{{ $stock }}" class="hidden peer" readonly />
                                                 <div class="current-price text-xl lg:!text-2xl font-semibold">
                                                     {{ number_format($precio* 0.95, 2,",", ".") }}&nbsp;€
@@ -1236,6 +1237,7 @@
                             var precioNuevoFormateado = formatterEuro.format(precioNuevo);
                             // Actualizar el precio, titulo, imagen
                             $("#precio_producto .previous-price").html(precioFormateado + " nuevo");
+                            $("input[name='precio_producto_antiguo']").val(precioFormateado);
                             $("#precio_producto .current-price").html(precioNuevoFormateado);
                             $("input[name='precio_producto']").val(precioNuevoFormateado);
                             $("#titulo_sku").html(response.sku);
