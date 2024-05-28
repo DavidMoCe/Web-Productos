@@ -108,7 +108,7 @@ class CartController extends Controller{
                                 $existingPivot = $carrito->productos()
                                 ->where('producto_id', $productoId)
                                 ->exists();
-                                
+                                echo $existingPivot ? 'true' : 'false';
                                 if ($existingPivot) {
                                     echo "Producto ya existente en el carrito. Actualizando unidades." . PHP_EOL;
                                     // Si ya existe, actualizar la cantidad
