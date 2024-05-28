@@ -40,6 +40,7 @@
                             // Obtener la cantidad del selector correspondiente
                             const cantidad = parseInt(producto.querySelector('.cantidad_selector').value);
                             total += precio * cantidad;
+                            
                         });
                         // Formatear el total en euros con separador de miles y dos decimales
                         const formatterEuro = new Intl.NumberFormat("es-ES", {
@@ -112,27 +113,29 @@
         <x-app-layout>
             @php
                 //print_r(session('cart'));
-                function clasificarEstado($frase) {
-                    preg_match('/\w+$/', $frase, $coincidencias);
-
-                    if (isset($coincidencias[0])) {
-                        $ultima_palabra = $coincidencias[0];
-                        switch (strtolower($ultima_palabra)) {
-                            case 'sta':
-                            case 'cor':
-                                return 'Correcto';
-                            case 'bue':
-                            case 'mbu':
-                                return 'Muy bueno';
-                            case 'imp':
-                                return 'Impecable';
-                            default:
-                                return 'Desconocido';
+                if(!function_exists('clasificarEstado')){
+                    function clasificarEstado($frase) {
+                        preg_match('/\w+$/', $frase, $coincidencias);
+                        if (isset($coincidencias[0])) {
+                            $ultima_palabra = $coincidencias[0];
+                            switch (strtolower($ultima_palabra)) {
+                                case 'sta':
+                                case 'cor':
+                                    return 'Correcto';
+                                case 'bue':
+                                case 'mbu':
+                                    return 'Muy bueno';
+                                case 'imp':
+                                    return 'Impecable';
+                                default:
+                                    return 'Desconocido';
+                            }
+                        } else {
+                            return 'Desconocido';
                         }
-                    } else {
-                        return 'Desconocido';
                     }
                 }
+                
             @endphp
             <x-slot name="header">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -178,7 +181,7 @@
                                                     </div>
                                                     {{-- <div class="font-bold" data-qa="price">{{ $producto['precio_producto'] }}</div> --}}
                                                     <div class="md:mb-2">
-                                                        <span class="font-medium text-black-900">
+                                                        <span class="font-medium text-black-900" data-qa="price">
                                                             <b> {{ $producto['precio_producto'] }}</b>
                                                         </span>
                                                         <span class="line-through text-sm font-medium text-gray-600">
@@ -256,8 +259,7 @@
                                         </div>
                                     </div>
                                     <div class="mt-4">
-                                        
-                                            
+
                                             <input type="hidden" name="total" id="total" value="0">
                                             <button class="w-full py-2 text-center text-white bg-blue-500 rounded-md shadow hover:bg-blue-600">
                                                 {{ __('Process order') }}
@@ -265,9 +267,7 @@
                                         
                                         {{-- <button id="clear-cart-btn">Vaciar Carrito</button> --}}
                                     </div>
-
                                 </form>
-
                             @else
                                 <p>El carrito está vacío.</p>
                             @endif

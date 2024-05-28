@@ -506,51 +506,6 @@
                                             <p class="mb-3 block">Almacenamiento (GB)</p>
                                         </div>
                                         <ul id="capacity-list" class="grid list-none gap-3 grid-cols-3">
-                                            {{-- <li data-qa="storage-0">
-                                                <a aria-current="page" href="#scroll=false"
-                                                    class="router-link-active router-link-exact-active cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="ec975bb8-df95-43a5-b04d-de63378f4a12" disabled="false"
-                                                    role="link" grade="[object Object]">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-4">
-                                                            <span class="font-bold text-center">128 GB</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li data-qa="storage-1">
-                                                <a href="#scroll=false"
-                                                    class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="58c0e06e-f4b5-4553-a0a2-1f2a5d1da186" disabled="false"
-                                                    role="link" grade="[object Object]">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-4">
-                                                            <span class= "text-center">256 GB</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li data-qa="storage-2">
-                                                <a href="#scroll=false"
-                                                    class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border px-4 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out {{ $sku_title && (strpos($sku_title, '512') !== false) ? 'border-black bg-purple-50' : '' }}"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="81ab240b-44af-4bb1-a59a-1321ffdd74ba" disabled="false"
-                                                    role="link" grade="[object Object]">
-                                                    <div
-                                                        class="absolute left-0 top-1/2 -mt-12 flex w-full place-content-center">
-                                                    </div>
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-4">
-                                                            <span class= "text-center">512 GB</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li> --}}
                                         </ul>
                                     </div>
 
@@ -559,111 +514,6 @@
                                             <p class="mb-2 block">Color</p>
                                         </div>
                                         <ul id="color-list" class="grid list-none gap-2 grid-cols-3">
-                                            {{-- Se muestran los colores disponibles --}}
-                                            {{-- <li data-qa="color-0">
-                                                <a href="#"
-                                                    class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
-                                                    grade="[object Object]" disabled="false" role="link">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                                                            <div aria-hidden=""
-                                                                class="rounded-full h-4 w-4 border border-black shrink-0"
-                                                                style="background-color: rgb(24, 32, 40);"></div>
-                                                            <span
-                                                                class="shrink truncate text-center text-sm">Medianoche</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li data-qa="color-1">
-                                                <a href="#"
-                                                    class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
-                                                    grade="[object Object]" disabled="false" role="link">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                                                            <div aria-hidden=""
-                                                                class="rounded-full h-4 w-4 border border-black shrink-0"
-                                                                style="background-color: rgb(255, 0, 0);"></div>
-                                                            <span class="shrink truncate text-center text-sm">Rojo</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li data-qa="color-2">
-                                                <a href="#"
-                                                    class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
-                                                    grade="[object Object]" disabled="false" role="link">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                                                            <div aria-hidden=""
-                                                                class="rounded-full h-4 w-4 border border-black shrink-0"
-                                                                style="background-color: rgb(156, 176, 196);"></div>
-                                                            <span class="shrink truncate text-center text-sm">Azul</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li data-qa="color-3">
-                                                <a href="#"
-                                                    class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
-                                                    grade="[object Object]" disabled="false" role="link">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                                                            <div aria-hidden=""
-                                                                class="rounded-full h-4 w-4 border border-black shrink-0"
-                                                                style="background-color: rgb(217, 239, 213);"></div>
-                                                            <span class="shrink truncate text-center text-sm">Verde</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li data-qa="color-4">
-                                                <a href="#"
-                                                    class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
-                                                    grade="[object Object]" disabled="false" role="link">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                                                            <div aria-hidden=""
-                                                                class="rounded-full h-4 w-4 border border-black shrink-0"
-                                                                style="background-color: rgb(238, 233, 229);"></div>
-                                                            <span class="shrink truncate text-center text-sm">Blanco
-                                                                estrella</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li data-qa="color-5">
-                                                <a href="#"
-                                                    class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out"
-                                                    rel="noreferrer noopener" aria-disabled="false"
-                                                    productoEstado="c38d3dfb-6962-4d55-858b-7e1f15a0e665"
-                                                    grade="[object Object]" disabled="false" role="link">
-                                                    <div class="w-full">
-                                                        <div
-                                                            class="flex flex-row flex-nowrap items-center justify-center gap-1">
-                                                            <div aria-hidden=""
-                                                                class="rounded-full h-4 w-4 border border-black shrink-0"
-                                                                style="background-color: rgb(252, 231, 231);"></div>
-                                                            <span class="shrink truncate text-center text-sm">Rosa</span>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li> --}}
                                         </ul>
                                     </div>
                                 </div>
@@ -808,12 +658,6 @@
                 </div>
             </div>
         </form>
-        {{-- @foreach ($info_producto as $producto){
-            {{$producto['sku'].$producto['price']}}
-        }
-            
-        @endforeach --}}
-
         
         {{-- incluir jquery --}}
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

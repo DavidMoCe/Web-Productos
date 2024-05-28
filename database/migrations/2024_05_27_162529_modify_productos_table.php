@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('productos', function (Blueprint $table) {
-            $table->integer('capacidad')->after('nombre');
-            $table->integer('libre')->after('color');
-            $table->integer('bateria')->after('libre');
+            $table->string('capacidad',10)->after('nombre');
+            $table->boolean('libre')->default(true)->after('color');
+            $table->string('bateria',20)->after('libre');
             $table->string('estado', 20)->after('bateria');
         });
     }

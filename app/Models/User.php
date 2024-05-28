@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -17,11 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'address',
-        'password',
+        'name','email', 'phone', 'address', 'password',
     ];
 
     /**
@@ -30,8 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
     /**
@@ -48,10 +45,26 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
      /**
+     * Get the pedidos associated with the user.
+     */
+    public function pedidos(): HasMany
+    {
+        // Relación "hasMany": Un usuario puede tener muchos pedidos
+        // Se especifica el nombre del modelo relacionado (Pedido),
+        // el nombre de la clave externa en el modelo relacionado (usuario_id),
+        // y el nombre de la clave primaria en el modelo actual (CodUsuario)
+        return $this->hasMany(Pedidos::class, 'usuario_id','id');
+    }
+
+     /**
      * Get the cart associated with the user.
      */
-    // public function cart()
-    // {
-    //     return $this->hasOne(Cart::class);
-    // }
+    public function carrito(): HasOne
+    {
+        // Relación "hasOne": Un usuario tiene un carrito
+        // Se especifica el nombre del modelo relacionado (Carrito),
+        // el nombre de la clave externa en el modelo relacionado (usuario_id),
+        // y el nombre de la clave primaria en el modelo actual (id)
+        return $this->hasOne(Carrito::class, 'usuario_id', 'id');
+    }
 }
