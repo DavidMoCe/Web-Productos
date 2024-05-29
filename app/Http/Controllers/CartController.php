@@ -81,9 +81,9 @@ class CartController extends Controller{
                             $bateria = $partesSku['bateria'];
                             $estado = $partesSku['estado'];
                             //separar en la capacidad los numeros de las palabras
-                            if($capacidad){
-                                $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
-                            }
+                            // if($capacidad){
+                            //     $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
+                            // }
                             // Buscar el producto en la base de datos basándose en los valores obtenidos del SKU
                             $producto = Producto::where('nombre', $nombre)
                                 ->where('capacidad', $capacidad)
@@ -147,9 +147,13 @@ class CartController extends Controller{
                     preg_match('/(\S*\s?){2}/', $producto->nombre, $matches);
                     $nombre= isset($matches[0]) ? trim($matches[0]) : '';
 
+                    if($producto->capacidad){
+                        $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $producto->capacidad);
+                    }
+
                     $dbCart[] = [
-                        'id_producto'=>$producto->id,'titulo_sku' => $producto->nombre . ' ' . str_replace(" ","",$producto->capacidad) . ' - ' . $producto->color . ' - ' . ($producto->libre ? 'Libre' : '') . ' ' . $producto->bateria . ' ' . $producto->estado,
-                        'titulo_producto'=> $producto->nombre.' '.$producto->capacidad.' - '.$producto->color.' - '.($producto->libre ? 'Libre' : ''),'estado_producto'=> $producto->estado,'cantidad' => $producto->pivot->unidades,
+                        'id_producto'=>$producto->id,'titulo_sku' => $producto->nombre . ' ' . $producto->capacidad . ' - ' . $producto->color . ' - ' . ($producto->libre ? 'Libre' : '') . ' ' . $producto->bateria . ' ' . $producto->estado,
+                        'titulo_producto'=> $producto->nombre.' '.$capacidad.' - '.$producto->color.' - '.($producto->libre ? 'Libre' : ''),'estado_producto'=> $producto->estado,'cantidad' => $producto->pivot->unidades,
                         'precio_producto'=>  number_format($producto->precioD, 2, ',', '.') . ' €', 'nombre'=> $producto->nombre, 'capacidad'=> $producto->capacidad, 'color'=> $producto->color,
                         'libre'=> $producto->libre, 'bateria'=> $producto->bateria,'titulo_imagen'=> str_replace(" ","",$nombre) .'-'.str_replace(" ","",$producto->color), 'precio_producto_antiguo'=>number_format($producto->precioA, 2, ',', '.') . ' €',
                     ];
@@ -291,10 +295,10 @@ class CartController extends Controller{
                     $libre = isset($libre) && $libre != '' ? true : false;
                     $bateria = $partesSku['bateria'];
                     $estado = $partesSku['estado'];
-                    //separar en la capacidad los numeros de las palabras
-                    if($capacidad){
-                        $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
-                    }
+                    // //separar en la capacidad los numeros de las palabras
+                    // if($capacidad){
+                    //     $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
+                    // }
                     // Buscar el producto en la base de datos basándose en los valores obtenidos del SKU
                     $producto = Producto::where('nombre', $nombre)
                         ->where('capacidad', $capacidad)
@@ -390,7 +394,7 @@ class CartController extends Controller{
                 }
                 // Guardar el carrito actualizado en la base de datos
                 $carrito->save();
-                return response()->json(['cantidad_seleccionada'=>$cantidad_sumar]);
+                return response()->json(['cantidad_seleccionada'=>$cantidad_sumar,'sku' => $sku]);
             }else {
                 $cart = session()->get('cart', []);
                 $productoEncontrado = false;

@@ -90,13 +90,13 @@
                         <div class="xl:w-3/5 lg:w-2/5 w-80 lg:mx-6 hidden lg:!block">
                             <img class="imagenGrande w-full" alt="{{ $titulo }}"
                                 src="./imagenes/{{$nombreImagenAPI}}.jpg" />
-                            <img class="mt-6 w-full" alt="image of a girl posing"
-                                src="https://i.ibb.co/qxkRXSq/component-image-two.png" />
+                            {{-- <img class="mt-6 w-full" alt="image of a girl posing"
+                                src="https://i.ibb.co/qxkRXSq/component-image-two.png" /> --}}
                         </div>
                         <div class="lg:hidden">
                             <img class="imagenPequena w-full" alt="{{ $titulo }}"
                                 src="./imagenes/{{$nombreImagenAPI}}.jpg" />
-                            <div class="flex items-center justify-between mt-3 space-x-3">
+                            {{-- <div class="flex items-center justify-between mt-3 space-x-3">
                                 <img alt="image-tag-one" class="lg:w-48 lg:h-48 w-full"
                                     src="https://i.ibb.co/cYDrVGh/Rectangle-245.png" />
                                 <img alt="image-tag-one" class="lg:w-48 lg:h-48 w-full"
@@ -105,7 +105,7 @@
                                     src="https://i.ibb.co/cYDrVGh/Rectangle-245.png" />
                                 <img alt="image-tag-one" class="lg:w-48 lg:h-48 w-full"
                                     src="https://i.ibb.co/f17NXrW/Rectangle-244.png" />
-                            </div>
+                            </div> --}}
                         </div>
                         <input name="titulo_imagen" value="{{ $nombreImagenAPI }}" class="hidden peer" readonly />
                         <div class="lg:mx-4 xl:w-3/4 lg:w-1/2 lg:ml-8 lg:ml-4">
@@ -663,7 +663,8 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             //Ejecutar al cargar la pagina      
-            document.addEventListener('DOMContentLoaded', function() {    
+            document.addEventListener('DOMContentLoaded', function() {
+               
                 //marcar el imput del estado al cargar la página
                 // Obtener todos los elementos li dentro del ul
                 var liElementos = document.querySelectorAll('#ul-estado li');
@@ -765,7 +766,7 @@
                     li.className='pointer-events-none opacity-85 bg-stone-100 border-stone-700';
                     li.innerHTML = `
                     <input type="radio" id="input-capacidad-${CapacityIndex}" name="capacidad" value="${capacity}" class="hidden peer" required />
-                        <a href="#" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
+                        <a href="#" class=" cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
                             <div class="w-full">
                                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
                                     <span class="truncate text-center text-sm font-bold">${capacity}</span>
@@ -879,7 +880,7 @@
                     li.className='pointer-events-none opacity-85 bg-stone-100 border-stone-700';
                     li.innerHTML = `
                         <input type="radio" id="input-color-${Colorindex}" name="color" value="${color}" class="hidden peer" required />
-                        <a href="#scroll=false" class="cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
+                        <a href="#scroll=false" class=" cursor-pointer rounded-md relative flex w-full flex-col items-center justify-center border  px-2 py-3 no-underline hover:bg-gray-100 motion-safe:transition-colors motion-safe:duration-300 motion-safe:ease-out" rel="noreferrer noopener" aria-disabled="false" productoEstado="{{ $producto['id'] }}" grade="[object Object]" disabled="false" role="link">
                             <div class="w-full">
                                 <div class="flex flex-row flex-nowrap items-center justify-center gap-1">
                                     <div aria-hidden="" class="rounded-full h-4 w-4 border border-black" style="background-color: ${RgbCode};"></div>
@@ -900,6 +901,7 @@
                     var aElement = colorItem.querySelector('a');
                     if ("{{ $sku_title }}" && "{{ $sku_title }}".includes(spanValue)) {
                         aElement.classList.add('border-black', 'bg-purple-50','color-activo');
+                        
                     }
                 });
 

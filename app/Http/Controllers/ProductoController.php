@@ -16,7 +16,7 @@ class ProductoController extends Controller{
         // Verificar si tanto $productos como $listings son distintos de null
         if (!is_null($productos) && !is_null($listings)) {
             // Si ambos están disponibles, mostrar tanto los productos como el listado
-            return view('producto.products', ['productos' => $productos, 'productosAPI' => collect($listings['results'])]);
+            return view('producto.products', ['productos' => $productos, 'productosAPI' => collect($listings['results']),'Totalproductos' => $listings['count'],'productosPorPaginas' => $productosPorPaginas]);
         } elseif (!is_null($productos)) {
             // Si solo hay productos en la base de datos, mostrarlos
             return view('producto.products', ['productos' => $productos]);
