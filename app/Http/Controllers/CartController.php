@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Carrito;
 use App\Models\Producto;
+use Exception;
+use Illuminate\Support\Facades\Cookie;
 
 class CartController extends Controller{
     protected $backMarketApi;
@@ -39,10 +41,6 @@ class CartController extends Controller{
             $bateria = isset($matches[5]) ? trim($matches[5]) : '';
             // Estado
             $estado = isset($matches[6]) ? trim($matches[6]) : '';
-
-            if($capacidad){
-                $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
-            }
             //echo $nombre,$capacidad,$color,$libre,$bateria,$estado;
             return [
                 'nombre' => $nombre, 'capacidad' => $capacidad, 'color' => $color, 'libre' => $libre, 'bateria' => $bateria, 'estado' => $estado
@@ -57,17 +55,14 @@ class CartController extends Controller{
     public function associateCartWithUser(){
         $user = Auth::user(); // Obtener al usuario autenticado
         if ($user) {
-            echo "Usuario autenticado correctamente." . PHP_EOL;
             $cart = session()->get('cart', []); // Obtener el carrito actual de la sesión
             if (!empty($cart)) {
-                echo "Carrito obtenido de la sesión correctamente." . PHP_EOL;
                 DB::beginTransaction();
                 try {
                     // Crear o actualizar el carrito asociado con el usuario
                     $carrito = Carrito::updateOrCreate(
                         ['usuario_id' => $user->id]
                     );
-                    echo "Carrito creado o actualizado correctamente." . PHP_EOL;
 
                     // Recorrer cada elemento del carrito
                     foreach ($cart as $detalle) {
@@ -77,20 +72,18 @@ class CartController extends Controller{
                         
                         // Verificar si la función devolvió un resultado válido
                         if (!empty($partesSku)) {
-                            echo "partes emcontradas";
                             // Aquí puedes utilizar $partesSku para acceder a las partes del SKU
                             $nombre = $partesSku['nombre'];
                             $capacidad = $partesSku['capacidad'];
                             $color = $partesSku['color'];
                             $libre = $partesSku['libre'];
-                            if(isset($libre) && $libre!=''){
-                                $libre= true;
-                            } else{
-                                $libre= false;
-                            }
+                            $libre = isset($libre) && $libre != '' ? true : false;
                             $bateria = $partesSku['bateria'];
                             $estado = $partesSku['estado'];
-                        
+                            //separar en la capacidad los numeros de las palabras
+                            if($capacidad){
+                                $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
+                            }
                             // Buscar el producto en la base de datos basándose en los valores obtenidos del SKU
                             $producto = Producto::where('nombre', $nombre)
                                 ->where('capacidad', $capacidad)
@@ -100,35 +93,30 @@ class CartController extends Controller{
                                 ->where('estado', $estado)
                                 ->first();
                             if ($producto) {
-                                echo "Producto encontrado en la base de datos." . PHP_EOL;
                                 $productoId = $producto->id; // Obtener el ID del producto
                                 $unidades = $detalle['cantidad']; // Obtener las unidades del producto
-                                
                                 // Verificar si ya existe una entrada en la tabla pivot para evitar duplicados
-                                $existingPivot = $carrito->productos()
+                                $existingPivot = DB::table('carrito_producto')
+                                ->where('carrito_id', $carrito->id)
                                 ->where('producto_id', $productoId)
-                                ->exists();
-                                echo $existingPivot ? 'true' : 'false';
+                                ->first();
                                 if ($existingPivot) {
-                                    echo "Producto ya existente en el carrito. Actualizando unidades." . PHP_EOL;
                                     // Si ya existe, actualizar la cantidad
                                     $carrito->productos()
-                                        ->updateExistingPivot($productoId, ['unidades' => DB::raw("unidades + $unidades")]);
+                                        ->updateExistingPivot($productoId, ['unidades' => DB::raw("$unidades")]);
                                 } else {
-                                    echo "Producto nuevo en el carrito. Adjuntando producto." . PHP_EOL;
                                     // Si no existe, adjuntar el producto con las unidades
                                     $carrito->productos()->attach($productoId, ['unidades' => $unidades]);
                                 }
                             }else{
-                                return response()->json(['error' => 'Error al obtener el producto'], 500);
+                               // return response()->json(['error' => 'Error al obtener el producto'], 500);
                             }
-                            
                         }
                     }
                     // Limpiar el carrito de la sesión
                     session()->forget('cart');
                     // Borrar la cookie del carrito
-                    $cookie = cookie()->forget('cart');
+                    Cookie::queue(Cookie::forget('cart'));
                     DB::commit();
                 }catch (\Exception $e){
                     DB::rollBack();
@@ -140,19 +128,91 @@ class CartController extends Controller{
 
     //Mostrar la vista del carrito
     public function index(){
-        // Obtener el contenido del carrito desde la sesión
-        $cookieCart = session()->get('cart', []);
-        // Verificar si la cookie 'cart' está presente y cargar los datos
-        if (empty($cookieCart)) {
-            $cookieCart = json_decode(request()->cookie('cart'), true) ?: [];
+        // Verificar si el usuario ha iniciado sesión
+        $user = Auth::user();
+
+        if ($user) {
+            // Si el carrito no está asociado con el usuario, asociarlo
+            $this->associateCartWithUser();
+
+            // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
+            $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
+
+            if ($carrito) {
+                // Convertir los productos del carrito en el formato esperado
+                $dbCart = [];
+                foreach ($carrito->productos as $producto) {
+                    try{
+                     //De momento saco solo el nombre hasta el numero
+                    preg_match('/(\S*\s?){2}/', $producto->nombre, $matches);
+                    $nombre= isset($matches[0]) ? trim($matches[0]) : '';
+
+                    $dbCart[] = [
+                        'id_producto'=>$producto->id,'titulo_sku' => $producto->nombre . ' ' . str_replace(" ","",$producto->capacidad) . ' - ' . $producto->color . ' - ' . ($producto->libre ? 'Libre' : '') . ' ' . $producto->bateria . ' ' . $producto->estado,
+                        'titulo_producto'=> $producto->nombre.' '.$producto->capacidad.' - '.$producto->color.' - '.($producto->libre ? 'Libre' : ''),'estado_producto'=> $producto->estado,'cantidad' => $producto->pivot->unidades,
+                        'precio_producto'=>  number_format($producto->precioD, 2, ',', '.') . ' €', 'nombre'=> $producto->nombre, 'capacidad'=> $producto->capacidad, 'color'=> $producto->color,
+                        'libre'=> $producto->libre, 'bateria'=> $producto->bateria,'titulo_imagen'=> str_replace(" ","",$nombre) .'-'.str_replace(" ","",$producto->color), 'precio_producto_antiguo'=>number_format($producto->precioA, 2, ',', '.') . ' €',
+                    ];
+                    } catch (Exception $e){
+                        // Si ocurre un error, omitir este producto y continuar con el siguiente
+                        continue;
+                    }
+                }
+            } else {
+                $dbCart = [];
+            }
+
+            // Verificar el stock del carrito de la base de datos antes de mostrarlo al usuario
+            $cookieCart = $this->verificarStockCarrito($dbCart);
+        } else {
+            // El usuario no ha iniciado sesión, obtener el carrito desde la cookie
+            $cookieCart = session()->get('cart', []);
+            if (empty($cookieCart)) {
+                $cookieCart = json_decode(request()->cookie('cart'), true) ?: [];
+            }
+
+            // Verificar el stock del carrito de la cookie antes de mostrarlo al usuario
+            $cookieCart = $this->verificarStockCarrito($cookieCart);
         }
-        // Verificar el stock del carrito antes de mostrarlo al usuario
-        $cookieCart = $this->verificarStockCarrito($cookieCart);
-        //dd($cookieCart);
+
         // Pasar los datos del carrito a la vista
         return view('carrito.cart', compact('cookieCart'));
     }
-    //comprobar el stock de los productos del carrito
+    //comprobar el stock de los productos del carrito de la bd MUESTRA EL STOCK DE LA BASE DE DATOS
+    public function verificarStockCarritoBD($carrito){
+        try {
+            // Recorrer los productos del carrito para verificar el stock
+            foreach ($carrito as &$item) {
+                $user = Auth::user();
+                if($user){
+                    // Recorrer los productos del carrito para verificar el stock en la base de datos
+                    // Obtener el producto desde la base de datos
+                    $producto = Producto::where('nombre', $item['nombre'])
+                                        ->where('capacidad', $item['capacidad'])
+                                        ->where('color', $item['color'])
+                                        ->where('libre', $item['libre'])
+                                        ->where('bateria', $item['bateria'])
+                                        ->where('estado', $item['estado_producto'])
+                                        ->first();
+
+                    if ($producto && $producto->stock > 0) {
+                        // Si hay stock disponible, actualizar la cantidad en el carrito
+                        $item['stock_total'] = $producto->stock;
+                        $item['mensaje_stock'] = "HayStock";
+                    } else {
+                        // Si no hay stock disponible, establecer el stock en 0 y agregar un mensaje
+                        $item['stock_total'] = 0;
+                        $item['mensaje_stock'] = "NoStock";
+                    }
+                }   
+            }
+            return $carrito;
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
+        }
+    }
+
+    //comprobar el stock de los productos del carrito en backmarket MUESTRA EL STOCK DE BACKMARKET
     public function verificarStockCarrito($carrito){
         try {
             // Recorrer los productos del carrito para verificar el stock
@@ -171,8 +231,6 @@ class CartController extends Controller{
                     $item['mensaje_stock'] = "NoStock";
                 }
             }
-            //si el usuario tiene sesion iniciada, se guarda en el carrito
-            $this->associateCartWithUser();
             return $carrito;
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
@@ -216,42 +274,95 @@ class CartController extends Controller{
             $capacidad = $request->input('capacidad');
             $color = $request->input('color');
             $stock_total = $request->input('stock_producto');
-            // Inicializar la variable productExists
-            $productExists = false;
-            // Verificar si el producto ya está en el carrito
-            foreach ($cookieCart as &$item) {
-                if ($item['titulo_sku'] === $tituloSku) {
-                    //si hay mas stock de ese producto, se suma si no se queda igual
-                    $productoCarrito = $this->verificarStockProducto($tituloSku);
-                    if($productoCarrito['quantity']>$item['cantidad']){
-                        // Si el producto ya está en el carrito, aumentar la cantidad y actualizar el carrito en la sesión
-                        $item['cantidad'] += $cantidadProducto;
-                    }
-                    $productExists = true;
-                    break;   
-                }
-            }
-            // Si el producto no está en el carrito, agregarlo
-            if (!$productExists) {
-                // Añadir el producto al carrito
-                $cookieCart[] = [
-                    'titulo_imagen' => $tituloImagen,
-                    'titulo_sku' => $tituloSku,
-                    'cantidad' => $cantidadProducto,
-                    'titulo_producto' => $tituloProducto,
-                    'precio_producto' => $precioProducto,
-                    'precio_producto_antiguo' => $precioProducto_antiguo,
-                    'estado' => $estado,
-                    'capacidad' => $capacidad,
-                    'color' => $color,
-                    'stock_total'=>$stock_total,
-                ];
-            }
-            // Actualizar el carrito en la sesión
-            session()->put('cart', $cookieCart);
 
-            // Crear una nueva cookie con el carrito actualizado
-            return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cookieCart)))->with('success', 'Producto agregado al carrito exitosamente.');
+            $user = Auth::user();
+            if ($user) {
+                // El usuario ha iniciado sesión, agregar el producto a la tabla pivot carrito_producto
+                $carrito = Carrito::firstOrCreate(['usuario_id' => $user->id]);
+                // Separar el SKU en partes (nombre, capacidad, color, libre, bateria, estado)
+                $partesSku = $this->separarSku($tituloSku);
+                // Verificar si la función devolvió un resultado válido
+                if (!empty($partesSku)) {
+                    // Aquí puedes utilizar $partesSku para acceder a las partes del SKU
+                    $nombre = $partesSku['nombre'];
+                    $capacidad = $partesSku['capacidad'];
+                    $color = $partesSku['color'];
+                    $libre = $partesSku['libre'];
+                    $libre = isset($libre) && $libre != '' ? true : false;
+                    $bateria = $partesSku['bateria'];
+                    $estado = $partesSku['estado'];
+                    //separar en la capacidad los numeros de las palabras
+                    if($capacidad){
+                        $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
+                    }
+                    // Buscar el producto en la base de datos basándose en los valores obtenidos del SKU
+                    $producto = Producto::where('nombre', $nombre)
+                        ->where('capacidad', $capacidad)
+                        ->where('color', $color)
+                        ->where('libre',$libre)
+                        ->where('bateria', $bateria)
+                        ->where('estado', $estado)
+                        ->first();
+                    if ($producto) {
+                        $productoId = $producto->id; // Obtener el ID del producto
+                        $unidades = $cantidadProducto; // Obtener las unidades del producto
+                        $existingPivot = DB::table('carrito_producto')
+                        ->where('carrito_id', $carrito->id)
+                        ->where('producto_id', $productoId)
+                        ->first();
+                        if ($existingPivot) {
+                            // Si ya existe, actualizar la cantidad
+                            DB::table('carrito_producto')
+                            ->where('carrito_id', $carrito->id)
+                            ->where('producto_id', $productoId)
+                            ->increment('unidades', $unidades);
+                        } else {
+                            // Si no existe, adjuntar el producto con las unidades
+                            $carrito->productos()->attach($productoId, ['unidades' => $unidades]);
+                        }
+                        return redirect()->route('cart.index')->with('success', 'Producto agregado al carrito exitosamente.');
+                    }else{
+                        return response()->json(['error' => 'Error al obtener el producto'.$capacidad], 500);
+                    }
+                }
+            } else {
+                // Inicializar la variable productExists
+                $productExists = false;
+                // Verificar si el producto ya está en el carrito
+                foreach ($cookieCart as &$item) {
+                    if ($item['titulo_sku'] === $tituloSku) {
+                        //si hay mas stock de ese producto, se suma si no se queda igual
+                        $productoCarrito = $this->verificarStockProducto($tituloSku);
+                        if($productoCarrito['quantity']>$item['cantidad']){
+                            // Si el producto ya está en el carrito, aumentar la cantidad y actualizar el carrito en la sesión
+                            $item['cantidad'] += $cantidadProducto;
+                        }
+                        $productExists = true;
+                        break;   
+                    }
+                }
+                // Si el producto no está en el carrito, agregarlo
+                if (!$productExists) {
+                    // Añadir el producto al carrito
+                    $cookieCart[] = [
+                        'titulo_imagen' => $tituloImagen,
+                        'titulo_sku' => $tituloSku,
+                        'cantidad' => $cantidadProducto,
+                        'titulo_producto' => $tituloProducto,
+                        'precio_producto' => $precioProducto,
+                        'precio_producto_antiguo' => $precioProducto_antiguo,
+                        'estado' => $estado,
+                        'capacidad' => $capacidad,
+                        'color' => $color,
+                        'stock_total'=>$stock_total,
+                    ];
+                }
+                // Actualizar el carrito en la sesión
+                session()->put('cart', $cookieCart);
+
+                // Crear una nueva cookie con el carrito actualizado
+                return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cookieCart)))->with('success', 'Producto agregado al carrito exitosamente.');
+            }
         } catch (\Exception $e) {
             return redirect()->route('cart.index')->with('error', 'Error al agregar el producto al carrito: ' . $e->getMessage());
         }
@@ -264,64 +375,98 @@ class CartController extends Controller{
             if (!is_numeric($cantidad_sumar) || $cantidad_sumar <= 0) {
                 throw new \InvalidArgumentException('La cantidad sumar debe ser un número válido y mayor que cero.');
             }
-            $cart = session()->get('cart', []);
-            $productoEncontrado = false;
-            foreach ($cart as $key => $item) {
-                if ($item['titulo_sku'] === $sku) {  
-                    //se verifica el stock del producto
-                    $productoCarrito = $this->verificarStockProducto($sku);
-                    //si hay mas stock de ese producto se suma, si no se queda igual
-                    if($productoCarrito['quantity']>= $item['cantidad']){  
-                        // Actualizar la cantidad del producto en el carrito
-                        $cart[$key]['cantidad'] = $cantidad_sumar;
-                        $productoEncontrado = true;
+            $user = Auth::user();
+            if ($user) {
+                // El usuario ha iniciado sesión, actualizar el carrito en la base de datos
+                $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
+                // Actualizar la cantidad del producto en el carrito
+                foreach ($carrito->productos as $producto) {
+                    $titulo_sku = $producto->nombre . ' ' . $producto->capacidad . ' - ' . $producto->color . ' - ' . ($producto->libre ? 'Libre' : '') . ' ' . $producto->bateria . ' ' . $producto->estado;
+                    if ($titulo_sku === $sku) {
+                        // Actualizar la cantidad del producto en la base de datos
+                        $carrito->productos()->updateExistingPivot($producto->id, ['unidades' => DB::raw($cantidad_sumar)]);
+                        break;
                     }
-                    break;
                 }
-            }
-            if (!$productoEncontrado) {
-                throw new \RuntimeException('El producto con SKU ' . $sku . ' no se encontró en el carrito.');
-            }
-            session()->put('cart', $cart);
+                // Guardar el carrito actualizado en la base de datos
+                $carrito->save();
+                return response()->json(['cantidad_seleccionada'=>$cantidad_sumar]);
+            }else {
+                $cart = session()->get('cart', []);
+                $productoEncontrado = false;
+                foreach ($cart as $key => $item) {
+                    if ($item['titulo_sku'] === $sku) {  
+                        //se verifica el stock del producto
+                        $productoCarrito = $this->verificarStockProducto($sku);
+                        //si hay mas stock de ese producto se suma, si no se queda igual
+                        if($productoCarrito['quantity']>= $item['cantidad']){  
+                            // Actualizar la cantidad del producto en el carrito
+                            $cart[$key]['cantidad'] = $cantidad_sumar;
+                            $productoEncontrado = true;
+                        }
+                        break;
+                    }
+                }
+                if (!$productoEncontrado) {
+                    throw new \RuntimeException('El producto con SKU ' . $sku . ' no se encontró en el carrito.');
+                }
+                session()->put('cart', $cart);
+                //redirect()->route('cart.index');
+                return response()->json(['cantidad_seleccionada'=>$cantidad_sumar,'sku' => $sku, 'carrito' => $cart])->withCookie(cookie()->forever('cart', json_encode($cart)));
+            }  
 
-            //redirect()->route('cart.index');
-            return response()->json(['cantidad_seleccionada'=>$cantidad_sumar,'sku' => $sku, 'carrito' => $cart])->withCookie(cookie()->forever('cart', json_encode($cart)));
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error al actualizar el producto en el carrito: ' . $e->getMessage()], 500);
         }
     }
     //eliminar el producto del carrito
-    public function remove($sku){
+    public function remove(Request $request, $sku){
         try {
-            // Obtener el carrito de la sesión
-            $cart = session()->get('cart', []);
-    
-            // Encuentra el índice del producto con el SKU dado
-            $index = null;
-            foreach ($cart as $key => $item) {
-                if ($item['titulo_sku'] === $sku) {
-                    $index = $key;
-                    break;
+            $user = Auth::user();
+            if($user){
+                $id= $request->input('id_producto');
+                // El usuario ha iniciado sesión, eliminar el producto del carrito en la base de datos
+                $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
+                // Buscar el producto en el carrito del usuario
+                $producto = $carrito->productos()->where('productos.id', $id)->first();
+                if ($producto) {
+                    // Eliminar el producto del carrito
+                    $carrito->productos()->detach($producto->id);
+                    return redirect()->route('cart.index')->with('success', 'El producto ha sido eliminado del carrito.');
+                } else {
+                    return redirect()->route('cart.index')->with('error', 'El producto no se encontró en el carrito.');
                 }
-            }
-            // Verifica si se encontró el producto
-            if (!is_null($index)) {
-                // Elimina el producto del carrito
-                unset($cart[$index]);
-                // Reindexa el arreglo para evitar índices faltantes
-                $cart = array_values($cart);
-                // Actualiza el carrito en la sesión
-                session()->put('cart', $cart);
-                // Si el carrito está vacío después de eliminar el producto, también eliminamos la sesión del carrito
-                if (empty($cart)) {
-                    session()->forget('cart');
-                    $cookie = cookie()->forget('cart');
-                    return redirect()->route('cart.index')->with('success', 'Carrito eliminado con éxito')->withCookie($cookie);
+            }else{
+                // Obtener el carrito de la sesión
+                $cart = session()->get('cart', []);
+        
+                // Encuentra el índice del producto con el SKU dado
+                $index = null;
+                foreach ($cart as $key => $item) {
+                    if ($item['titulo_sku'] === $sku) {
+                        $index = $key;
+                        break;
+                    }
                 }
-                // Actualiza la cookie del carrito
-                return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cart)))->with('success', 'El producto ha sido eliminado del carrito.');
-            } else {
-                return redirect()->route('cart.index')->with('error', 'El producto no se encontró en el carrito.');
+                // Verifica si se encontró el producto
+                if (!is_null($index)) {
+                    // Elimina el producto del carrito
+                    unset($cart[$index]);
+                    // Reindexa el arreglo para evitar índices faltantes
+                    $cart = array_values($cart);
+                    // Actualiza el carrito en la sesión
+                    session()->put('cart', $cart);
+                    // Si el carrito está vacío después de eliminar el producto, también eliminamos la sesión del carrito
+                    if (empty($cart)) {
+                        session()->forget('cart');
+                        $cookie = cookie()->forget('cart');
+                        return redirect()->route('cart.index')->with('success', 'Carrito eliminado con éxito')->withCookie($cookie);
+                    }
+                    // Actualiza la cookie del carrito
+                    return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cart)))->with('success', 'El producto ha sido eliminado del carrito.');
+                } else {
+                    return redirect()->route('cart.index')->with('error', 'El producto no se encontró en el carrito.');
+                }
             }
         } catch (\Exception $e) {
             return redirect()->route('cart.index')->with('error', 'Error al eliminar el producto del carrito: ' . $e->getMessage());

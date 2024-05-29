@@ -17,7 +17,7 @@ class Producto extends Model
     ];
 
     // Nombre del campo de clave primaria
-    protected $primaryKey = 'codProd';
+    protected $primaryKey = 'id';
 
     /**
      * The pedidos that belong to the producto.

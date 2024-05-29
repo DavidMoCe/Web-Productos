@@ -142,6 +142,9 @@
                     {{ __('Cart') }}
                 </h2>
             </x-slot>
+            <div class="alert alert-success">
+                {{ session('error') }}
+            </div>
             <div class="mx-auto max-w-2xl px-4 py-10 md:px-6 md:!py-16 lg:max-w-7xl lg:px-8">
                 <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
                     <div class="container md:pt-4 md:p-8 mx-auto">
@@ -213,7 +216,7 @@
                                                         </div>
                                                     </span>
                                                 @endif
-                                                <a href="{{ route('cart.remove', ['sku' => $producto['titulo_sku']]) }}" class="eliminar-btn font-bold rounded-md relative inline-flex cursor-pointer items-center justify-center px-3 no-underline transition duration-300 ease-in border border-solid ml-3 text-red-700 border-red-600 hover:bg-red-50">
+                                                <a href="{{ $producto && isset($producto['id_producto']) ? route('cart.remove', ['sku' => $producto['titulo_sku'], 'id_producto' => $producto['id_producto']]) : route('cart.remove', ['sku' => $producto['titulo_sku']]) }}" class="eliminar-btn font-bold rounded-md relative inline-flex cursor-pointer items-center justify-center px-3 no-underline transition duration-300 ease-in border border-solid ml-3 text-red-700 border-red-600 hover:bg-red-50">
                                                     <span class="flex items-center truncate">
                                                         <span class="flex items-center space-x-8 truncate visible">
                                                             <span class="truncate">Suprimir</span>
