@@ -26,8 +26,13 @@ class CartController extends Controller{
     //Funcion para separar el sku por partes
     public function separarSku($sku){
         // Expresión regular para capturar las partes principales del SKU
-        $regex = '/^(.*?)\s*(\d+[MTG]B)\s-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*(\bLibre\b)?\s*(\w+)?\s*(\w+)?/';
-        
+        $regex = '/^(.*?)\s*(\d+[MTG]B)\s-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*(\bLibre\b)?\s*(.*)/i';
+        $regex1 = '/\bNew\s*battery\b/i';
+        $regex2 = '/\b(\w+)\b$/i';
+
+        // Inicializar las variables fuera de los bloques if
+        $bateria = '';
+        $estado = '';
         if (preg_match($regex, $sku, $matches)) {
             // El nombre del teléfono
             $nombre = isset($matches[1]) ? trim($matches[1]) : '';
@@ -37,18 +42,25 @@ class CartController extends Controller{
             $color = isset($matches[3]) ? trim($matches[3]) : '';
             // Libre
             $libre = isset($matches[4]) ? trim($matches[4]) : '';
-            // Batería
-            $bateria = isset($matches[5]) ? trim($matches[5]) : '';
-            // Estado
-            $estado = isset($matches[6]) ? trim($matches[6]) : '';
             //echo $nombre,$capacidad,$color,$libre,$bateria,$estado;
+    
+            //sacar la bateria
+            if ((preg_match($regex1, $sku, $matches))) {
+                // Batería
+                $bateria = isset($matches[0]) ? trim($matches[0]) : '';
+            }
+            //sacar el estado
+            if((preg_match($regex2, $sku, $matches))){
+                // Batería
+                $estado = isset($matches[0]) ? trim($matches[0]) : '';
+            }
             return [
                 'nombre' => $nombre, 'capacidad' => $capacidad, 'color' => $color, 'libre' => $libre, 'bateria' => $bateria, 'estado' => $estado
                 ];
         } else {
-            echo "No se pudo encontrar coincidencia".$sku;
+           // echo "<br>No se pudo encontrar coincidencia".$sku;
             
-        }
+        } 
     }
 
     //Asociar el carrito con el usuario
@@ -152,7 +164,7 @@ class CartController extends Controller{
                     }
 
                     $dbCart[] = [
-                        'id_producto'=>$producto->id,'titulo_sku' => $producto->nombre . ' ' . $producto->capacidad . ' - ' . $producto->color . ' - ' . ($producto->libre ? 'Libre' : '') . ' ' . $producto->bateria . ' ' . $producto->estado,
+                        'id_producto'=>$producto->id,'titulo_sku' => $producto->nombre . ' ' . $producto->capacidad . ' - ' . $producto->color . ' - ' . ($producto->libre ? 'Libre' : '') . ($producto->bateria ? ' ' . $producto->bateria : '') . ' ' . $producto->estado,
                         'titulo_producto'=> $producto->nombre.' '.$capacidad.' - '.$producto->color.' - '.($producto->libre ? 'Libre' : ''),'estado_producto'=> $producto->estado,'cantidad' => $producto->pivot->unidades,
                         'precio_producto'=>  number_format($producto->precioD, 2, ',', '.') . ' €', 'nombre'=> $producto->nombre, 'capacidad'=> $producto->capacidad, 'color'=> $producto->color,
                         'libre'=> $producto->libre, 'bateria'=> $producto->bateria,'titulo_imagen'=> str_replace(" ","",$nombre) .'-'.str_replace(" ","",$producto->color), 'precio_producto_antiguo'=>number_format($producto->precioA, 2, ',', '.') . ' €',
@@ -431,14 +443,18 @@ class CartController extends Controller{
                 $id= $request->input('id_producto');
                 // El usuario ha iniciado sesión, eliminar el producto del carrito en la base de datos
                 $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
-                // Buscar el producto en el carrito del usuario
-                $producto = $carrito->productos()->where('productos.id', $id)->first();
-                if ($producto) {
-                    // Eliminar el producto del carrito
-                    $carrito->productos()->detach($producto->id);
-                    return redirect()->route('cart.index')->with('success', 'El producto ha sido eliminado del carrito.');
+                if ($carrito) {
+                    // Buscar el producto en el carrito del usuario
+                    $producto = $carrito->productos()->where('productos.id', $id)->first();
+                    if ($producto) {
+                        // Eliminar el producto del carrito
+                        $carrito->productos()->detach($producto->id);
+                        return redirect()->route('cart.index')->with('success', 'El producto ha sido eliminado del carrito.');
+                    } else {
+                        return redirect()->route('cart.index')->with('error', 'El producto no se encontró en el carrito.');
+                    }
                 } else {
-                    return redirect()->route('cart.index')->with('error', 'El producto no se encontró en el carrito.');
+                    return redirect()->route('cart.index')->with('error', 'No se encontró el carrito del usuario.');
                 }
             }else{
                 // Obtener el carrito de la sesión
@@ -495,9 +511,22 @@ class CartController extends Controller{
     //realizar pedido
     public function processOrder(Request $request){
         try {
+            // Obtener el usuario autenticado
+            $user = Auth::user();
+
+            // // Verificar si el campo address está relleno
+            if (empty($user->address)) {
+                return response()->json(['error' => 'El campo de dirección está vacío.'], 400);
+            }
+
+            // Verificar si el campo phone está relleno
+            if (empty($user->phone)) {
+                return response()->json(['error' => 'El campo de teléfono está vacío.'], 400);
+            }
+
             // Supongamos que obtienes los detalles del pedido de la solicitud
             $orderDetails = $request->all();
-
+            return redirect()->route('order-address')->with('carrito', $orderDetails);
             // Aquí tendrías lógica para procesar el pedido y obtener los detalles del pedido
 
             // Supongamos que tienes los detalles del pedido en las variables $userId y $orderDetails
@@ -513,10 +542,10 @@ class CartController extends Controller{
             // ]);
 
             // Envía un correo electrónico al usuario para notificarle que su pedido ha sido procesado
-            Mail::to(Auth::user()->email)->send(new OrderProcessed($orderDetails));
+            //Mail::to(Auth::user()->email)->send(new OrderProcessed($orderDetails));
 
             // Retorna una respuesta apropiada, como una redirección a una página de confirmación o un mensaje JSON
-            return response()->json(['message' => 'Pedido procesado correctamente.','hola'=>$orderDetails]);
+            //return response()->json(['message' => 'Pedido procesado correctamente.','hola'=>$orderDetails]);
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
             return response()->json(['error' => 'Error al procesar el pedido: ' . $e->getMessage()], 500);

@@ -142,9 +142,18 @@
                     {{ __('Cart') }}
                 </h2>
             </x-slot>
-            <div class="alert alert-success">
-                {{ session('error') }}
-            </div>
+            <!-- Mostrar mensajes flash -->
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
             <div class="mx-auto max-w-2xl px-4 py-10 md:px-6 md:!py-16 lg:max-w-7xl lg:px-8">
                 <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
                     <div class="container md:pt-4 md:p-8 mx-auto">
@@ -265,7 +274,7 @@
 
                                             <input type="hidden" name="total" id="total" value="0">
                                             <button class="w-full py-2 text-center text-white bg-blue-500 rounded-md shadow hover:bg-blue-600">
-                                                {{ __('Process order') }}
+                                                {{ __('Make the order') }}
                                             </button>
                                         
                                         {{-- <button id="clear-cart-btn">Vaciar Carrito</button> --}}

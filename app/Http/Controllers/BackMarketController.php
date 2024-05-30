@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\BackMarketApi;
+use App\Models\Producto;
 
 // use Illuminate\Support\Facades\Session;
 
@@ -29,7 +30,7 @@ class BackMarketController extends Controller{
             }
             
             // Utiliza el método apiget() de BackMarketApi para obtener los listados
-            // $listings = $this->backMarketApi->apiGet('/listings/detail?sku=iPhone+14+Plus+128GB+-+Blanco+Estrella+-+Libre+NEWBATTERY+COR');
+            //$listings = $this->backMarketApi->apiGet('/listings/detail?sku=iPhone 15 Pro 256GB - Titanio Blanco - Libre COR');
             $productosPorPaginas = $this->productosPorPaginas;
             $listings = $this->backMarketApi->apiGet('listings/?publication_state=2&page='.$numeroPagina.'&page-size='.$productosPorPaginas);
             // Devuelve los listados en una respuesta JSON
@@ -618,15 +619,132 @@ class BackMarketController extends Controller{
 
     //parte carrito
     public function mostrarUnProducto($sku){
-        try {
+        try {           
             // Hacer una solicitud a la API de BackMarket para obtener detalles del producto
-            $producto = $this->backMarketApi->apiGet('listings/detail?sku='.$sku);
+            $producto = $this->backMarketApi->apiGet("listings/detail?sku=".$sku);
             // Devolver los detalles del producto
             return $producto;
            
         } catch (\Exception $e) {
             // Manejar errores y devolver una respuesta vacía o un mensaje de error según corresponda
             return  null;
+        }
+    }
+
+    //Funcion para separar el sku por partes
+    public function separarSku($sku){
+        // Expresión regular para capturar las partes principales del SKU
+        $regex = '/^(.*?)\s*(\d+[MTG]B)\s-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*(\bLibre\b)?\s*(.*)/i';
+        $regex1 = '/\bNew\s*battery\b/i';
+        $regex2 = '/\b(\w+)\b$/i';
+
+        // Inicializar las variables fuera de los bloques if
+        $bateria = '';
+        $estado = '';
+        if (preg_match($regex, $sku, $matches)) {
+            // El nombre del teléfono
+            $nombre = isset($matches[1]) ? trim($matches[1]) : '';
+            // La capacidad
+            $capacidad = isset($matches[2]) ? trim($matches[2]) : '';
+            // El color
+            $color = isset($matches[3]) ? trim($matches[3]) : '';
+            // Libre
+            $libre = isset($matches[4]) ? trim($matches[4]) : '';
+            //echo $nombre,$capacidad,$color,$libre,$bateria,$estado;
+    
+            //sacar la bateria
+            if ((preg_match($regex1, $sku, $matches))) {
+                // Batería
+                $bateria = isset($matches[0]) ? trim($matches[0]) : '';
+            }
+            //sacar el estado
+            if((preg_match($regex2, $sku, $matches))){
+                // Batería
+                $estado = isset($matches[0]) ? trim($matches[0]) : '';
+            }
+            return [
+                'nombre' => $nombre, 'capacidad' => $capacidad, 'color' => $color, 'libre' => $libre, 'bateria' => $bateria, 'estado' => $estado
+                ];
+        } else {
+           // echo "<br>No se pudo encontrar coincidencia".$sku;
+            
+        } 
+    }
+
+    //Actualizar los productos en la BD
+    public function actualizarProductosBD(){
+        try {
+            $productosPorPaginas = $this->productosPorPaginas;
+            $Totalpaginas=1;
+            $allListings=[];
+            $skuPartesArray=[];
+            for ($x = 1; $x <= $Totalpaginas; $x++){
+                // Hacer una solicitud a la API de BackMarket para obtener detalles del producto
+                $listing = $this->backMarketApi->apiGet('listings/?page='.$x.'&page-size='.$productosPorPaginas);
+                $Totalpaginas = ceil($listing['count'] / $productosPorPaginas);
+                $allListings = array_merge($allListings, $listing['results']);
+            }
+            
+            // Guardar los productos en la base de datos
+            foreach ($allListings as $productoData) {
+                // Obtener el SKU del producto desde el detalle
+                $sku = $productoData['sku'];
+
+                // Separar el SKU en partes (nombre, capacidad, color, libre, batería, estado)
+                $partesSku = $this->separarSku($sku);
+                $skuPartesArray[] = $partesSku;
+                
+                
+
+                if (!empty($partesSku)) {
+                    if (strpos($partesSku['nombre'], 'iPhone') !== 0) {
+                        continue; // Si el nombre no comienza por "iPhone", omitir el producto y continuar con el siguiente
+                    }
+                    try {
+                        // Aquí puedes utilizar $partesSku para acceder a las partes del SKU
+                        $nombre = $partesSku['nombre'];
+                        $capacidad = $partesSku['capacidad'];
+                        $color = $partesSku['color'];
+                        $libre = $partesSku['libre'];
+                        $libre = isset($libre) && $libre != '' ? true : false;
+                        $bateria = $partesSku['bateria'];
+                        $estado = $partesSku['estado'];
+                        //separar en la capacidad los numeros de las palabras
+                        // if($capacidad){
+                        //     $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
+                        // }
+                        // Buscar el producto en la base de datos basándose en los valores obtenidos del SKU
+                        
+                        Producto::updateOrCreate(
+                            [
+                                'nombre' => $nombre,
+                                'capacidad' => $capacidad,
+                                'descripcion' => $productoData['comment'],
+                                'precioA' => $productoData['price'],
+                                'precioD' => $productoData['price']*0.95,
+                                'color' => $color,
+                                'libre' => $libre,
+                                'bateria' => $bateria,
+                                'estado' => $estado,
+                                'stock' => $productoData['quantity']
+                            ]
+                        );
+                    }  catch (\Exception $e) {
+                    }
+                }
+            }
+
+            $response = [
+                'productosAPI' => $allListings,
+                'Totalproductos' => $listing['count'],
+                'productosPorPaginas' => $productosPorPaginas
+            ];
+            // Devolver la respuesta JSON
+            return response()->json($response);
+           
+        } catch (\Exception $e) {
+            // Manejar errores y devolver una respuesta vacía o un mensaje de error según corresponda
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

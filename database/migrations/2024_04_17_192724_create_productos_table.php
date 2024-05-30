@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->decimal('precioD',8,2);
             $table->string('color',50);
             $table->integer('stock');
+            $table->timestamps();
         });
     }
 

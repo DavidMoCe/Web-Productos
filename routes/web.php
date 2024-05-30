@@ -54,6 +54,18 @@ Route::get('/cart/remove/{sku}', [CartController::class, 'remove'])->name('cart.
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::post('/cart/processOrder', [CartController::class, 'processOrder'])->middleware(['auth'])->name('cart.processOrder');
 
+//mostrar pagina de rellenar direccion
+Route::get('/order/shipping-address', function () {
+    return view('orders.shipping-address');
+})->name('order-address');
+
+
+
+//Actualizar productos en la BD
+Route::get('/actualizarProductosBD',[BackMarketController::class,'actualizarProductosBD'])->name('actualizarProductos');
+
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
