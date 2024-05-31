@@ -634,7 +634,7 @@ class BackMarketController extends Controller{
     //Funcion para separar el sku por partes
     public function separarSku($sku){
         // Expresión regular para capturar las partes principales del SKU
-        $regex = '/^(.*?)\s*(\d+[MTG]B)\s-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*(\bLibre\b)?\s*(.*)/i';
+        $regex = '/^(.*?)\s*(\d+\s*[MTG]B)\s*-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*(?:-\s*(\bLibre\b))?(\s*-\s*)?$/i';
         $regex1 = '/\bNew\s*battery\b/i';
         $regex2 = '/\b(\w+)\b$/i';
 

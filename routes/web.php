@@ -8,7 +8,6 @@ use App\Http\Controllers\ProductoController;//para obtener productos de la bd
 use App\Http\Controllers\BackMarketController;//para utilizar la api
 use App\Http\Middleware\AdminMiddleware;//para limitar el acceso del usuario
 use App\Http\Controllers\CartController;//para manejar las funciones del carrito
-//use DragonCode\Contracts\Cashier\Http\Request;
 use Illuminate\Http\Request;
 
 // Route::get('/', function () {
@@ -52,12 +51,8 @@ Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{sku}', [CartController::class, 'update'])->name('cart.update');
 Route::get('/cart/remove/{sku}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::post('/order/shipping-address', [CartController::class, 'addAddress'])->middleware(['auth'])->name('order-address');
 Route::post('/cart/processOrder', [CartController::class, 'processOrder'])->middleware(['auth'])->name('cart.processOrder');
-
-//mostrar pagina de rellenar direccion
-Route::get('/order/shipping-address', function () {
-    return view('orders.shipping-address');
-})->name('order-address');
 
 
 

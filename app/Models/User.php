@@ -19,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
-        'name','email', 'phone', 'address', 'password',
+        'name', 'lastname', 'email', 'phone', 'password',
     ];
 
     /**
@@ -52,7 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail
         // Relación "hasMany": Un usuario puede tener muchos pedidos
         // Se especifica el nombre del modelo relacionado (Pedido),
         // el nombre de la clave externa en el modelo relacionado (usuario_id),
-        // y el nombre de la clave primaria en el modelo actual (CodUsuario)
+        // y el nombre de la clave primaria en el modelo actual (id) aunque no hace falta este segundo campo si es "id"
         return $this->hasMany(Pedidos::class, 'usuario_id','id');
     }
 
@@ -67,4 +67,35 @@ class User extends Authenticatable implements MustVerifyEmail
         // y el nombre de la clave primaria en el modelo actual (id)
         return $this->hasOne(Carrito::class, 'usuario_id', 'id');
     }
+
+    public function direccionEnvio(): HasOne{
+        return $this->hasOne(Envio::class, 'user_id');
+    }
+
+    public function direccionFacturacion(): HasOne{
+        return $this->hasOne(Facturacion::class, 'user_id');
+    }
+
+    /**
+     * Get the shipping information associated with the user.
+     */
+    public function envio(): HasOne{
+        return $this->hasOne(Envio::class, 'user_id', 'id');
+    }
+    
+
+     /**
+     * Get the password reset tokens associated with the user.
+     */
+    public function passwordResetTokens(): HasMany{
+        return $this->hasMany(PasswordResetToken::class, 'email', 'email');
+    }
+
+    /**
+     * Get the sessions associated with the user.
+     */
+    public function sessions(): HasMany{
+        return $this->hasMany(Session::class, 'user_id');
+    }
+
 }

@@ -26,7 +26,7 @@ class CartController extends Controller{
     //Funcion para separar el sku por partes
     public function separarSku($sku){
         // Expresión regular para capturar las partes principales del SKU
-        $regex = '/^(.*?)\s*(\d+[MTG]B)\s-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*-\s*(\bLibre\b)?\s*(.*)/i';
+        $regex = '/^(.*?)\s*(\d+\s*[MTG]B)\s*-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*(?:-\s*(\bLibre\b))?(\s*-\s*)?$/i';
         $regex1 = '/\bNew\s*battery\b/i';
         $regex2 = '/\b(\w+)\b$/i';
 
@@ -506,6 +506,33 @@ class CartController extends Controller{
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente
             abort(500, 'Error al eliminar el carrito: ' . $e->getMessage());
+        }
+    }
+
+    //anadir direccion de envio
+    public function addAddress(Request $request){
+        try {
+            // Obtener el usuario autenticado
+            $user = Auth::user();
+
+            // Obtener la dirección del usuario autenticado
+            $address = $user->address;
+            $phone = $user->phone;
+            
+            // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
+            $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
+            
+            return view('orders.shipping-address', compact('address', 'phone','carrito'));
+
+            // Supongamos que obtienes los detalles del pedido de la solicitud
+            //$orderDetails = $request->all();
+            //return redirect()->route('order-address')->with('carrito', $orderDetails);
+
+            // Retorna una respuesta apropiada, como una redirección a una página de confirmación o un mensaje JSON
+            //return response()->json(['message' => 'Pedido procesado correctamente.','hola'=>$orderDetails]);
+        } catch (\Exception $e) {
+            // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
+            return response()->json(['error' => 'Error al procesar el pedido: ' . $e->getMessage()], 500);
         }
     }
     //realizar pedido

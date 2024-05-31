@@ -26,6 +26,20 @@ class Pedidos extends Model
     }
 
     /**
+     * Get the shipping address associated with the order.
+     */
+    public function direccionEnvio(): BelongsTo{
+        return $this->belongsTo(Envio::class, 'envio_id');
+    }
+
+    /**
+     * Get the billing address associated with the order.
+     */
+    public function direccionFacturacion(): BelongsTo{
+        return $this->belongsTo(Facturacion::class, 'facturacion_id');
+    }
+
+    /**
      * The products that belong to the pedido.
      */
     public function productos(): BelongsToMany

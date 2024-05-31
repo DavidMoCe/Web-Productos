@@ -159,7 +159,7 @@
                     <div class="container md:pt-4 md:p-8 mx-auto">
                         <div class="w-full overflow-x-auto">
                             @if (count($cookieCart) > 0)
-                                <form action="{{ route('cart.processOrder') }}" method="POST">
+                                <form action="{{ route('order-address') }}" method="POST">
                                     @csrf
                                     @foreach ($cookieCart as $producto)
                             {{--------------------------------------------------------------------------------------------------------------------------------------------------}}
