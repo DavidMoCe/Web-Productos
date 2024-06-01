@@ -51,7 +51,8 @@ Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{sku}', [CartController::class, 'update'])->name('cart.update');
 Route::get('/cart/remove/{sku}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
-Route::post('/order/shipping-address', [CartController::class, 'addAddress'])->middleware(['auth'])->name('order-address');
+Route::post('/order/shipping-address', [CartController::class, 'addAddress_shipping'])->middleware(['auth'])->name('shipping-address');
+Route::post('/order/billing-address', [CartController::class, 'submitShippingAddressForm'])->middleware(['auth'])->name('billing-address');
 Route::post('/cart/processOrder', [CartController::class, 'processOrder'])->middleware(['auth'])->name('cart.processOrder');
 
 

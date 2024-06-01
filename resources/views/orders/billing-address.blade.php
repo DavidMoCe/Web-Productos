@@ -47,7 +47,7 @@
                             <form action="" method="POST">
                                 @csrf
                                 <div class="mb-3 font-bold text-xl">
-                                    <h3>Dirección de envío</h3>
+                                    <h3>Dirección de facturación</h3>
                                 </div>
                                 <div class="form-group">
                                     {{-- <div class="md:min-w-[20rem] md:flex-1 relative">
@@ -69,14 +69,14 @@
 
                                     <!-- Mostrar los campos nombre y apellido del usuario logueado -->
                                     <label for="name">Nombre:</label>
-                                    <input type="text" id="name" name="name" class="form-control mt-4" value="{{ old('name', $name) }}" required>
+                                    <input type="text" id="name" name="name" class="form-control mt-4" value="{{ old('name', Auth::user()->name ?? '') }}" required>
                                     <br>
                                     <label for="lastname">Apellido:</label>
-                                    <input type="text" id="lastname" name="lastname" class="form-control mt-4" value="{{ old('lastname', $lastname) }}" required>
+                                    <input type="text" id="lastname" name="lastname" class="form-control mt-4" value="{{ old('lastname', Auth::user()->lastname ?? '') }}" required>
                                     <br>
                                     <!-- Mostrar los campos direccion_1 del envío del usuario logueado -->
                                     <label for="address">Dirección:</label>
-                                    <input type="text" id="address" name="address" class="form-control mt-4" value="{{ old('address', $direccion_1) }}" required>
+                                    <input type="text" id="address" name="address" class="form-control mt-4" value="{{ old('address', Auth::user()->direccionEnvio->direccion_1 ?? '') }}" required>
                                     <br>
                                     <!-- Mostrar los campos direccion_2 del envío del usuario logueado -->
                                     <label for="address_2">Dirección 2:</label>

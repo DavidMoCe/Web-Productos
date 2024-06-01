@@ -13,16 +13,14 @@ return new class extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('usuario_id')->constrained('users');
-            $table->foreignId('envio_id')->constrained('envios');
-           // $table->foreignId('facturacion_id')->constrained('facturaciones');
+            //$table->foreignId('usuario_id')->constrained('users');
+            //$table->foreignId('envio_id')->constrained('envios');
+            // $table->foreignId('facturacion_id')->constrained('facturaciones');
             $table->dateTime('fecha');
             $table->boolean('enviado')->default(false);
             $table->timestamps();
         });
 
-        // Habilitar las restricciones de clave foránea de forma diferida
-        Schema::enableForeignKeyConstraints();
     }
 
     /**
@@ -30,7 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('pedidos');
     }
 };
