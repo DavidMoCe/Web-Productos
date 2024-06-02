@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Carrito;
 use App\Models\Producto;
+use App\Models\Envio;
 use Exception;
 use Illuminate\Support\Facades\Cookie;
 
@@ -522,11 +523,17 @@ class CartController extends Controller{
             $direccionEnvio = $user->direccionEnvio;
             // Obtener la dirección_1 del usuario autenticado, si existe
             $direccion_1 = $direccionEnvio ? $direccionEnvio->direccion_1 : '';
+            $direccion_2 = $direccionEnvio ? $direccionEnvio->direccion_2 : '';
+            $pais = $direccionEnvio ? $direccionEnvio->pais : '';
+            $ciudad = $direccionEnvio ? $direccionEnvio->ciudad : '';
+            $codigo_postal = $direccionEnvio ? $direccionEnvio->codigo_postal : '';
+            $empresa = $direccionEnvio ? $direccionEnvio->empresa : '';
+            $telefono = $direccionEnvio ? $direccionEnvio->telefono : '';
             
             // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
             $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
             
-            return view('orders.shipping-address', compact('name', 'lastname','direccion_1','carrito'));
+            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono','carrito'));
 
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
@@ -538,22 +545,54 @@ class CartController extends Controller{
     public function submitShippingAddressForm(Request $request){
         try {
             // Validar los datos del formulario
-            $request->validate([
+            $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
+                'lastname' => 'required|string|max:255', // Puede que este campo no esté en la tabla 'envios'
                 'address' => 'required|string|max:255',
+                'address_2' => 'nullable|string|max:255',
+                'company' => 'nullable|string|max:255',
                 'city' => 'required|string|max:255',
                 'postal_code' => 'required|string|max:10',
                 'country' => 'required|string|max:255',
+                'phone' => 'required|string|max:20',
             ]);
 
-            // Procesar los datos (guardar en la base de datos, enviar un correo, etc.)
-            // ...
+            // Crear un nuevo registro en la tabla envios
+            Envio::updateOrCreate([
+                'user_id' => auth()->id(),
+                'pais' => $validatedData['country'],
+                'direccion_1' => $validatedData['address'],
+                'direccion_2' => $validatedData['address_2'] ?? null,
+                'ciudad' => $validatedData['city'],
+                'codigo_postal' => $validatedData['postal_code'],
+                'empresa' => $validatedData['company'] ?? null,
+                'telefono' => $validatedData['phone'],
+            ]);
 
-            // Redirigir a la función que muestra la vista de dirección de facturación
-            //return redirect()->action([CarController::class, 'showBillingAddressForm']);
+            // Obtener el usuario autenticado
+            $user = Auth::user();
+
+            // Obtener los datos del usuario autenticado
+            $name = $user->name ?? '';
+            $lastname = $user->lastname ?? '';
+            //accedemos a la funcion direccion envio del modelo user.php
+            $direccionFacturacion = $user->direccionFacturacion;
+            // Obtener la dirección_1 del usuario autenticado, si existe
+            $direccion_1 = $direccionFacturacion ? $direccionFacturacion->direccion_1 : '';
+            $direccion_2 = $direccionFacturacion ? $direccionFacturacion->direccion_2 : '';
+            $pais = $direccionFacturacion ? $direccionFacturacion->pais : '';
+            $ciudad = $direccionFacturacion ? $direccionFacturacion->ciudad : '';
+            $codigo_postal = $direccionFacturacion ? $direccionFacturacion->codigo_postal : '';
+            $empresa = $direccionFacturacion ? $direccionFacturacion->empresa : '';
+            
+            // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
+            $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
+
+            // Redirigir a la función que muestra la vista de dirección de facturación o a cualquier otra página
+            return view('orders.billing-address', compact('name', 'lastname','pais','direccion_1','direccion_1','direccion_2','ciudad','codigo_postal','empresa','carrito'))->with('success', 'Dirección de envío guardada con éxito.');
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
-            return response()->json(['error' => 'Error al procesar el pedido: ' . $e->getMessage()], 500);
+            return back()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
         }
     }
 

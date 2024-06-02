@@ -1,4 +1,4 @@
-{{-- <x-mail::message>
+<x-mail::message>
 # Introduction
 
 The body of your message.
@@ -9,9 +9,9 @@ Button Text
 
 Thanks,<br>
 {{ config('app.name') }}
-</x-mail::message> --}}
+</x-mail::message>
 
-{{-- @component('mail::message')
+@component('mail::message')
     # Order Received
     
 
@@ -31,9 +31,9 @@ Thanks,<br>
     Thank you for shopping with us!
 
     Thanks,{{ config('app.name') }}
-@endcomponent --}}
+@endcomponent
 
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -91,5 +91,5 @@ Thanks,<br>
         </div>
     </div>
 </body>
-</html>
+</html> --}}
 

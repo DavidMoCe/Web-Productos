@@ -69,39 +69,34 @@
 
                                     <!-- Mostrar los campos nombre y apellido del usuario logueado -->
                                     <label for="name">Nombre:</label>
-                                    <input type="text" id="name" name="name" class="form-control mt-4" value="{{ old('name', Auth::user()->name ?? '') }}" required>
+                                    <input type="text" id="name" name="name" class="form-control mt-4" value="{{ old('name', $name) }}" required>
                                     <br>
                                     <label for="lastname">Apellido:</label>
-                                    <input type="text" id="lastname" name="lastname" class="form-control mt-4" value="{{ old('lastname', Auth::user()->lastname ?? '') }}" required>
+                                    <input type="text" id="lastname" name="lastname" class="form-control mt-4" value="{{ old('lastname', $lastname) }}" required>
                                     <br>
                                     <!-- Mostrar los campos direccion_1 del envío del usuario logueado -->
                                     <label for="address">Dirección:</label>
-                                    <input type="text" id="address" name="address" class="form-control mt-4" value="{{ old('address', Auth::user()->direccionEnvio->direccion_1 ?? '') }}" required>
+                                    <input type="text" id="address" name="address" class="form-control mt-4" value="{{ old('address', $direccion_1) }}" required>
                                     <br>
                                     <!-- Mostrar los campos direccion_2 del envío del usuario logueado -->
                                     <label for="address_2">Dirección 2:</label>
-                                    <input type="text" id="address_2" name="address_2" class="form-control mt-4" value="{{ old('address_2', Auth::user()->direccionEnvio->direccion_2 ?? '') }}">
+                                    <input type="text" id="address_2" name="address_2" class="form-control mt-4" value="{{ old('address_2', $direccion_2) }}">
                                     <br>
                                     <!-- Mostrar el campo empresa del envío del usuario logueado -->
                                     <label for="company">Empresa:</label>
-                                    <input type="text" id="company" name="company" class="form-control mt-4" value="{{ old('company', Auth::user()->direccionEnvio->empresa ?? '') }}">
+                                    <input type="text" id="company" name="company" class="form-control mt-4" value="{{ old('company', $empresa) }}">
                                     <br>
                                     <!-- Mostrar los campos ciudad del envío del usuario logueado -->
                                     <label for="city">Ciudad:</label>
-                                    <input type="text" id="city" name="city" class="form-control mt-4" value="{{ old('city', Auth::user()->direccionEnvio->ciudad ?? '') }}" required>
+                                    <input type="text" id="city" name="city" class="form-control mt-4" value="{{ old('city', $ciudad) }}" required>
                                     <br>
                                     <!-- Mostrar los campos código postal del envío del usuario logueado -->
                                     <label for="postal_code">Código Postal:</label>
-                                    <input type="text" id="postal_code" name="postal_code" class="form-control mt-4" value="{{ old('postal_code', Auth::user()->direccionEnvio->codigo_postal ?? '') }}" required>
+                                    <input type="text" id="postal_code" name="postal_code" class="form-control mt-4" value="{{ old('postal_code', $codigo_postal) }}" required>
                                     <br>
                                     <!-- Mostrar los campos país del envío del usuario logueado -->
                                     <label for="country">País:</label>
-                                    <input type="text" id="country" name="country" class="form-control mt-4" value="{{ old('country', Auth::user()->direccionEnvio->pais ?? '') }}" required>
-                                    <br>
-                                    <!-- Mostrar el campo teléfono del envío del usuario logueado -->
-                                    <label for="phone">Teléfono:</label>
-                                    <input type="text" id="phone" name="phone" class="form-control mt-4" value="{{ old('phone', Auth::user()->direccionEnvio->telefono ?? '') }}" required>
-
+                                    <input type="text" id="country" name="country" class="form-control mt-4" value="{{ old('country', $pais) }}" required>
                             
                                     <!-- Mostrar el carrito -->
                                     <h3>Contenido del carrito:</h3>

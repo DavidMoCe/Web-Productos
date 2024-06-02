@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Facturacion extends Model
 {
     use HasFactory;
+    //para evitar problemas con que laravel asuma el nombre de la tabla (generalmente en ingles, plural y minusculas)
+    //especificamos el nombre de la tabla
+    protected $table = 'facturaciones';
 
     protected $fillable = [
         'user_id',
