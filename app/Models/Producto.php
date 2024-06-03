@@ -24,7 +24,7 @@ class Producto extends Model
      */
     public function pedidos(): BelongsToMany
     {
-        return $this->belongsToMany(Pedidos::class, 'pedidos_productos', 'producto_id', 'pedido_id')
+        return $this->belongsToMany(Pedido::class, 'pedidos_productos', 'producto_id', 'pedido_id')
                     ->withPivot('unidades') // Incluir el campo "unidades" de la tabla pivote
                     ->withTimestamps();
     }

@@ -29,6 +29,6 @@ class Envio extends Model
     }
 
     public function pedido(){
-        return $this->hasOne(Pedidos::class, 'envio_id');
+        return $this->hasOne(Pedido::class, 'envio_id');
     }
 }

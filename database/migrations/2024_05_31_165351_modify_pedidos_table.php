@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pedidos', function (Blueprint $table) {
-            $table->foreignId('usuario_id')->constrained('users');
-            $table->foreignId('envio_id')->constrained('envios');
-            $table->foreignId('facturacion_id')->constrained('facturaciones');
+            $table->foreign('usuario_id')->references('id')->on('users');
+            $table->foreign('envio_id')->references('id')->on('envios');
+            $table->foreign('facturacion_id')->references('id')->on('facturaciones');
         });
     }
 

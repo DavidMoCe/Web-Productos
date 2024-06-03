@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Pedidos extends Model
+class Pedido extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['fecha', 'enviado', 'usuario_id'];
+    protected $fillable = ['usuario_id', 'envio_id', 'facturacion_id','metodoPago','enviado'];
     /**
      * Get the user that owns the pedido.
      */

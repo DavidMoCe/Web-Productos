@@ -47,13 +47,13 @@ class User extends Authenticatable implements MustVerifyEmail
      /**
      * Get the pedidos associated with the user.
      */
-    public function pedidos(): HasMany
+    public function pedido(): HasMany
     {
         // Relación "hasMany": Un usuario puede tener muchos pedidos
         // Se especifica el nombre del modelo relacionado (Pedido),
         // el nombre de la clave externa en el modelo relacionado (usuario_id),
         // y el nombre de la clave primaria en el modelo actual (id) aunque no hace falta este segundo campo si es "id"
-        return $this->hasMany(Pedidos::class, 'usuario_id','id');
+        return $this->hasMany(Pedido::class, 'usuario_id','id');
     }
 
      /**

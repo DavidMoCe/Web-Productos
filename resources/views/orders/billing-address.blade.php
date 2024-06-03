@@ -14,8 +14,6 @@
 
         <!-- <link href="css/styles.css" rel="stylesheet" /> -->
 
-        @vite('resources/css/app.css')
-
         <!-- <link href="{!! asset('css/styles.css') !!}" rel="stylesheet" /> -->
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -40,11 +38,11 @@
                 </div>
             @endif
             <div class="mx-auto max-w-2xl px-4 py-10 md:px-6 md:!py-16 lg:max-w-7xl lg:px-8">
-                <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
+                <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
                     <div class="container md:pt-4 md:p-8 mx-auto">
                         <div class="w-full overflow-x-auto">
                             {{-- <form action="{{ route('process.shipping') }}" method="POST"> --}}
-                            <form action="" method="POST">
+                            <form action="{{ route('payment') }}" method="POST">
                                 @csrf
                                 <div class="mb-3 font-bold text-xl">
                                     <h3>Dirección de facturación</h3>
@@ -74,29 +72,33 @@
                                     <label for="lastname">Apellido:</label>
                                     <input type="text" id="lastname" name="lastname" class="form-control mt-4" value="{{ old('lastname', $lastname) }}" required>
                                     <br>
-                                    <!-- Mostrar los campos direccion_1 del envío del usuario logueado -->
+                                    <!-- Mostrar los campos direccion_1 de la factura del usuario logueado -->
                                     <label for="address">Dirección:</label>
                                     <input type="text" id="address" name="address" class="form-control mt-4" value="{{ old('address', $direccion_1) }}" required>
                                     <br>
-                                    <!-- Mostrar los campos direccion_2 del envío del usuario logueado -->
+                                    <!-- Mostrar los campos direccion_2 de la factura del usuario logueado -->
                                     <label for="address_2">Dirección 2:</label>
                                     <input type="text" id="address_2" name="address_2" class="form-control mt-4" value="{{ old('address_2', $direccion_2) }}">
                                     <br>
-                                    <!-- Mostrar el campo empresa del envío del usuario logueado -->
+                                    <!-- Mostrar el campo empresa de la factura del usuario logueado -->
                                     <label for="company">Empresa:</label>
                                     <input type="text" id="company" name="company" class="form-control mt-4" value="{{ old('company', $empresa) }}">
                                     <br>
-                                    <!-- Mostrar los campos ciudad del envío del usuario logueado -->
+                                    <!-- Mostrar los campos ciudad de la factura del usuario logueado -->
                                     <label for="city">Ciudad:</label>
                                     <input type="text" id="city" name="city" class="form-control mt-4" value="{{ old('city', $ciudad) }}" required>
                                     <br>
-                                    <!-- Mostrar los campos código postal del envío del usuario logueado -->
+                                    <!-- Mostrar los campos código postal de la factura del usuario logueado -->
                                     <label for="postal_code">Código Postal:</label>
                                     <input type="text" id="postal_code" name="postal_code" class="form-control mt-4" value="{{ old('postal_code', $codigo_postal) }}" required>
                                     <br>
-                                    <!-- Mostrar los campos país del envío del usuario logueado -->
+                                    <!-- Mostrar los campos país de la factura del usuario logueado -->
                                     <label for="country">País:</label>
                                     <input type="text" id="country" name="country" class="form-control mt-4" value="{{ old('country', $pais) }}" required>
+                                    <br>
+                                    <!-- Mostrar los campos nif_dni de la factura del usuario logueado -->
+                                    <label for="nif_dni">NIF/DNI:</label>
+                                    <input type="text" id="nif_dni" name="nif_dni" class="form-control mt-4" value="{{ old('nif_dni', $nif_dni) }}" required>
                             
                                     <!-- Mostrar el carrito -->
                                     <h3>Contenido del carrito:</h3>

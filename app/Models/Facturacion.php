@@ -19,7 +19,8 @@ class Facturacion extends Model
         'direccion_2',
         'ciudad',
         'codigo_postal',
-        'empresa'      
+        'empresa',
+        'nif_dni'     
     ];
 
     /**
@@ -31,6 +32,6 @@ class Facturacion extends Model
     }
 
     public function pedido(){
-        return $this->hasOne(Pedidos::class, 'facturacion_id');
+        return $this->hasOne(Pedido::class, 'facturacion_id');
     }
 }

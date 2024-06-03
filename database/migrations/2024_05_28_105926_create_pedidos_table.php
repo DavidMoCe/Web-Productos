@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
-            //$table->foreignId('usuario_id')->constrained('users');
-            //$table->foreignId('envio_id')->constrained('envios');
-            // $table->foreignId('facturacion_id')->constrained('facturaciones');
-            $table->dateTime('fecha');
+            $table->unsignedBigInteger('usuario_id');
+            $table->unsignedBigInteger('envio_id');
+            $table->unsignedBigInteger('facturacion_id');
+            //$table->dateTime('fecha');
+            $table->string('metodoPago');
             $table->boolean('enviado')->default(false);
             $table->timestamps();
         });

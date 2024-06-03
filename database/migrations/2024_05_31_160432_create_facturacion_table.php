@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('ciudad');
             $table->string('codigo_postal');
             $table->string('empresa')->nullable();
+            $table->string('nif_dni');
             $table->timestamps();
         });
     }

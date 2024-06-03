@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Carrito;
 use App\Models\Producto;
 use App\Models\Envio;
+use App\Models\Facturacion;
+use App\Models\Pedido;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Cookie;
 
@@ -533,11 +536,15 @@ class CartController extends Controller{
             // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
             $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
             
-            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono','carrito'));
+            if($carrito==null){
+                return redirect()->route('products');
+            }
+
+            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono','carrito'));
 
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
-            return response()->json(['error' => 'Error al procesar el pedido: ' . $e->getMessage()], 500);
+            return back()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
         }
     }
 
@@ -557,8 +564,13 @@ class CartController extends Controller{
                 'phone' => 'required|string|max:20',
             ]);
 
-            // Crear un nuevo registro en la tabla envios
-            Envio::updateOrCreate([
+            // Definir los criterios de búsqueda
+            $criterio = [
+                'user_id' => auth()->id(),
+            ];
+
+           // Definir los datos a actualizar o crear
+           $updateData = [
                 'user_id' => auth()->id(),
                 'pais' => $validatedData['country'],
                 'direccion_1' => $validatedData['address'],
@@ -567,7 +579,11 @@ class CartController extends Controller{
                 'codigo_postal' => $validatedData['postal_code'],
                 'empresa' => $validatedData['company'] ?? null,
                 'telefono' => $validatedData['phone'],
-            ]);
+                'updated_at' => Carbon::now(),
+            ];
+
+            // Crear un nuevo registro en la tabla envios o actualizar uno existente
+            Envio::updateOrCreate($criterio, $updateData);
 
             // Obtener el usuario autenticado
             $user = Auth::user();
@@ -584,12 +600,68 @@ class CartController extends Controller{
             $ciudad = $direccionFacturacion ? $direccionFacturacion->ciudad : '';
             $codigo_postal = $direccionFacturacion ? $direccionFacturacion->codigo_postal : '';
             $empresa = $direccionFacturacion ? $direccionFacturacion->empresa : '';
+            $nif_dni = $direccionFacturacion ? $direccionFacturacion->nif_dni : '';
             
             // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
             $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
 
+            if($carrito==null){
+                return redirect()->route('products');
+
+            }
             // Redirigir a la función que muestra la vista de dirección de facturación o a cualquier otra página
-            return view('orders.billing-address', compact('name', 'lastname','pais','direccion_1','direccion_1','direccion_2','ciudad','codigo_postal','empresa','carrito'))->with('success', 'Dirección de envío guardada con éxito.');
+            return view('orders.billing-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','nif_dni','carrito'))->with('success', 'Dirección de envío guardada con éxito.');
+        } catch (\Exception $e) {
+            // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
+            return back()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
+        }
+    }
+
+
+    //validar y guardar los datos de la direccion de envio y mostrar la de facturacion
+    public function submitBillingAddressForm(Request $request){
+        try {
+            // Validar los datos del formulario
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'lastname' => 'required|string|max:255', // Puede que este campo no esté en la tabla 'envios'
+                'address' => 'required|string|max:255',
+                'address_2' => 'nullable|string|max:255',
+                'company' => 'nullable|string|max:255',
+                'city' => 'required|string|max:255',
+                'postal_code' => 'required|string|max:10',
+                'country' => 'required|string|max:255',
+                'nif_dni' => 'required|string|max:20',
+            ]);
+
+            // Definir los criterios de búsqueda
+            $criterio = [
+                'user_id' => auth()->id(),
+            ];
+
+            // Definir los datos a actualizar o crear
+            $updateData = [
+                'pais' => $validatedData['country'],
+                'direccion_1' => $validatedData['address'],
+                'direccion_2' => $validatedData['address_2'] ?? null,
+                'ciudad' => $validatedData['city'],
+                'codigo_postal' => $validatedData['postal_code'],
+                'empresa' => $validatedData['company'] ?? null,
+                'nif_dni' => $validatedData['nif_dni'],
+                'updated_at' => Carbon::now(),
+            ];
+
+            // Crear un nuevo registro en la tabla envios o actualizar uno existente
+            Facturacion::updateOrCreate($criterio, $updateData);
+
+            // Obtener el usuario autenticado
+            $user = Auth::user();
+
+            // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
+            $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
+
+            // Redirigir a la función que muestra la vista de dirección de facturación o a cualquier otra página
+            return view('orders.payment', compact('carrito'))->with('success', 'Dirección de facturacion guardada con éxito.');
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
             return back()->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
@@ -600,44 +672,66 @@ class CartController extends Controller{
     //realizar pedido
     public function processOrder(Request $request){
         try {
+
             // Obtener el usuario autenticado
             $user = Auth::user();
 
-            // // Verificar si el campo address está relleno
-            if (empty($user->address)) {
-                return response()->json(['error' => 'El campo de dirección está vacío.'], 400);
+            $userId = $user->id;
+            $envioId = $user->direccionEnvio->id;
+            $facturacionId = $user->direccionFacturacion->id;
+            $metodoPago = $request->input('payment_method');
+
+            // Obtener los productos del carrito del usuario
+            $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
+
+            $pedido= Pedido::create([
+                'usuario_id' => $userId,
+                'envio_id' => $envioId,
+                'facturacion_id' => $facturacionId,
+                'metodoPago' => $metodoPago,
+            ]);
+
+            // Asociar los productos del carrito al pedido en la tabla pedidos_productos
+            if ($carrito && $carrito->productos) {
+                foreach ($carrito->productos as $producto) {
+                    // Asocia cada producto del carrito al pedido en la tabla pedidos_productos
+                    // Utiliza el método attach para agregar una entrada en la tabla pivote (pedidos_productos)
+                    // Se pasa el ID del producto y la cantidad desde la relación pivot
+                    $pedido->productos()->attach($producto->id, ['unidades' => $producto->pivot->unidades]);
+                }
             }
 
-            // Verificar si el campo phone está relleno
-            if (empty($user->phone)) {
-                return response()->json(['error' => 'El campo de teléfono está vacío.'], 400);
-            }
+            // Eliminar el carrito del usuario
+            $carrito->delete();
 
-            // Supongamos que obtienes los detalles del pedido de la solicitud
-            $orderDetails = $request->all();
-            return redirect()->route('order-address')->with('carrito', $orderDetails);
-            // Aquí tendrías lógica para procesar el pedido y obtener los detalles del pedido
+            // Guardar detalles del pedido en la sesión para mostrarlos en la página de confirmación
+            $orderDetails = [
+                'order_number' => $pedido->id,
+                'order_date' => now()->format('d/m/Y H:i'),
+                'payment_method' => $metodoPago,
+                'products' => $carrito->productos->map(function ($product) {
+                    return [
+                        'name' => $product->nombre,
+                        'quantity' => $product->pivot->unidades,
+                        'price' => $product->precioD,
+                    ];
+                })->toArray()
+            ];
+            session(['order_details' => $orderDetails]);
 
-            // Supongamos que tienes los detalles del pedido en las variables $userId y $orderDetails
-
-            // Insertar los detalles del pedido en la base de datos
-            // DB::table('orders')->insert([
-            //     'user_id' => $userId, // Asignar el ID del usuario actual
-            //     // Asignar otros detalles del pedido, como los productos, el total, etc.
-            //     // 'total' => $orderDetails['total'],
-            //     // Otros detalles del pedido
-            //     'created_at' => now(), // Opcional: agregar la fecha y hora actual
-            //     'updated_at' => now(), // Opcional: agregar la fecha y hora actual
-            // ]);
-
+            // Redirigir a la página de confirmación del pedido
+            return redirect()->route('orders.confirmation')->with('success', 'Pedido procesado con éxito.');
+            
+           
             // Envía un correo electrónico al usuario para notificarle que su pedido ha sido procesado
             //Mail::to(Auth::user()->email)->send(new OrderProcessed($orderDetails));
 
-            // Retorna una respuesta apropiada, como una redirección a una página de confirmación o un mensaje JSON
-            //return response()->json(['message' => 'Pedido procesado correctamente.','hola'=>$orderDetails]);
+            // Retorna una respuesta
+           // return view('orders.confirmation', compact('carrito'))->with('success', 'Dirección de facturacion guardada con éxito.');
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
-            return response()->json(['error' => 'Error al procesar el pedido: ' . $e->getMessage()], 500);
+            return back()->with('error', 'Error al procesar el pedido: ');
         }
     }
+    
 }
