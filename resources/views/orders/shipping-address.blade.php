@@ -44,8 +44,8 @@
                             {{-- <form action="{{ route('process.shipping') }}" method="POST"> --}}
                             <form action="{{ route('billing-address') }}" method="POST">
                                 @csrf
-                                <div class="mb-3 font-bold text-xl">
-                                    <h3>Dirección de envío</h3>
+                                <div class="mb-6">
+                                    <h3 class="text-2xl font-bold text-gray-700">Dirección de envío</h3>
                                 </div>
                                 <div class="form-group">
                                     {{-- <div class="md:min-w-[20rem] md:flex-1 relative">
@@ -107,51 +107,59 @@
 
 
                                     <!-- Mostrar los campos nombre y apellido del usuario logueado -->
-                                    <label for="name">Nombre:</label>
-                                    <input type="text" id="name" name="name" class="form-control mt-4" value="{{ old('name', $name) }}" required>
-                                    <br>
-                                    <label for="lastname">Apellido:</label>
-                                    <input type="text" id="lastname" name="lastname" class="form-control mt-4" value="{{ old('lastname', $lastname) }}" required>
-                                    <br>
-                                    <!-- Mostrar los campos direccion_1 del envío del usuario logueado -->
-                                    <label for="address">Dirección:</label>
-                                    <input type="text" id="address" name="address" class="form-control mt-4" value="{{ old('address', $direccion_1) }}" required>
-                                    <br>
-                                    <!-- Mostrar los campos direccion_2 del envío del usuario logueado -->
-                                    <label for="address_2">Dirección 2:</label>
-                                    <input type="text" id="address_2" name="address_2" class="form-control mt-4" value="{{ old('address_2', $direccion_2) }}">
-                                    <br>
-                                    <!-- Mostrar el campo empresa del envío del usuario logueado -->
-                                    <label for="company">Empresa:</label>
-                                    <input type="text" id="company" name="company" class="form-control mt-4" value="{{ old('company', $empresa) }}">
-                                    <br>
-                                    <!-- Mostrar los campos ciudad del envío del usuario logueado -->
-                                    <label for="city">Ciudad:</label>
-                                    <input type="text" id="city" name="city" class="form-control mt-4" value="{{ old('city', $ciudad) }}" required>
-                                    <br>
-                                    <!-- Mostrar los campos código postal del envío del usuario logueado -->
-                                    <label for="postal_code">Código Postal:</label>
-                                    <input type="text" id="postal_code" name="postal_code" class="form-control mt-4" value="{{ old('postal_code', $codigo_postal) }}" required>
-                                    <br>
-                                    <!-- Mostrar los campos país del envío del usuario logueado -->
-                                    <label for="country">País:</label>
-                                    <input type="text" id="country" name="country" class="form-control mt-4" value="{{ old('country', $pais) }}" required>
-                                    <br>
-                                    <!-- Mostrar el campo teléfono del envío del usuario logueado -->
-                                    <label for="phone">Teléfono:</label>
-                                    <input type="text" id="phone" name="phone" class="form-control mt-4" value="{{ old('phone', $telefono) }}" required>
-
-                            
-                                    <!-- Mostrar el carrito -->
-                                    <h3>Contenido del carrito:</h3>
-                                    @if ($carrito && $carrito->productos)
-                                    @foreach ($carrito->productos as $producto)
-                                        <li>{{ $producto->nombre }} {{ $producto->capacidad }}- Cantidad: {{ $producto->pivot->unidades }}- Precio: {{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</li>
-                                    @endforeach
-                                    @else
-                                        <p>El carrito está vacío.</p>
-                                    @endif
-                                    <button type="submit" class="btn btn-primary mt-3">Confirmar Dirección</button>
+                                    <div class="grid md:grid-cols-2 md:gap-6 mb-4">
+                                        <div>
+                                            <label for="name" class="block text-sm font-medium text-gray-700">Nombre:</label>
+                                            <input type="text" id="name" name="name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('name', $name) }}" required>
+                                        </div>
+                                        <div>
+                                            <label for="lastname" class="block text-sm font-medium text-gray-700">Apellido:</label>
+                                            <input type="text" id="lastname" name="lastname" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('lastname', $lastname) }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="address" class="block text-sm font-medium text-gray-700">Dirección:</label>
+                                        <input type="text" id="address" name="address" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('address', $direccion_1) }}" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="address_2" class="block text-sm font-medium text-gray-700">Dirección 2:</label>
+                                        <input type="text" id="address_2" name="address_2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('address_2', $direccion_2) }}">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="company" class="block text-sm font-medium text-gray-700">Empresa:</label>
+                                        <input type="text" id="company" name="company" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('company', $empresa) }}">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="city" class="block text-sm font-medium text-gray-700">Ciudad:</label>
+                                        <input type="text" id="city" name="city" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('city', $ciudad) }}" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="postal_code" class="block text-sm font-medium text-gray-700">Código Postal:</label>
+                                        <input type="text" id="postal_code" name="postal_code" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('postal_code', $codigo_postal) }}" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="country" class="block text-sm font-medium text-gray-700">País:</label>
+                                        <input type="text" id="country" name="country" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('country', $pais) }}" required>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono:</label>
+                                        <input type="text" id="phone" name="phone" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('phone', $telefono) }}" required>
+                                    </div>
+                                    <div class="mb-6">
+                                        <h3 class="text-xl font-bold text-gray-700">Contenido del carrito:</h3>
+                                        @if ($carrito && $carrito->productos)
+                                        <ul class="list-disc pl-5">
+                                            @foreach ($carrito->productos as $producto)
+                                            <li class="text-gray-700">{{ $producto->nombre }} {{ $producto->capacidad }} - Cantidad: {{ $producto->pivot->unidades }} - Precio: {{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</li>
+                                            @endforeach
+                                        </ul>
+                                        @else
+                                        <p class="text-gray-500">El carrito está vacío.</p>
+                                        @endif
+                                    </div>
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Confirmar Dirección</button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
