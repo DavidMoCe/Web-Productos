@@ -26,15 +26,14 @@
                 </h2>
             </x-slot>
             <!-- Mostrar mensajes flash -->
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
+            @if (isset($success))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    {{ $success }}
                 </div>
             @endif
-
-            @if (session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
+            @if (isset($error))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    {{ $error }}
                 </div>
             @endif
             <div class="mx-auto max-w-2xl px-4 py-10 md:px-6 md:!py-16 lg:max-w-7xl lg:px-8">
@@ -101,8 +100,6 @@
                                     <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
                                      --}}
                                       
-
-
 
 
 

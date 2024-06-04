@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductoController;//para obtener productos de la bd
 use App\Http\Controllers\BackMarketController;//para utilizar la api
 use App\Http\Middleware\AdminMiddleware;//para limitar el acceso del usuario
 use App\Http\Controllers\CartController;//para manejar las funciones del carrito
+use App\Http\Controllers\PaymentController;
 use Illuminate\Http\Request;
 
 // Route::get('/', function () {
@@ -54,11 +55,12 @@ Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear')
 Route::match(['get','post'],'/order/shipping-address', [CartController::class, 'addAddress_shipping'])->middleware(['auth'])->name('shipping-address');
 Route::match(['get','post'],'/order/billing-address', [CartController::class, 'submitShippingAddressForm'])->middleware(['auth'])->name('billing-address');
 Route::match(['get','post'],'/order/payment', [CartController::class, 'submitBillingAddressForm'])->middleware(['auth'])->name('payment');
-Route::post('/order/processOrder', [CartController::class, 'processOrder'])->middleware(['auth'])->name('cart.processOrder');
+Route::match(['get','post'],'/order/processOrder', [PaymentController::class, 'processOrder'])->middleware(['auth'])->name('cart.processOrder');
+Route::get('/order/paypal-status', [PaymentController::class, 'payPalStatus'])->name('paypal.status');
 
-Route::get('/cart/confirmation', function (){
+Route::get('/order/confirmation', function (){
          return view('orders.confirmation');
-    })->name('orders.confirmation');
+    })->name('confirmation');
 
 //Actualizar productos en la BD
 Route::get('/actualizarProductosBD',[BackMarketController::class,'actualizarProductosBD'])->name('actualizarProductos');
