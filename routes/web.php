@@ -55,8 +55,8 @@ Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear')
 Route::match(['get','post'],'/order/shipping-address', [CartController::class, 'addAddress_shipping'])->middleware(['auth'])->name('shipping-address');
 Route::match(['get','post'],'/order/billing-address', [CartController::class, 'submitShippingAddressForm'])->middleware(['auth'])->name('billing-address');
 Route::match(['get','post'],'/order/payment', [CartController::class, 'submitBillingAddressForm'])->middleware(['auth'])->name('payment');
-Route::match(['get','post'],'/order/processOrder', [PaymentController::class, 'processOrder'])->middleware(['auth'])->name('cart.processOrder');
-Route::get('/order/paypal-status', [PaymentController::class, 'payPalStatus'])->name('paypal.status');
+Route::post('/order/processOrder', [PaymentController::class, 'processOrder'])->middleware(['auth'])->name('cart.processOrder');
+Route::get('/payment/status', [PaymentController::class, 'payPalStatus'])->name('payment.status');
 
 Route::get('/order/confirmation', function (){
          return view('orders.confirmation');

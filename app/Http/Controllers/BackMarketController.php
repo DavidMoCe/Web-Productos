@@ -183,7 +183,6 @@ class BackMarketController extends Controller{
             return redirect()->route('products');
         }
     }
-
     public function tipoTelefono(Request $request){
         // Comprobar si el parámetro 'producto' está presente en la solicitud
         if ($request->has('producto')) {
@@ -197,7 +196,6 @@ class BackMarketController extends Controller{
         //return Session::get('productoSeleccionado');
         return '';
     }
-
     public function capacidad(Request $request){
         // Comprobar si el parámetro 'capacidad' está presente en la solicitud
         if ($request->has('capacidad')) { 
@@ -211,7 +209,6 @@ class BackMarketController extends Controller{
         //return Session::get('capacidad');
         return '';
     }
-
     public function color(Request $request){
         // Comprobar si el parámetro 'color' está presente en la solicitud
         if ($request->has('color')) {
@@ -225,7 +222,6 @@ class BackMarketController extends Controller{
         //return Session::get('color');
         return '';
     }
-
     public function mejor_Precio(Request $request){
         // Comprobar si el parámetro 'mejor_precio' está presente en la solicitud
         if ($request->has('mejor_precio')) {
@@ -238,7 +234,6 @@ class BackMarketController extends Controller{
         }
         return '';
     }
-
     public function mas_popular(Request $request){
         // Comprobar si el parámetro 'mas_popular' está presente en la solicitud
         if ($request->has('mas_popular')) {
@@ -251,7 +246,6 @@ class BackMarketController extends Controller{
         }
         return '';
     }
-
     public function peticionProductos(Request $request){
         try {
             // Definir una colección para almacenar los colores únicos y las capacidades unicas
@@ -630,7 +624,6 @@ class BackMarketController extends Controller{
             return  null;
         }
     }
-
     //Funcion para separar el sku por partes
     public function separarSku($sku){
         // Expresión regular para capturar las partes principales del SKU
@@ -670,14 +663,12 @@ class BackMarketController extends Controller{
             
         } 
     }
-
     //Actualizar los productos en la BD
     public function actualizarProductosBD(){
         try {
             $productosPorPaginas = $this->productosPorPaginas;
             $Totalpaginas=1;
             $allListings=[];
-            $skuPartesArray=[];
             for ($x = 1; $x <= $Totalpaginas; $x++){
                 // Hacer una solicitud a la API de BackMarket para obtener detalles del producto
                 $listing = $this->backMarketApi->apiGet('listings/?page='.$x.'&page-size='.$productosPorPaginas);
@@ -692,9 +683,6 @@ class BackMarketController extends Controller{
 
                 // Separar el SKU en partes (nombre, capacidad, color, libre, batería, estado)
                 $partesSku = $this->separarSku($sku);
-                $skuPartesArray[] = $partesSku;
-                
-                
 
                 if (!empty($partesSku)) {
                     if (strpos($partesSku['nombre'], 'iPhone') !== 0) {
@@ -726,27 +714,32 @@ class BackMarketController extends Controller{
                                 'libre' => $libre,
                                 'bateria' => $bateria,
                                 'estado' => $estado,
-                                'stock' => $productoData['quantity']
+                            ],
+                            [
+                                'stock' => $productoData['quantity'] // Este es el valor del stock que deseas establecer
                             ]
                         );
                     }  catch (\Exception $e) {
                     }
                 }
             }
-
-            $response = [
-                'productosAPI' => $allListings,
-                'Totalproductos' => $listing['count'],
-                'productosPorPaginas' => $productosPorPaginas
-            ];
+            // $response = [
+            //     'productosAPI' => $allListings,
+            //     'Totalproductos' => $listing['count'],
+            //     'productosPorPaginas' => $productosPorPaginas
+            // ];
             // Devolver la respuesta JSON
-            return response()->json($response);
+            //return response()->json($response);
+            return redirect()->route('admin.dashboard')->with('success','Base de datos actualizada');
            
         } catch (\Exception $e) {
             // Manejar errores y devolver una respuesta vacía o un mensaje de error según corresponda
-            return response()->json(['error' => $e->getMessage()], 500);
+            //return response()->json(['error' => $e->getMessage()], 500);
+            return redirect()->route('admin.dashboard')->with('error','Error al actualizar la base de datos');
         }
     }
+    
+
 }
 
 

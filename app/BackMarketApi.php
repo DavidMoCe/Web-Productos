@@ -29,8 +29,6 @@ class BackMarketApi{
             'headers' => $this->headers, // Encabezados combinados con los encabezados predeterminados y los proporcionados opcionalmente
         ]);
     }
-
-
    // Método para realizar solicitudes GET a la API de Back Market
     public function apiGet($end_point) {
         // Dar formato a $end_point quitándole una "/" al principio si existe
@@ -80,9 +78,6 @@ class BackMarketApi{
             }
         }
     }
-
-
-
     // Método para realizar solicitudes POST a la API de Back Market
     public function apiPost($end_point, $request = []) {
         // Dar formato a $end_point quitándole una "/" al principio si existe
@@ -135,7 +130,6 @@ class BackMarketApi{
             }
         }
     }
-
 
     // Método para obtener todas las órdenes de la API de Back Market.
     // Si se proporciona $date_modification, devuelve todas las órdenes modificadas después de esa fecha.

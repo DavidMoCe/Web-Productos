@@ -38,9 +38,26 @@
                                 <li><strong>Método de Pago:</strong> {{ session('order_details.payment_method') }}</li>
                             </ul>
                             <h3 class="text-xl font-semibold mt-4">Productos:</h3>
-                            <ul>
+                            <ul class="list-disc list-inside">
                                 @foreach (session('order_details.products') as $product)
-                                    <li>{{ $product['name'] }} -Cantidad: {{ $product['quantity'] }} -Precio: {{ number_format($product['price'], 2, ',', '.') . ' €' }}</li>
+                                    @php
+                                        switch ($product['state']) {
+                                            case 'STA':
+                                            case 'COR':
+                                                $estado="Correcto";
+                                                break;
+                                            case 'BUE':
+                                            case 'MBU':
+                                                $estado="Muy bueno";
+                                                break;
+                                            case 'IMP':
+                                                $estado="Excelente";
+                                            default:
+                                                $estado="";
+                                                break;
+                                        }
+                                    @endphp
+                                    <li><b>Nombre: </b>{{ $product['name'] }} {{ $product['capacity'] }} {{ $product['color'] }} {{$estado}} <b>- Cantidad:</b> {{ $product['quantity'] }} <b>- Precio:</b> {{ number_format($product['price'], 2, ',', '.') . ' €' }}</li>
                                 @endforeach
                             </ul>
                         @else

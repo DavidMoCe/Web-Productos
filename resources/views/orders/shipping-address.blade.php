@@ -143,19 +143,36 @@
                                         <input type="text" id="phone" name="phone" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('phone', $telefono) }}" required>
                                     </div>
                                     <div class="mb-6">
-                                        <h3 class="text-xl font-bold text-gray-700">Contenido del carrito:</h3>
+                                        <h3 class="text-xl font-semibold mt-8 mb-4">Contenido del carrito:</h3>
                                         @if ($carrito && $carrito->productos)
-                                        <ul class="list-disc pl-5">
+                                        <ul class="list-disc list-inside">
                                             @foreach ($carrito->productos as $producto)
-                                            <li class="text-gray-700">{{ $producto->nombre }} {{ $producto->capacidad }} - Cantidad: {{ $producto->pivot->unidades }} - Precio: {{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</li>
+                                                @php
+                                                    switch ($producto->estado) {
+                                                        case 'STA':
+                                                        case 'COR':
+                                                            $estado="Correcto";
+                                                            break;
+                                                        case 'BUE':
+                                                        case 'MBU':
+                                                            $estado="Muy bueno";
+                                                            break;
+                                                        case 'IMP':
+                                                            $estado="Excelente";
+                                                        default:
+                                                            $estado="";
+                                                            break;
+                                                    }
+                                                @endphp
+                                                <li><b>Nombre: </b>{{ $producto->nombre }} {{ $producto->capacidad }} {{ $producto->color }} {{$estado}} <b>- Cantidad:</b> {{ $producto->pivot->unidades }} <b>- Precio:</b> {{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</li>
                                             @endforeach
                                         </ul>
                                         @else
-                                        <p class="text-gray-500">El carrito está vacío.</p>
+                                            <p>El carrito está vacío.</p>
                                         @endif
                                     </div>
                                     <div class="flex justify-end">
-                                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Confirmar Dirección</button>
+                                        <button type="submit" class="mr-1 mb-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Confirmar Dirección</button>
                                     </div>
                                 </div>
                             </form>
