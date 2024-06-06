@@ -118,6 +118,7 @@ class PaymentController extends Controller{
 
             //Enviar correo con los detalles del pedido
             Mail::to($user->email)->send(new OrderProcessed($orderDetails));
+            
             //Guardar los datos del carrito en la sesion para mostrarlo en la coonfirmación
             session(['order_details' => $orderDetails]);
 

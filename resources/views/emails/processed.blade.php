@@ -20,7 +20,7 @@
 
         @foreach ($orderDetails['products'] as $item)
         @php
-            switch ($producto->estado) {
+            switch ($item["state"]) {
                 case 'STA':
                 case 'COR':
                     $estado="Correcto";
