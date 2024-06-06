@@ -24,7 +24,7 @@ class OrderProcessed extends Mailable{
      * Build the message.
      */
     public function build(){
-        return $this->markdown('emails.orders.processed')->subject('Order Processed');
+        return $this->markdown('emails.processed')->subject('Order Processed');
     }
     // public function build(){
     //     return $this->view('emails.orders.processed')->subject('Order Processed')->with('orderDetails', $this->orderDetails);

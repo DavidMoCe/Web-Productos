@@ -41,7 +41,7 @@
                     <div class="container md:pt-4 md:p-8 mx-auto">
                         <div class="w-full overflow-x-auto">
                             {{-- <form action="{{ route('process.shipping') }}" method="POST"> --}}
-                            <form action="{{ route('payment') }}" method="POST">
+                            <form action="{{ route('payment') }}" method="POST" class="mx-1">
                                 @csrf
                                 <div class="mb-6">
                                     <h3 class="text-2xl font-bold text-gray-700">Dirección de facturación</h3>
@@ -68,69 +68,40 @@
                                       <div class="grid md:grid-cols-2 md:gap-6 mb-4">
                                         <div>
                                             <label for="name" class="block text-sm font-medium text-gray-700">Nombre:</label>
-                                            <input type="text" id="name" name="name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('name', $name) }}" required>
+                                            <input type="text" id="name" name="name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('name', isset($name) ? $name : '') }}" required>
                                         </div>
                                         <div>
                                             <label for="lastname" class="block text-sm font-medium text-gray-700">Apellido:</label>
-                                            <input type="text" id="lastname" name="lastname" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('lastname', $lastname) }}" required>
+                                            <input type="text" id="lastname" name="lastname" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('lastname', isset($lastname) ? $lastname : '') }}" required>
                                         </div>
                                     </div>
                                     <div class="mb-4">
                                         <label for="address" class="block text-sm font-medium text-gray-700">Dirección:</label>
-                                        <input type="text" id="address" name="address" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('address', $direccion_1) }}" required>
+                                        <input type="text" id="address" name="address" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('address', isset($direccion_1) ? $direccion_1 : '') }}" required>
                                     </div>
                                     <div class="mb-4">
                                         <label for="address_2" class="block text-sm font-medium text-gray-700">Dirección 2:</label>
-                                        <input type="text" id="address_2" name="address_2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('address_2', $direccion_2) }}">
+                                        <input type="text" id="address_2" name="address_2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('address_2', isset($direccion_2) ? $direccion_2 : '') }}">
                                     </div>
                                     <div class="mb-4">
                                         <label for="company" class="block text-sm font-medium text-gray-700">Empresa:</label>
-                                        <input type="text" id="company" name="company" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('company', $empresa) }}">
+                                        <input type="text" id="company" name="company" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('company', isset($empresa) ? $empresa : '') }}">
                                     </div>
                                     <div class="mb-4">
                                         <label for="city" class="block text-sm font-medium text-gray-700">Ciudad:</label>
-                                        <input type="text" id="city" name="city" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('city', $ciudad) }}" required>
+                                        <input type="text" id="city" name="city" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('city', isset($ciudad) ? $ciudad : '') }}" required>
                                     </div>
                                     <div class="mb-4">
                                         <label for="postal_code" class="block text-sm font-medium text-gray-700">Código Postal:</label>
-                                        <input type="text" id="postal_code" name="postal_code" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('postal_code', $codigo_postal) }}" required>
+                                        <input type="text" id="postal_code" name="postal_code" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('postal_code', isset($codigo_postal) ? $codigo_postal : '') }}" required>
                                     </div>
                                     <div class="mb-4">
                                         <label for="country" class="block text-sm font-medium text-gray-700">País:</label>
-                                        <input type="text" id="country" name="country" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('country', $pais) }}" required>
+                                        <input type="text" id="country" name="country" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('country', isset($pais) ?  $pais : '') }}" required>
                                     </div>
                                     <div class="mb-4">
                                         <label for="nif_dni" class="block text-sm font-medium text-gray-700">NIF/DNI:</label>
-                                        <input type="text" id="nif_dni" name="nif_dni" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('nif_dni', $nif_dni) }}" required>
-                                    </div>
-                                    <div class="mb-6">
-                                        <h3 class="text-xl font-semibold mt-8 mb-4">Contenido del carrito:</h3>
-                                        @if ($carrito && $carrito->productos)
-                                        <ul class="list-disc list-inside">
-                                            @foreach ($carrito->productos as $producto)
-                                                @php
-                                                    switch ($producto->estado) {
-                                                        case 'STA':
-                                                        case 'COR':
-                                                            $estado="Correcto";
-                                                            break;
-                                                        case 'BUE':
-                                                        case 'MBU':
-                                                            $estado="Muy bueno";
-                                                            break;
-                                                        case 'IMP':
-                                                            $estado="Excelente";
-                                                        default:
-                                                            $estado="";
-                                                            break;
-                                                    }
-                                                @endphp
-                                                <li><b>Nombre: </b>{{ $producto->nombre }} {{ $producto->capacidad }} {{ $producto->color }} {{$estado}} <b>- Cantidad:</b> {{ $producto->pivot->unidades }} <b>- Precio:</b> {{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</li>
-                                            @endforeach
-                                        </ul>
-                                        @else
-                                            <p>El carrito está vacío.</p>
-                                        @endif
+                                        <input type="text" id="nif_dni" name="nif_dni" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('nif_dni', isset($nif_dni) ? $nif_dni : '') }}" required>
                                     </div>
                                     <div class="flex justify-end">
                                         <button type="submit" class="mr-1 mb-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Confirmar Dirección</button>

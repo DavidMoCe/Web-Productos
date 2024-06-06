@@ -1,37 +1,59 @@
-<x-mail::message>
-# Introduction
+{{-- <x-mail::message>
+    # Introduction
 
-The body of your message.
+    The body of your message.
 
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
+    <x-mail::button :url="''">
+    Button Text
+    </x-mail::button>
 
-Thanks,<br>
-{{ config('app.name') }}
-</x-mail::message>
+    Thanks,<br>
+    {{ config('app.name') }}
+</x-mail::message> --}}
 
-@component('mail::message')
-    # Order Received
-    
+    @component('mail::message')
+        # Order Received
+        
 
-    Thank you for your order! Below is a summary of the items in your cart:
+        {{-- Thank you for your order! Below is a summary of the items in your cart: --}}
+        ¡Gracias por su pedido! A continuación se muestra un resumen del pedido:
 
-    @foreach ($orderDetails['productos'] as $item)
-    **{{ $item['titulo_producto'] }}**
-    - Estado: {{$item['estado_producto']}}
-    - Precio: {{ $item['precio_producto']}}
-    - Cantidad: {{ $item['cantidad_producto'] }}
-    @endforeach
+        @foreach ($orderDetails['products'] as $item)
+        @php
+            switch ($producto->estado) {
+                case 'STA':
+                case 'COR':
+                    $estado="Correcto";
+                    break;
+                case 'BUE':
+                case 'MBU':
+                    $estado="Muy bueno";
+                    break;
+                case 'IMP':
+                    $estado="Excelente";
+                default:
+                    $estado="";
+                    break;
+            }
+        @endphp
 
-    Total: {{ $orderDetails['total'] }}
+        **{{ $item['name'] }} {{ $item['capacity']}} {{ $item['color'] }}**
+        - Estado: {{$estado}}
+        - Precio: {{ $item['price']}}
+        - Cantidad: {{ $item['quantity'] }}
+        @endforeach
 
-    We will process your order shortly.
+        Total: {{ number_format($item['price'], 2, ',', '.') . ' €' }}
 
-    Thank you for shopping with us!
+        {{-- We will process your order shortly. --}}
+        Procesaremos su pedido en breve.
 
-    Thanks,{{ config('app.name') }}
-@endcomponent
+        {{-- Thank you for shopping with us! --}}
+        ¡Gracias por comprar con nosotros!
+
+        {{-- Thanks,{{ config('app.name') }} --}}
+        Gracias,{{ config('app.name') }}
+    @endcomponent
 
 {{-- <!DOCTYPE html>
 <html lang="en">

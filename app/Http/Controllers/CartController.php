@@ -380,8 +380,10 @@ class CartController extends Controller{
                 // Actualizar el carrito en la sesión
                 session()->put('cart', $cookieCart);
 
+                // Establecer el tiempo de expiración en 30 días (en minutos)
+                $expirationTime = 30 * 24 * 60;
                 // Crear una nueva cookie con el carrito actualizado
-                return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cookieCart)))->with('success', 'Producto agregado al carrito exitosamente.');
+                return redirect()->route('cart.index')->withCookie(cookie()->forever('cart', json_encode($cookieCart), $expirationTime))->with('success', 'Producto agregado al carrito exitosamente.');
             }
         } catch (\Exception $e) {
             return redirect()->route('cart.index')->with('error', 'Error al agregar el producto al carrito: ' . $e->getMessage());
@@ -532,6 +534,8 @@ class CartController extends Controller{
             $empresa = $direccionEnvio ? $direccionEnvio->empresa : '';
             $telefono = $direccionEnvio ? $direccionEnvio->telefono : '';
             
+            $direccionFacturacion = $user->direccionFacturacion;
+            $nif_dni = $direccionFacturacion ? $direccionFacturacion->nif_dni : '';
             // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
             $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
             
@@ -539,7 +543,7 @@ class CartController extends Controller{
                 return redirect()->route('products');
             }
 
-            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono','carrito'));
+            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono','nif_dni','carrito'));
 
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
@@ -560,6 +564,12 @@ class CartController extends Controller{
                 'postal_code' => 'required|string|max:10',
                 'country' => 'required|string|max:255',
                 'phone' => 'required|string|max:20',
+                'nif_dni' => [
+                    'nullable',
+                    'string',
+                    'regex:/^[0-9]{8}[a-zA-Z]$/',
+                    'max:9', // Para asegurarse de que el DNI tiene exactamente 9 caracteres
+                ],
             ]);
 
             // Definir los criterios de búsqueda
@@ -582,6 +592,25 @@ class CartController extends Controller{
 
             // Crear un nuevo registro en la tabla envios o actualizar uno existente
             Envio::updateOrCreate($criterio, $updateData);
+
+            // Si el checkbox de dirección de facturación es igual a la dirección de envío está marcado, copia los datos de envío a los de facturación
+            if ($request->has('same_as_billing')) {
+                $updateDataFacturacion = [
+                    'pais' => $validatedData['country'],
+                    'direccion_1' => $validatedData['address'],
+                    'direccion_2' => $validatedData['address_2'] ?? null,
+                    'ciudad' => $validatedData['city'],
+                    'codigo_postal' => $validatedData['postal_code'],
+                    'empresa' => $validatedData['company'] ?? null,
+                    'telefono' => $validatedData['phone'],
+                    'nif_dni' => $validatedData['nif_dni'] ?? null,
+                ];
+
+                // Crear un nuevo registro en la tabla facturaciones o actualizar uno existente
+                Facturacion::updateOrCreate($criterio, $updateDataFacturacion);
+                return view('orders.payment')->with('success', 'Dirección de envío y facturación guardada con éxito.');
+            }
+
 
             // Obtener el usuario autenticado
             $user = Auth::user();
@@ -671,7 +700,7 @@ class CartController extends Controller{
                 return redirect()->route('products');
             }
             // Redirigir a la función que muestra la vista de dirección de facturación o a cualquier otra página
-            return view('orders.payment', compact('carrito'))->with('success', 'Dirección de facturacion guardada con éxito.');
+            return view('orders.payment', compact('carrito'))->with('success', 'Dirección de facturación guardada con éxito.');
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error con los datos de la tabla facturacion
              // Obtener el usuario autenticado

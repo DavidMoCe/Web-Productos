@@ -36,8 +36,25 @@ class BackMarketController extends Controller{
             // Devuelve los listados en una respuesta JSON
             //return response()->json($listings);
 
-            // Llama al método productos() del ProductoController y pasa los listados como argumento
-            return app('App\Http\Controllers\ProductoController')->productos($listings, $productosPorPaginas);
+            // Verificar que la respuesta contiene la clave "results"
+            if (is_array($listings) && array_key_exists('results', $listings)) {
+                $listings1 = $listings['results'];
+                $totalProductos = $listings['count'];
+
+                // Filtrar los productos que empiezan por "iPhone"
+                $productosFiltrados = array_filter($listings1, function($producto) {
+                    return is_array($producto) && isset($producto['sku']) && stripos($producto['sku'], 'iPhone') === 0;
+                });
+
+                // Reindexar el array filtrado
+                $productosFiltrados = array_values($productosFiltrados);
+
+                // Llama al método productos() del ProductoController y pasa los listados filtrados como argumento
+                return app('App\Http\Controllers\ProductoController')->productos($productosFiltrados, $productosPorPaginas,$totalProductos);
+            } else {
+                // Si la respuesta no contiene "results", lanza una excepción
+                throw new \Exception("La respuesta de la API no contiene 'results'.");
+            }
 
 
         } catch (\Exception $e) {
@@ -739,6 +756,30 @@ class BackMarketController extends Controller{
         }
     }
     
+    public function actualizarStockBM($sku,$cantidad){
+        // Endpoint para actualizar el stock de un producto en Back Market
+        $end_point = "listings/sku=".$sku;
+
+        // Hacer una solicitud a la API de Back Market para obtener detalles del producto en el que se incluye el stock
+        $producto = $this->mostrarUnProducto($sku);
+        $cantidadFinal=$producto['quantity']-$cantidad;
+        // Datos a enviar en la solicitud POST
+        $request = [
+            'quantity' => $cantidadFinal
+        ];
+
+        try {
+            // Realizar la solicitud POST a la API de Back Market para actualizar el stock
+            $this->backMarketApi->apiPost($end_point, $request);
+            
+            // Devolver un mensaje de éxito si la actualización del stock fue exitosa
+            return 'Stock actualizado correctamente en Back Market.';
+            //return redirect()->route('products')->with('success','Stock actualizado correctamente en Back Market.');
+        } catch (\Exception $e) {
+            // Capturar y manejar cualquier excepción que ocurra durante la actualización del stock
+            return 'Error al actualizar el stock en Back Market: ' . $e->getMessage();
+        }
+    }
 
 }
 

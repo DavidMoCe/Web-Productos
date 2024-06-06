@@ -48,7 +48,10 @@
                     <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 xl:gap-x-8">
                         <!-- Mostrar lista de modelos de iPhone -->
                         @php
-                            $productosAgrupados = $productos->groupBy(function ($producto){
+                            $productosAgrupados = $productos->filter(function ($producto) {
+                                    //mostramos solo los productos que emppiezen por iPhone
+                                    return stripos($producto['title'], 'iPhone') === 0;
+                                })->groupBy(function ($producto){
                                 preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto['title'], $matches);
                                 if (isset($matches[1])) {
                                     $nombreTelefono = trim($matches[1]);

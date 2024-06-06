@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\BackMarketApi;
+use App\Mail\OrderProcessed;
 use App\Models\Carrito;
 use App\Models\Pedido;
-use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller{
+    protected $backMarketController;
+    // Constructor para inyectar la instancia de BackMarketApi y BackMarketController
+    public function __construct(BackMarketController $backMarketController){
+        $this->backMarketController = $backMarketController;
+    }
 
     private function getPayPalAccessToken(){
         // Obtener las credenciales de PayPal del archivo .env
@@ -46,7 +53,6 @@ class PaymentController extends Controller{
             // Manejar errores si la solicitud no fue exitosa
             return null;
         }
-       
     }
 
     public function borrarCarrito($metodoPago){
@@ -83,10 +89,13 @@ class PaymentController extends Controller{
                 'facturacion_id' => $facturacionId,
                 'metodoPago' => $metodoPago,
             ]);
-
+            $total = 0;
             if ($carrito && $carrito->productos) {
                 foreach ($carrito->productos as $producto) {
+                    //vinculamos cada producto a la tabla de pedidos guardando los datos en la tabla pivot
                     $pedido->productos()->attach($producto->id, ['unidades' => $producto->pivot->unidades]);
+                    //sumamos el precio de cada unidad
+                    $total += $producto->precioD * $producto->pivot->unidades;
                 }
             }
 
@@ -104,7 +113,12 @@ class PaymentController extends Controller{
                         'price' => $product->precioD,
                     ];
                 })->toArray(),
+                'total' => $total,
             ];
+
+            //Enviar correo con los detalles del pedido
+            Mail::to($user->email)->send(new OrderProcessed($orderDetails));
+            //Guardar los datos del carrito en la sesion para mostrarlo en la coonfirmación
             session(['order_details' => $orderDetails]);
 
             DB::beginTransaction();
@@ -115,7 +129,11 @@ class PaymentController extends Controller{
                     'stock' => $producto->stock - $producto->pivot->unidades
                 ]);
 
-                //Tambien restar stock en backmarket!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // Actualizar stock en Back Market
+                //creamos el sku para pasarlo a la url
+                $sku= "$producto->nombre $producto->capacidad - $producto->color - Libre ".(isset($producto->bateria) ? "$producto->bateria ":'')."$producto->estado";
+                //$this->backMarketController->actualizarStockBM($sku, $producto->pivot->unidades);
+                
             }
             // Elimina el carrito
             $carrito->delete();

@@ -63,37 +63,6 @@
                                     Submit Payment
                                 </button>
                             </form>
-
-                            
-
-                            <!-- Mostrar el carrito -->
-                            <h3 class="text-xl font-semibold mt-8 mb-4">Contenido del carrito:</h3>
-                            @if ($carrito && $carrito->productos)
-                            <ul class="list-disc list-inside">
-                                @foreach ($carrito->productos as $producto)
-                                    @php
-                                        switch ($producto->estado) {
-                                            case 'STA':
-                                            case 'COR':
-                                                $estado="Correcto";
-                                                break;
-                                            case 'BUE':
-                                            case 'MBU':
-                                                $estado="Muy bueno";
-                                                break;
-                                            case 'IMP':
-                                                $estado="Excelente";
-                                            default:
-                                                $estado="";
-                                                break;
-                                        }
-                                    @endphp
-                                    <li><b>Nombre: </b>{{ $producto->nombre }} {{ $producto->capacidad }} {{ $producto->color }} {{$estado}} <b>- Cantidad:</b> {{ $producto->pivot->unidades }} <b>- Precio:</b> {{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</li>
-                                @endforeach
-                            </ul>
-                            @else
-                                <p>El carrito está vacío.</p>
-                            @endif
                         </div>
                     </div>
                 </div>
