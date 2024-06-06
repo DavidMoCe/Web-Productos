@@ -602,8 +602,8 @@ class CartController extends Controller{
                     'ciudad' => $validatedData['city'],
                     'codigo_postal' => $validatedData['postal_code'],
                     'empresa' => $validatedData['company'] ?? null,
-                    'telefono' => $validatedData['phone'],
                     'nif_dni' => $validatedData['nif_dni'] ?? null,
+                    'updated_at' => Carbon::now(),
                 ];
 
                 // Crear un nuevo registro en la tabla facturaciones o actualizar uno existente
