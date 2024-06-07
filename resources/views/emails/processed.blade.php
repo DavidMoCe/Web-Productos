@@ -12,11 +12,11 @@
 </x-mail::message> --}}
 
     @component('mail::message')
-        # Order Received
+        # Pedido Realizado
         
 
         {{-- Thank you for your order! Below is a summary of the items in your cart: --}}
-        ¡Gracias por su pedido! A continuación se muestra un resumen del pedido:
+        A continuación se muestra un resumen del pedido:
 
         @foreach ($orderDetails['products'] as $item)
         @php
@@ -52,7 +52,7 @@
         ¡Gracias por comprar con nosotros!
 
         {{-- Thanks,{{ config('app.name') }} --}}
-        Gracias,{{ config('app.name') }}
+        {{-- Gracias,{{ config('app.name') }} --}}
     @endcomponent
 
 {{-- <!DOCTYPE html>

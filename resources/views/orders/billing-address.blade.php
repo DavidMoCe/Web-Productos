@@ -40,7 +40,6 @@
                 <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
                     <div class="container md:pt-4 md:p-8 mx-auto">
                         <div class="w-full overflow-x-auto">
-                            {{-- <form action="{{ route('process.shipping') }}" method="POST"> --}}
                             <form action="{{ route('payment') }}" method="POST" class="mx-1">
                                 @csrf
                                 <div class="mb-6">
@@ -76,6 +75,14 @@
                                         </div>
                                     </div>
                                     <div class="mb-4">
+                                        <label for="company" class="block text-sm font-medium text-gray-700">Empresa:</label>
+                                        <input type="text" id="company" name="company" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('company', isset($empresa) ? $empresa : '') }}">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="country" class="block text-sm font-medium text-gray-700">País:</label>
+                                        <input type="text" id="country" name="country" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('country', isset($pais) ?  $pais : '') }}" required>
+                                    </div>
+                                    <div class="mb-4">
                                         <label for="address" class="block text-sm font-medium text-gray-700">Dirección:</label>
                                         <input type="text" id="address" name="address" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('address', isset($direccion_1) ? $direccion_1 : '') }}" required>
                                     </div>
@@ -83,28 +90,27 @@
                                         <label for="address_2" class="block text-sm font-medium text-gray-700">Dirección 2:</label>
                                         <input type="text" id="address_2" name="address_2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('address_2', isset($direccion_2) ? $direccion_2 : '') }}">
                                     </div>
-                                    <div class="mb-4">
-                                        <label for="company" class="block text-sm font-medium text-gray-700">Empresa:</label>
-                                        <input type="text" id="company" name="company" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('company', isset($empresa) ? $empresa : '') }}">
+                                    <div class="grid md:grid-cols-2 md:gap-6 mb-4">
+                                        <div class="mb-4 md:!mb-0">
+                                            <label for="postal_code" class="block text-sm font-medium text-gray-700">Código Postal:</label>
+                                            <input type="text" id="postal_code" name="postal_code" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('postal_code', isset($codigo_postal) ? $codigo_postal : '') }}" required>
+                                        </div>
+                                        <div>
+                                            <label for="city" class="block text-sm font-medium text-gray-700">Ciudad:</label>
+                                            <input type="text" id="city" name="city" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('city', isset($ciudad) ? $ciudad : '') }}" required>
+                                        </div>
                                     </div>
-                                    <div class="mb-4">
-                                        <label for="city" class="block text-sm font-medium text-gray-700">Ciudad:</label>
-                                        <input type="text" id="city" name="city" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('city', isset($ciudad) ? $ciudad : '') }}" required>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label for="postal_code" class="block text-sm font-medium text-gray-700">Código Postal:</label>
-                                        <input type="text" id="postal_code" name="postal_code" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('postal_code', isset($codigo_postal) ? $codigo_postal : '') }}" required>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label for="country" class="block text-sm font-medium text-gray-700">País:</label>
-                                        <input type="text" id="country" name="country" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('country', isset($pais) ?  $pais : '') }}" required>
-                                    </div>
-                                    <div class="mb-4">
+                                    <div class="mb-6 border-t border-t-gray-300 mt-7" id="dni_field">
+                                        <p class="font-bold text-xl mt-6 mb-3">Información personal</p>
                                         <label for="nif_dni" class="block text-sm font-medium text-gray-700">NIF/DNI:</label>
                                         <input type="text" id="nif_dni" name="nif_dni" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" value="{{ old('nif_dni', isset($nif_dni) ? $nif_dni : '') }}" required>
+                                        <p class="font-bold mt-2 mb-3 text-slate-800">Para la emisión de tu factura.</p>
                                     </div>
+                                    
                                     <div class="flex justify-end">
-                                        <button type="submit" class="mr-1 mb-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Confirmar Dirección</button>
+                                        <button class="float-right right-4 bottom-4 md:right-8 md:bottom-8 px-4 py-3 bg-neutral-950 text-white rounded-md hover:bg-zinc-800 transition-colors duration-300">
+                                            Continuar
+                                        </button>
                                     </div>
                                 </div>
                             </form>

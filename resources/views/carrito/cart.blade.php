@@ -107,7 +107,7 @@
                 });
             });
         </script>
-<script src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.client_id') }}&currency=EUR"></script>
+{{-- <script src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.client_id') }}&currency=EUR"></script> --}}
     </head>
     <body>
         <x-app-layout>
@@ -156,7 +156,7 @@
             @endif
 
 
-            <div id="paypal-button-container"></div>
+            {{-- <div id="paypal-button-container"></div>
 <script>
     paypal.Buttons({
     createOrder: function(data, actions) {
@@ -175,7 +175,7 @@
         });
     }
 }).render('#paypal-button-container');
-</script>
+</script> --}}
 
 
             <div class="mx-auto max-w-2xl px-4 py-10 md:px-6 md:!py-16 lg:max-w-7xl lg:px-8">
@@ -183,7 +183,7 @@
                     <div class="container md:pt-4 md:p-8 mx-auto">
                         <div class="w-full overflow-x-auto">
                             @if (count($cookieCart) > 0)
-                                <form action="{{ route('shipping-address') }}" method="POST">
+                                <form action="{{ route('confirm-address') }}" method="POST">
                                     @csrf
                                     @foreach ($cookieCart as $producto)
                             {{--------------------------------------------------------------------------------------------------------------------------------------------------}}
@@ -289,7 +289,7 @@
                                     <div class="mt-4">
 
                                             <input type="hidden" name="total" id="total" value="0">
-                                            <button class="w-full py-2 text-center text-white bg-blue-500 rounded-md shadow hover:bg-blue-600">
+                                            <button class="w-full py-2 text-center text-white bg-neutral-950 rounded-md shadow hover:bg-zinc-800 transition-colors duration-300">
                                                 {{ __('Make the order') }}
                                             </button>
                                         

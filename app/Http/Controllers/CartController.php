@@ -6,14 +6,11 @@ use Illuminate\Http\Request;
 
 use App\BackMarketApi; // Asegúrate de importar la clase BackMarketApi
 use Illuminate\Support\Facades\DB;
-use App\Mail\OrderProcessed;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Carrito;
 use App\Models\Producto;
 use App\Models\Envio;
 use App\Models\Facturacion;
-use App\Models\Pedido;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Cookie;
@@ -499,7 +496,7 @@ class CartController extends Controller{
         }
     }
     //vaciar carrito
-    public function clear(Request $request){
+    public function clear(){
         try {
             // Borrar la cookie del carrito
             $cookie = cookie()->forget('cart');
@@ -514,8 +511,49 @@ class CartController extends Controller{
             abort(500, 'Error al eliminar el carrito: ' . $e->getMessage());
         }
     }
+
+    //Comprobar si tiene direccion de envio y de facturación 
+    public function checkAddress(){
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        //obtenemos los datos
+        $name = $user->name ?? '';
+        $lastname = $user->lastname ?? '';
+        //accedemos a la funcion direccion envio del modelo user.php
+        $direccionEnvio = $user->direccionEnvio;
+        // Obtener la dirección_1 del usuario autenticado, si existe
+        $direccion_1 = $direccionEnvio ? $direccionEnvio->direccion_1 : '';
+        $direccion_2 = $direccionEnvio ? $direccionEnvio->direccion_2 : '';
+        $pais = $direccionEnvio ? $direccionEnvio->pais : '';
+        $ciudad = $direccionEnvio ? $direccionEnvio->ciudad : '';
+        $codigo_postal = $direccionEnvio ? $direccionEnvio->codigo_postal : '';
+        $empresa = $direccionEnvio ? $direccionEnvio->empresa : '';
+        $telefono = $direccionEnvio ? $direccionEnvio->telefono : '';
+
+        //accedemos a la funcion direccion envio del modelo user.php
+        $direccionFacturacion = $user->direccionFacturacion;
+        $Fdireccion_1 = $direccionFacturacion ? $direccionFacturacion->direccion_1 : '';
+        $Fdireccion_2 = $direccionFacturacion ? $direccionFacturacion->direccion_2 : '';
+        $Fpais = $direccionFacturacion ? $direccionFacturacion->pais : '';
+        $Fciudad = $direccionFacturacion ? $direccionFacturacion->ciudad : '';
+        $Fcodigo_postal = $direccionFacturacion ? $direccionFacturacion->codigo_postal : '';
+        $Fempresa = $direccionFacturacion ? $direccionFacturacion->empresa : '';
+        $Fnif_dni = $direccionFacturacion ? $direccionFacturacion->nif_dni : '';
+
+        //si hay direcciones se muestra, si no se llama a la funcion addAddress_shippping
+        if($direccionEnvio && $direccionFacturacion){
+            return view('orders.confirm-address', 
+                compact('name', 'lastname','direccion_1','direccion_2','pais','ciudad',
+                'codigo_postal','empresa','telefono','Fdireccion_1','Fdireccion_2',
+                'Fpais','Fciudad','Fcodigo_postal','Fempresa','Fnif_dni'));
+        }else{
+            return $this->addAddress_shipping();
+        }
+    }
+
     //anadir direccion de envio
-    public function addAddress_shipping(Request $request){
+    public function addAddress_shipping(){
         try {
             // Obtener el usuario autenticado
             $user = Auth::user();
@@ -543,7 +581,7 @@ class CartController extends Controller{
                 return redirect()->route('products');
             }
 
-            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono','nif_dni','carrito'));
+            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono','nif_dni'));
 
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error
@@ -556,7 +594,7 @@ class CartController extends Controller{
             // Validar los datos del formulario
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'lastname' => 'required|string|max:255', // Puede que este campo no esté en la tabla 'envios'
+                'lastname' => 'required|string|max:255',
                 'address' => 'required|string|max:255',
                 'address_2' => 'nullable|string|max:255',
                 'company' => 'nullable|string|max:255',
@@ -635,8 +673,13 @@ class CartController extends Controller{
             if($carrito==null){
                 return redirect()->route('products');
             }
+            //si la peticion es desde la modificacion en la vista de confirmation-address, entramos en el if
+            $edicionConfirmacion=$request->edicionConfirmacion;
+            if($edicionConfirmacion){
+                return view('orders.billing-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','nif_dni'));
+            }
             // Redirigir a la función que muestra la vista de dirección de facturación o a cualquier otra página
-            return view('orders.billing-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','nif_dni','carrito'))->with('success', 'Dirección de envío guardada con éxito.');
+            return view('orders.billing-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','nif_dni'))->with('success', 'Dirección de envío guardada con éxito.');
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error con los datos de la tabla envios
             // Obtener el usuario autenticado
@@ -654,10 +697,8 @@ class CartController extends Controller{
             $codigo_postal = $direccionEnvio ? $direccionEnvio->codigo_postal : '';
             $empresa = $direccionEnvio ? $direccionEnvio->empresa : '';
             $telefono = $direccionEnvio ? $direccionEnvio->telefono : '';            
-            // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
-            $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
 
-            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono','carrito'))->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
+            return view('orders.shipping-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','telefono'))->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
         }
     }
     //validar y guardar los datos de la direccion de envio y mostrar la de facturacion
@@ -666,7 +707,7 @@ class CartController extends Controller{
             // Validar los datos del formulario
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'lastname' => 'required|string|max:255', // Puede que este campo no esté en la tabla 'envios'
+                'lastname' => 'required|string|max:255',
                 'address' => 'required|string|max:255',
                 'address_2' => 'nullable|string|max:255',
                 'company' => 'nullable|string|max:255',
@@ -700,29 +741,29 @@ class CartController extends Controller{
                 return redirect()->route('products');
             }
             // Redirigir a la función que muestra la vista de dirección de facturación o a cualquier otra página
-            return view('orders.payment', compact('carrito'))->with('success', 'Dirección de facturación guardada con éxito.');
+            return view('orders.payment')->with('success', 'Dirección de envío guardada con éxito.');
         } catch (\Exception $e) {
             // Si hay algún error, manejarlo apropiadamente y retornar una respuesta de error con los datos de la tabla facturacion
-             // Obtener el usuario autenticado
-             $user = Auth::user();
-             // Obtener los datos del usuario autenticado
-             $name = $user->name ?? '';
-             $lastname = $user->lastname ?? '';
-             //accedemos a la funcion direccion envio del modelo user.php
-             $direccionFacturacion = $user->direccionFacturacion;
-             // Obtener la dirección_1 del usuario autenticado, si existe
-             $direccion_1 = $direccionFacturacion ? $direccionFacturacion->direccion_1 : '';
-             $direccion_2 = $direccionFacturacion ? $direccionFacturacion->direccion_2 : '';
-             $pais = $direccionFacturacion ? $direccionFacturacion->pais : '';
-             $ciudad = $direccionFacturacion ? $direccionFacturacion->ciudad : '';
-             $codigo_postal = $direccionFacturacion ? $direccionFacturacion->codigo_postal : '';
-             $empresa = $direccionFacturacion ? $direccionFacturacion->empresa : '';
-             $nif_dni = $direccionFacturacion ? $direccionFacturacion->nif_dni : '';             
-             // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
-             $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
+            // Obtener el usuario autenticado
+            $user = Auth::user();
+            // Obtener los datos del usuario autenticado
+            $name = $user->name ?? '';
+            $lastname = $user->lastname ?? '';
+            //accedemos a la funcion direccion envio del modelo user.php
+            $direccionFacturacion = $user->direccionFacturacion;
+            // Obtener la dirección_1 del usuario autenticado, si existe
+            $direccion_1 = $direccionFacturacion ? $direccionFacturacion->direccion_1 : '';
+            $direccion_2 = $direccionFacturacion ? $direccionFacturacion->direccion_2 : '';
+            $pais = $direccionFacturacion ? $direccionFacturacion->pais : '';
+            $ciudad = $direccionFacturacion ? $direccionFacturacion->ciudad : '';
+            $codigo_postal = $direccionFacturacion ? $direccionFacturacion->codigo_postal : '';
+            $empresa = $direccionFacturacion ? $direccionFacturacion->empresa : '';
+            $nif_dni = $direccionFacturacion ? $direccionFacturacion->nif_dni : '';             
 
-            return view('orders.billing-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','nif_dni','carrito'))->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
+            return view('orders.billing-address', compact('name', 'lastname','pais','direccion_1','direccion_2','ciudad','codigo_postal','empresa','nif_dni'))->with('error', 'Error al procesar el pedido: ' . $e->getMessage());
         }
     }
+
+
     
 }
