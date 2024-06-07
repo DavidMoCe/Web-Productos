@@ -196,6 +196,7 @@
                                         @endif
                                         <div class="mb-7 w-full md:mt-4 md:flex md:items-start border-b-2 border-gray-200 pb-4 cart-product" data-product-price="{{ $producto['precio_producto'] }}" data-product-sku="{{ $producto['titulo_sku'] }}">
                                             <div class="flex grow items-start overflow-hidden">
+                                                {{-- {{ route('info_products',  ['producto' => $nombreTelefono, 'capacidad' => $capacidad, 'color' => $color]) }} --}}
                                                 <a href="#scroll=false" rel="noreferrer noopener" >
                                                     <img class="w-14 md:w-28 max-w-60 cursor-pointer align-top leading-none" alt="{{ $producto['titulo_imagen'] }}" decoding="async" loading="lazy" src="./imagenes/{{ $producto['titulo_imagen'] }}.jpg">
                                                 </a>
