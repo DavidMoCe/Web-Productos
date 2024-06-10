@@ -9,50 +9,8 @@
     <!-- <link rel="icon" type="image/x-icon" href="assets/favicon.ico" /> -->
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            const buyButton = document.getElementById('buyButton');
-            const loadingIcon = document.getElementById('loadingIcon');
-            const links = document.querySelectorAll('a');
+    <script src="{{ asset('js/script-info-product-load.js') }}"></script>
     
-            // Función para aplicar los efectos al hacer clic en un enlace
-            function applyClickEffects(link) {
-                // Agregar clase para mostrar el icono de carga
-                loadingIcon.classList.remove('hidden');
-                loadingIcon.classList.add('bg-slate-100/50');
-                buyButton.disabled = true;
-
-                // Eliminar la clase después de 2 segundos
-                setTimeout(function() {
-                    loadingIcon.classList.add('hidden');
-                    loadingIcon.classList.remove('bg-slate-100/50');
-                    buyButton.disabled = false;
-                }, 1000);
-            }
-            
-            // Agregar clase para mostrar el icono de carga
-            loadingIcon.classList.remove('hidden');
-            loadingIcon.classList.add('bg-slate-100/50');
-            buyButton.disabled = true;
-    
-            // Eliminar la clase después de 2 segundos
-            setTimeout(function() {
-                loadingIcon.classList.add('hidden');
-                loadingIcon.classList.remove('bg-slate-100/50');
-                buyButton.disabled = false;
-            }, 1000);
-
-            // Aplicar los efectos al hacer clic en un enlace
-            links.forEach(function(link) {
-                link.addEventListener('click', function(event) {
-                    // Prevenir el comportamiento predeterminado de los enlaces
-                    event.preventDefault();
-                    // Aplicar los efectos al hacer clic en el enlace
-                    applyClickEffects(link);
-                });
-            });
-        });
-    </script>
 </head>
 <body>
     <x-app-layout>
@@ -74,9 +32,8 @@
                 // Si la variable mejor_precio está definida y es 'si', filtrar por el precio más bajo
                 if (isset($mejor_precio) && $mejor_precio == 'si') {
                     // Filtrar los productos por el precio más bajo
-                    // Esto es solo un ejemplo, necesitarás implementar la lógica real para filtrar por el precio más bajo
-                    $precio_bajo = $info_producto->min('price');
-                    return $producto['price'] == $precio_bajo;
+                    $precio_bajo = $info_producto->min('min_price');
+                    return $producto['min_price'] == $precio_bajo;
                 }
                 if(isset($mas_popular) && $mas_popular == 'si'){
                     $cantidad_minima = $info_producto->min('quantity');
@@ -86,13 +43,12 @@
                 // Si mejor_precio no está definida o no es 'si', filtrar solo por capacidad y color
                 return $matchCapacidad && $matchColor;
             });
-            
             // Verificar si se encontró un producto con el título que contiene la cantidad y muestra sus datos
             if ($productoDiferente) {
                 // Acceder a las propiedades del producto encontrado
                 $sku_title = $productoDiferente['sku'];
                 $titulo = $productoDiferente['title'];
-                $precio = $productoDiferente['price'];
+                $precio = $productoDiferente['min_price'];
                 $stock = $productoDiferente['quantity'];
                 $descripcion = $productoDiferente['comment'];
                 $garantia = $productoDiferente['warranty_delay'];
@@ -164,13 +120,13 @@
                                         <div id="precio_producto" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
                                             <div class="flex items-center mt-4">
                                                 <div class="previous-price text-xs lg:!text-sm font-semibold line-through mt-auto mr-2">
-                                                    {{ number_format($precio, 2,",", ".") }}&nbsp;€ nuevo
+                                                    {{-- {{ number_format($precio, 2,",", ".") }}&nbsp;€ nuevo --}}
                                                 </div>
                                                 <input name="precio_producto" value='' class="hidden peer" readonly />
                                                 <input name="precio_producto_antiguo" value='' class="hidden peer" readonly />
                                                 <input name="stock_producto" value="{{ $stock }}" class="hidden peer" readonly />
                                                 <div class="current-price text-xl lg:!text-2xl font-semibold">
-                                                    {{ number_format($precio* 0.95, 2,",", ".") }}&nbsp;€
+                                                    {{ number_format($precio, 2,",", ".") }}&nbsp;€
                                                 </div>
                                             </div>
                                             <div class="iva text-xs lg:text-sm ml-auto">IVA incluido*</div>
@@ -262,7 +218,7 @@
                                             <p class="mb-3 block">Lo mejor de lo mejor</p>
                                             <div>
                                                 <div class="">
-                                                    <button class= "rounded-md font-weight-link cursor-pointer hover-hover underline" type="button">Ver más</button>
+                                                    {{-- <button class= "rounded-md font-weight-link cursor-pointer hover-hover underline" type="button">Ver más</button> --}}
                                                 </div>
                                             </div>
                                         </div>
@@ -299,7 +255,7 @@
                                                             </svg>
                                                             <span class="shrink truncate text-center">Mejor precio</span>
                                                         </div>
-                                                        <div class="text-static-brand-hi text-center">{{  number_format($info_producto->where('price', $info_producto->min('price'))->first()['price']* 0.95, 2,",", ".") }}&nbsp;€</div>
+                                                        <div class="text-static-brand-hi text-center">{{  number_format($info_producto->where('min_price', $info_producto->min('min_price'))->first()['min_price'], 2,",", ".") }}&nbsp;€</div>
                                                     </div>
                                                 </a>
                                             </li>
@@ -338,7 +294,7 @@
                                                                 class="shrink truncate text-center text-action-brand-mid text-blue-">Más
                                                                 populares</span>
                                                         </div>
-                                                        <div class="text-static-brand-mid text-center"> {{ number_format($info_producto->where('quantity', $info_producto->min('quantity'))->first()['price']* 0.95, 2,",", ".") }}&nbsp;€</div>
+                                                        <div class="text-static-brand-mid text-center"> {{ number_format($info_producto->where('quantity', $info_producto->min('quantity'))->first()['min_price'], 2,",", ".") }}&nbsp;€</div>
                                                     </div>
                                                 </a>
                                             </li>
@@ -350,7 +306,7 @@
                                             <p class="mb-3 block">Estado</p>
                                             <div>
                                                 <div class="font-bold">
-                                                    <button class="rounded-md font-weight-link cursor-pointer hover-hover underline" type="button">Ver más</button>
+                                                    {{-- <button class="rounded-md font-weight-link cursor-pointer hover-hover underline" type="button">Ver más</button> --}}
                                                 </div>
                                             </div>
                                         </div>
@@ -419,15 +375,15 @@
                                                 }                                         
                                                 // Si se encontró un producto seleccionado, calcular su precio correcto
                                                 if ($producto_COR) {
-                                                    $precio_producto_Correcto = number_format($producto_COR['price']*0.95 , 2, ",", ".");
+                                                    $precio_producto_Correcto = number_format($producto_COR['min_price'] , 2, ",", ".");
                                                 }
                                                 // Si se encontró un producto seleccionado, calcular su precio correcto
                                                 if ($producto_MBU) {
-                                                    $precio_producto_MBU = number_format($producto_MBU['price']*0.95 , 2, ",", ".");
+                                                    $precio_producto_MBU = number_format($producto_MBU['min_price'] , 2, ",", ".");
                                                 }                                      
                                                 // Si se encontró un producto seleccionado, calcular su precio correcto
                                                 if ($producto_IMP) {
-                                                    $precio_producto_IMP = number_format($producto_IMP['price']*0.95 , 2, ",", ".");
+                                                    $precio_producto_IMP = number_format($producto_IMP['min_price'] , 2, ",", ".");
                                                 }
 
                                                 // Verificar si el SKU contiene 'NEWBATTERY'
@@ -1105,7 +1061,6 @@
                         var precioCOR= response.precioCOR;
                         var precioBUE= response.precioBUE;
                         var precioIMP= response.precioIMP;
-
                         //console.log(response.precio*0.95, response);
                         //Convertir la cadena de precio a un número
                         var precio = parseFloat(precioString);
@@ -1115,10 +1070,10 @@
                         // Verificar si la conversión fue exitosa
                         if (!isNaN(precio)) {
                             // Aplicar el descuento del 5% al precio
-                            var precioNuevo = precio * 0.95;
-                            var precioCOR = precioCOR * 0.95;
-                            var precioBUE = precioBUE * 0.95;
-                            var precioIMP = precioIMP * 0.95;
+                            var precioNuevo = precio;
+                            var precioCOR = precioCOR;
+                            var precioBUE = precioBUE;
+                            var precioIMP = precioIMP;
                             //formateamos el precioTotal en euro
                             const formatterEuro = new Intl.NumberFormat("es-ES", {
                                 style: "currency",

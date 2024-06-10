@@ -136,49 +136,56 @@ class BackMarketApi{
     // Si se proporciona $date_creation, devuelve todas las órdenes creadas después de esa fecha.
     // @param string|false $date_modification - Fecha de modificación de las órdenes (en formato 'Y-m-d H:i:s'). Por defecto, se obtienen las órdenes modificadas en los últimos 60 días.
     // @param string|false $date_creation - Fecha de creación de las órdenes (en formato 'Y-m-d H:i:s'). Si se proporciona, se obtienen las órdenes creadas después de esta fecha.
-    // @param array $param - Parámetros adicionales para filtrar las órdenes (opcional).
-    // @return array - Un array de objetos que representan las órdenes.
+    // @param json $param - Parámetros adicionales para filtrar las órdenes (opcional).
+    // @return json - Un json que representan las órdenes.
     
     public function getAllOrders($date_modification = false, $date_creation = false, $param = array()) {
-        $end_point = 'orders';
+        $end_point = 'orders/';
 
-        // Si no se proporciona $date_modification, se obtienen las órdenes modificadas en los últimos 60 días por defecto
-        if (!$date_modification) {
-            $date_modification = date("Y-m-d H:i:s", time() - 60 * 24 * 60 * 60);
-        }
+        // if (!$date_creation) {
+        //     $date_creation = date("Y-m-d+H:i:s", time() - 60 * 24 * 60 * 60);
+        //     $end_point .= "?date_creation=$date_creation";
+        // }
+
+        // // Si no se proporciona $date_modification, se obtienen las órdenes modificadas en los últimos 60 días por defecto
+        // if (!$date_modification) {
+        //     $date_modification = date("Y-m-d H:i:s", time() - 60 * 24 * 60 * 60);
+        //     $end_point .= "?date_modification=$date_modification";
+        // }
         
-        $end_point .= "?date_modification=$date_modification";
+        $end_point .= "?date_creation=$date_creation";
 
         if(count($param) > 0) {
             $end_point .= '&'.http_build_query($param);
         }
 
         // Resultado de la primera página
-        $result = $this->client->apiGet($end_point);
+        $result = $this->apiGet($end_point);
 
-        // Array de resultados de la primera página
-        $result_array = $result->results;
-
+        // Json de resultados de la primera página
+        $result_json = $result['results'];
+        // $result_json = $result;
         $result_next = $result;
 
         $page = 1;
         // Verificar si existe la siguiente página
-        while (($result_next->next) != null) {
+        while (($result_next['next']) != null) {
             $page++;
             // Obtener el nuevo endpoint
             $end_point_next_tail = '&page='."$page";
             $end_point_next = $end_point.$end_point_next_tail;
             // Obtener la nueva página de resultados
-            $result_next = $this->client->apiGet($end_point_next);
-            // Obtener el array de resultados de la nueva página
-            $result_next_array = $result_next->results;
-            // Agregar todas las órdenes de la página actual al $result_array
-            foreach ($result_next_array as $value) {
-                $result_array[] = $value;
+            $result_next = $this->apiGet($end_point_next);
+            // Obtener el json de resultados de la nueva página
+            $result_next_json = $result_next['results'];
+            // Agregar todas las órdenes de la página actual al $result_json
+            foreach ($result_next_json as $value) {
+                $result_json[] = $value;
             }
         }
 
-        return $result_array;
+        
+        return $result_json;
     }
 
 

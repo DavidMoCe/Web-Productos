@@ -174,14 +174,14 @@
                                             </span> 
                                             <div>
                                                 <span class="text-primary body-2-bold text-sm font-medium text-black-900">
-                                                    <b> {{  number_format($productoAPI2['price'] * 0.95, 2,",", ".") }}&nbsp;€</b>
+                                                    <b> {{  number_format($productoAPI2['min_price'] , 2,",", ".") }}&nbsp;€</b>
                                                 </span>
-                                                <span class="text-primary-light line-through body-2-light text-sm font-medium text-gray-600">
-                                                    {{ number_format($productoAPI2['price'], 2,",", ".") }}&nbsp;€
+                                                {{-- <span class="text-primary-light line-through body-2-light text-sm font-medium text-gray-600">
+                                                    {{ number_format($productoAPI2['min_price'], 2,",", ".") }}&nbsp;€
                                                     <span>
                                                         nuevo
                                                     </span>
-                                                </span>
+                                                </span> --}}
                                             </div>
                                         </div>
                                     </a>

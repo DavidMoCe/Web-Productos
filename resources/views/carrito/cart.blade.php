@@ -298,7 +298,7 @@
                                     </div>
                                 </form>
                             @else
-                                <p>El carrito está vacío.</p>
+                                <p>El carrito está vacío</p>
                             @endif
                         </div>
                     </div>

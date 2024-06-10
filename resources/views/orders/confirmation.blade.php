@@ -57,7 +57,10 @@
                                                 break;
                                         }
                                     @endphp
-                                    <li><b>Nombre: </b>{{ $product['name'] }} {{ $product['capacity'] }} {{ $product['color'] }} {{$estado}} <b>- Cantidad:</b> {{ $product['quantity'] }} <b>- Precio:</b> {{ number_format($product['price'], 2, ',', '.') . ' €' }}</li>
+                                    <li><b>Nombre: </b>{{  $product['name']." ". $product['capacity']." ".$product['color']." ".($product['libre'] ? 'Libre':'')." ".$product['battery']}}</li>
+                                    <li><b>Estado:</b> {{$estado}}</li>
+                                    <li><b>Cantidad:</b> {{ $product['quantity'] }}</li>
+                                    <li><b>Precio:</b> {{ number_format($product['price'], 2, ',', '.') . ' €' }}</li>
                                 @endforeach
                             </ul>
                         @else

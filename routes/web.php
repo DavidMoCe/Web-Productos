@@ -1,5 +1,6 @@
 <?php
 
+use App\BackMarketApi;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -67,6 +68,10 @@ Route::get('/order/confirmation', function (){
 
 //Actualizar productos en la BD
 Route::get('/actualizarProductosBD',[BackMarketController::class,'actualizarProductosBD'])->name('actualizarProductos');
+
+//Obtener listado de pedidos
+Route::get('/listadoPedidos',[ProfileController::class, 'obtenerPedidoBD'])->name('listadoPedidos');
+// Route::get('/listadoPedidos',[BackMarketApi::class,'getAllOrders'])->name('listadoPedidos');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

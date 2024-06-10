@@ -32,6 +32,8 @@
                             {{-- {{ __("You're logged in!") }} --}}
                             {{-- <h1>Bienvenido {{ auth()->user()->name }}</h1>--}}
                             <button id="actualizarBD" class="bg-gray-50 p-3 rounded-md border border-black">Actualizar BD</button>
+                        
+                            {{-- <button id="Pedidos" class="bg-gray-50 p-3 rounded-md border border-black">Ver listado</button> --}}
                         </div>
                     </div>
                 </div>
@@ -118,5 +120,7 @@
         document.getElementById('actualizarBD').addEventListener('click', function() {
             window.location.href = "{{ route('actualizarProductos') }}";
         });
+
+       
     </script>
 </html>

@@ -528,17 +528,17 @@ class BackMarketController extends Controller{
                 }
                 //si existe el producto en los estados, se pone el precio si no se pone 0
                 if(isset($precioCOR1)){
-                    $precioCOR = $precioCOR1['price'];
+                    $precioCOR = $precioCOR1['min_price'];
                 }else{
                     $precioCOR = 0;
                 }
                 if(isset($precioBUE1)){
-                    $precioBUE = $precioBUE1['price'];
+                    $precioBUE = $precioBUE1['min_price'];
                 }else{
                     $precioBUE = 0;
                 }
                 if(isset($precioIMP1)){
-                    $precioIMP = $precioIMP1['price'];
+                    $precioIMP = $precioIMP1['min_price'];
                 }else{
                     $precioIMP = 0;
                 }
@@ -564,7 +564,7 @@ class BackMarketController extends Controller{
             }
                
             if($productosFiltrados){
-                $productosFiltradosPrecio = $productosFiltrados['price'];
+                $productosFiltradosPrecio = $productosFiltrados['min_price'];
             }else{
                 $productosFiltradosPrecio = 0;
             }
@@ -688,6 +688,7 @@ class BackMarketController extends Controller{
             $allListings=[];
             for ($x = 1; $x <= $Totalpaginas; $x++){
                 // Hacer una solicitud a la API de BackMarket para obtener detalles del producto
+                //$listing = $this->backMarketApi->apiGet('listings_bi/?page='.$x.'&page-size='.$productosPorPaginas);
                 $listing = $this->backMarketApi->apiGet('listings/?page='.$x.'&page-size='.$productosPorPaginas);
                 $Totalpaginas = ceil($listing['count'] / $productosPorPaginas);
                 $allListings = array_merge($allListings, $listing['results']);
@@ -726,7 +727,7 @@ class BackMarketController extends Controller{
                                 'capacidad' => $capacidad,
                                 'descripcion' => $productoData['comment'],
                                 'precioA' => $productoData['price'],
-                                'precioD' => $productoData['price']*0.95,
+                                'precioD' => $productoData['min_price'],
                                 'color' => $color,
                                 'libre' => $libre,
                                 'bateria' => $bateria,
@@ -740,47 +741,55 @@ class BackMarketController extends Controller{
                     }
                 }
             }
-            // $response = [
-            //     'productosAPI' => $allListings,
-            //     'Totalproductos' => $listing['count'],
-            //     'productosPorPaginas' => $productosPorPaginas
-            // ];
+            $response = [
+                'productosAPI' => $allListings,
+                'Totalproductos' => $listing['count'],
+                'productosPorPaginas' => $productosPorPaginas
+            ];
             // Devolver la respuesta JSON
-            //return response()->json($response);
+           // return response()->json($response);
             return redirect()->route('admin.dashboard')->with('success','Base de datos actualizada');
            
         } catch (\Exception $e) {
             // Manejar errores y devolver una respuesta vacía o un mensaje de error según corresponda
             //return response()->json(['error' => $e->getMessage()], 500);
-            return redirect()->route('admin.dashboard')->with('error','Error al actualizar la base de datos');
+            return redirect()->route('admin.dashboard')->with('error','Error al actualizar la base de datos' . $e->getMessage());
         }
     }
     
+    // Actualizar stock en back market
     public function actualizarStockBM($sku,$cantidad){
-        // Endpoint para actualizar el stock de un producto en Back Market
-        $end_point = "listings/sku=".$sku;
+        
 
         // Hacer una solicitud a la API de Back Market para obtener detalles del producto en el que se incluye el stock
         $producto = $this->mostrarUnProducto($sku);
-        $cantidadFinal=$producto['quantity']-$cantidad;
-        // Datos a enviar en la solicitud POST
-        $request = [
-            'quantity' => $cantidadFinal
-        ];
+        // Endpoint para actualizar el stock de un producto en Back Market
+        $end_point = "listings/".$producto['listing_id'];
 
-        try {
-            // Realizar la solicitud POST a la API de Back Market para actualizar el stock
-            $this->backMarketApi->apiPost($end_point, $request);
-            
-            // Devolver un mensaje de éxito si la actualización del stock fue exitosa
-            return 'Stock actualizado correctamente en Back Market.';
-            //return redirect()->route('products')->with('success','Stock actualizado correctamente en Back Market.');
-        } catch (\Exception $e) {
-            // Capturar y manejar cualquier excepción que ocurra durante la actualización del stock
-            return 'Error al actualizar el stock en Back Market: ' . $e->getMessage();
+        if (isset($producto['quantity'])) {
+            $cantidadFinal=$producto['quantity']-$cantidad;
+
+            // Datos a enviar en la solicitud POST
+            $request = [
+                "quantity" => $cantidadFinal,
+            ];
+            try {
+                // Realizar la solicitud POST a la API de Back Market para actualizar el stock
+                $this->backMarketApi->apiPost($end_point, $request);
+                
+                // Devolver un mensaje de éxito si la actualización del stock fue exitosa
+                return 'Stock actualizado correctamente en Back Market.';
+                //return redirect()->route('products')->with('success','Stock actualizado correctamente en Back Market.');
+            } catch (\Exception $e) {
+                // Capturar y manejar cualquier excepción que ocurra durante la actualización del stock
+                return 'Error al actualizar el stock en Back Market: ' . $e->getMessage();
+            }
+        }else{
+            return 'Error: No se pudo obtener la cantidad del producto desde Back Market.';
         }
     }
 
+    
 }
 
 
