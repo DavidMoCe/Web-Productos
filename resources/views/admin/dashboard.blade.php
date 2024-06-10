@@ -116,7 +116,7 @@
 
 
                 <div class="sketchfab-embed-wrapperç pt-8"> 
-                    <iframe title="Platano (Banana)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="640" height="480" src="https://sketchfab.com/models/86018b256c5b49e9a9862de7e9fb5ca3/embed?autospin=0.5&autostart=0.5&preload=2&ui_hint=0&background=0xff0000"> </iframe> 
+                    <iframe title="Platano (Banana)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="640" height="480" src="https://sketchfab.com/models/86018b256c5b49e9a9862de7e9fb5ca3/embed?autospin=0.5&autostart=1&preload=1&ui_hint=0"> </iframe> 
                 </div>
 
             </div>
@@ -126,7 +126,6 @@
         document.getElementById('actualizarBD').addEventListener('click', function() {
             window.location.href = "{{ route('actualizarProductos') }}";
         });
-
-       
+      
     </script>
 </html>
