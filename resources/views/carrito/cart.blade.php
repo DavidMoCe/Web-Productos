@@ -221,12 +221,12 @@
                                                         <span class="font-medium text-black-900" data-qa="price">
                                                             <b> {{ $producto['precio_producto'] }}</b>
                                                         </span>
-                                                        <span class="line-through text-sm font-medium text-gray-600">
+                                                        {{-- <span class="line-through text-sm font-medium text-gray-600">
                                                             {{ $producto['precio_producto_antiguo'] }}
                                                             <span>
                                                                 nuevo
                                                             </span>
-                                                        </span>
+                                                        </span> --}}
                                                     </div>
                                                 </div>
                                             </div>

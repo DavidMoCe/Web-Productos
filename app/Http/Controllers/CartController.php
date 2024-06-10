@@ -184,12 +184,11 @@ class CartController extends Controller{
         } else {
             // El usuario no ha iniciado sesión, obtener el carrito desde la cookie
             $cookieCart = session()->get('cart', []);
-            if (empty($cookieCart)) {
-                $cookieCart = json_decode(request()->cookie('cart'), true) ?: [];
-            }
 
             // Verificar el stock del carrito de la cookie antes de mostrarlo al usuario
-            $cookieCart = $this->verificarStockCarrito($cookieCart);
+            if(!empty($cookieCart)){
+                $cookieCart = $this->verificarStockCarrito($cookieCart);
+            }
         }
 
         // Pasar los datos del carrito a la vista
@@ -279,7 +278,8 @@ class CartController extends Controller{
     public function add(Request $request){
         try {
             // Verificar si hay una cookie de carrito
-            $cookieCart = json_decode($request->cookie('cart'), true) ?: [];
+            // $cookieCart = json_decode($request->cookie('cart'), true) ?: [];
+            $cookieCart = session()->get('cart', []);
             // Obtener los datos del formulario POST
             $tituloImagen = $request->input('titulo_imagen');
             $tituloSku = $request->input('titulo_sku');

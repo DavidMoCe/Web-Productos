@@ -119,9 +119,9 @@
                                         <h2 id="titulo_producto" class="text-2xl sm:!text-3xl font-bold m-auto">{{ $titulo }}</h2>
                                         <div id="precio_producto" class="flex flex-col shrink-0 md:ml-6 items-end mr-2 lg:mr-0">
                                             <div class="flex items-center mt-4">
-                                                <div class="previous-price text-xs lg:!text-sm font-semibold line-through mt-auto mr-2">
-                                                    {{-- {{ number_format($precio, 2,",", ".") }}&nbsp;€ nuevo --}}
-                                                </div>
+                                                {{-- <div class="previous-price text-xs lg:!text-sm font-semibold line-through mt-auto mr-2">
+                                                    {{ number_format($precio, 2,",", ".") }}&nbsp;€ nuevo
+                                                </div> --}}
                                                 <input name="precio_producto" value='' class="hidden peer" readonly />
                                                 <input name="precio_producto_antiguo" value='' class="hidden peer" readonly />
                                                 <input name="stock_producto" value="{{ $stock }}" class="hidden peer" readonly />
@@ -225,8 +225,8 @@
                                         <ul class="grid list-none gap-2 grid-cols-2">
                                             <li data-qa="recommended_variants-0">
                                                 @php
-                                                    $producto_mejor_precio = $info_producto->min('price');
-                                                    $producto_mejor = $info_producto->where('price', $producto_mejor_precio)->first();
+                                                    $producto_mejor_precio = $info_producto->min('min_price');
+                                                    $producto_mejor = $info_producto->where('min_price', $producto_mejor_precio)->first();
                                                     $producto_mejor_titulo = $producto_mejor['title'];
 
                                                     if (preg_match('/^(.*?)\s*(\d+[MTG]B\b)(\s.*)$/i', $producto_mejor_titulo, $matches)) {

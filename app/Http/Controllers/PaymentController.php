@@ -136,7 +136,7 @@ class PaymentController extends Controller{
                 // Actualizar stock en Back Market
                 //creamos el sku para pasarlo a la url
                 $sku= "$producto->nombre $producto->capacidad - $producto->color - Libre ".(isset($producto->bateria) ? "$producto->bateria ":'')."$producto->estado";
-                $this->backMarketController->actualizarStockBM($sku, $producto->pivot->unidades);
+                //-----------------$this->backMarketController->actualizarStockBM($sku, $producto->pivot->unidades);
                 
             }
             // Elimina el carrito
