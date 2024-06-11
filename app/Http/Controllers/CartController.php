@@ -495,7 +495,7 @@ class CartController extends Controller{
             return redirect()->route('cart.index')->with('error', 'Error al eliminar el producto del carrito: ' . $e->getMessage());
         }
     }
-    //vaciar carrito
+    //vaciar carrito (No se utiliza)
     public function clear(){
         try {
             // Borrar la cookie del carrito

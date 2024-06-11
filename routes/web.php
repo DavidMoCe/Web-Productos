@@ -38,7 +38,7 @@ Route::post('/actualizar-estado-pedido', [BackMarketController::class, 'actualiz
 Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name('products');
 
 // mostrar pagina detalles del producto
-Route::get('/info_products',[BackMarketController::class, 'OntenerUnProducto'])->name('info_products');
+Route::get('/info_products',[BackMarketController::class, 'ObtenerUnProducto'])->name('info_products');
 //ruta para las peticiones de la ppagina dellates del producto
 Route::post('/peticionProductos',[BackMarketController::class,'peticionProductos'])->name('peticionProductos');
 

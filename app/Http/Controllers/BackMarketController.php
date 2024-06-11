@@ -18,7 +18,7 @@ class BackMarketController extends Controller{
         $this->backMarketApi = $backMarketApi;
     }
 
-    // Método para obtener los productos en linea de Back Market Pagina por pagina
+    // Método para obtener los productos en linea de Back Market Pagina por pagina, para la página de productos
     public function mostrarProductos(Request $request){
         try {
             // Obtener el valor del parámetro de página de la solicitud
@@ -155,7 +155,7 @@ class BackMarketController extends Controller{
     }
 
     // Parte de detalles del producto
-    public function OntenerUnProducto(Request $request){
+    public function ObtenerUnProducto(Request $request){
         // Obtener los parametros del producto
         $productoSeleccionado= $this->tipoTelefono($request);
         $capacidad= $this->capacidad($request);
@@ -758,7 +758,7 @@ class BackMarketController extends Controller{
             return redirect()->route('admin.dashboard')->with('error','Error al actualizar la base de datos' . $e->getMessage());
         }
     }
-    //Actualizar los productos en línea
+    //Actualizar los productos en línea (No se utiliza)
     public function actualizarProductosEnLineaBD(){
         try {
             $productosPorPaginas = $this->productosPorPaginas;
