@@ -4,7 +4,8 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        {{-- <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
+        
         <!-- <title>Shop Homepage - Start Bootstrap Template</title> -->
         <title>TouchPhone</title>
         <!-- Favicon-->
@@ -18,7 +19,7 @@
         <x-app-layout>
             <x-slot name="header">
                 <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    {{ __('Pedidos Realizados') }}
+                    {{ __('Pedidos Recibidos') }}
                 </h2>
             </x-slot>
             <!-- Mostrar mensajes flash -->
@@ -52,7 +53,7 @@
                                                 Nombre producto
                                             </th>
                                             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Estado
+                                                Grado
                                             </th>
                                             <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Unidades
@@ -65,6 +66,9 @@
                                             </th>
                                             <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Fecha de realización
+                                            </th>
+                                            <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                Estado pedido
                                             </th>
                                         </tr>
                                     </thead>
@@ -90,7 +94,7 @@
                                                             break;
                                                     }
                                                 @endphp
-                                                <tr>
+                                                <tr data-pedido-id="{{ $pedido->id }}">
                                                     <td class="py-3 whitespace-nowrap text-center">{{ $pedido->id }}</td>
                                                     <td class="py-3 whitespace-nowrap text-center">{{ $producto->nombre." ". $producto->capacidad." ".$producto->color." ".($producto->libre ? 'Libre':'')." ".$producto->bateria}}</td>
                                                     <td class="py-3 whitespace-nowrap text-center">{{ $estado }}</td>
@@ -98,12 +102,42 @@
                                                     <td class="py-3 whitespace-nowrap text-center">{{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</td>
                                                     <td class="py-3 whitespace-nowrap text-center">{{ $pedido->metodoPago }}</td>
                                                     <td class="py-3 whitespace-nowrap text-center">{{ $pedido->created_at }}</td>
+                                                    <td class="py-3 whitespace-nowrap text-center">
+                                                        <select class="form-select" onchange="actualizarEstadoPedido({{ $pedido->id }}, this.value)">
+                                                            <option value="pendiente" {{ $pedido->enviado == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                                                            <option value="aceptado" {{ $pedido->enviado == 'aceptado' ? 'selected' : '' }}>Aceptado</option>
+                                                            <option value="procesado" {{ $pedido->enviado == 'procesado' ? 'selected' : '' }}>Procesado</option>
+                                                            
+                                                        </select>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
+                            <script>
+                                function actualizarEstadoPedido(pedidoId, nuevoEstado) {
+                                    // Envía los datos al controlador mediante AJAX
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '{{ route('actualizarEstadoPedido') }}',
+                                        data: {
+                                            pedido_id: pedidoId,
+                                            nuevo_estado: nuevoEstado,
+                                            _token: '{{ csrf_token() }}'
+                                        },
+                                        success: function(response) {
+                                            // Maneja la respuesta del servidor si es necesario
+                                            //console.log(response);
+                                        },
+                                        error: function(xhr, status, error) {
+                                            // Maneja los errores si es necesario
+                                            console.error(xhr.responseText);
+                                        }
+                                    });
+                                }
+                            </script>
                             @endif
                         </div>
                     </div>

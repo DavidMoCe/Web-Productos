@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('facturacion_id');
             //$table->dateTime('fecha');
             $table->string('metodoPago');
-            $table->boolean('enviado')->default(false);
+            $table->string('enviado')->default("pendiente");
             $table->timestamps();
         });
 

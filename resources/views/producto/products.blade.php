@@ -82,7 +82,7 @@
                                         </span> 
                                         <div>
                                             <span class="text-sm font-medium text-black-900">
-                                                <b> {{ str_replace('.', ',', number_format($producto->precioD * 0.95, 2)) }}&nbsp;€</b>
+                                                <b> {{ str_replace('.', ',', number_format($producto->precioD, 2)) }}&nbsp;€</b>
                                             </span>
                                             <span class="line-through text-sm font-medium text-gray-600">
                                                 {{ str_replace('.', ',', number_format($producto->precioA, 2)) }}&nbsp;€

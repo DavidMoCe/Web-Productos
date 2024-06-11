@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\BackMarketApi;
+use App\Models\Pedido;
 use App\Models\Producto;
+use Illuminate\Support\Facades\Auth;
 
 // use Illuminate\Support\Facades\Session;
 
@@ -680,7 +682,7 @@ class BackMarketController extends Controller{
             
         } 
     }
-    //Actualizar los productos en la BD
+    //Actualizar tolos los productos en la BD
     public function actualizarProductosBD(){
         try {
             $productosPorPaginas = $this->productosPorPaginas;
@@ -690,6 +692,82 @@ class BackMarketController extends Controller{
                 // Hacer una solicitud a la API de BackMarket para obtener detalles del producto
                 //$listing = $this->backMarketApi->apiGet('listings_bi/?page='.$x.'&page-size='.$productosPorPaginas);
                 $listing = $this->backMarketApi->apiGet('listings/?page='.$x.'&page-size='.$productosPorPaginas);
+                $Totalpaginas = ceil($listing['count'] / $productosPorPaginas);
+                $allListings = array_merge($allListings, $listing['results']);
+            }
+            
+            // Guardar los productos en la base de datos
+            foreach ($allListings as $productoData) {
+                // Obtener el SKU del producto desde el detalle
+                $sku = $productoData['sku'];
+
+                // Separar el SKU en partes (nombre, capacidad, color, libre, batería, estado)
+                $partesSku = $this->separarSku($sku);
+
+                if (!empty($partesSku)) {
+                    if (strpos($partesSku['nombre'], 'iPhone') !== 0) {
+                        continue; // Si el nombre no comienza por "iPhone", omitir el producto y continuar con el siguiente
+                    }
+                    try {
+                        // Aquí puedes utilizar $partesSku para acceder a las partes del SKU
+                        $nombre = $partesSku['nombre'];
+                        $capacidad = $partesSku['capacidad'];
+                        $color = $partesSku['color'];
+                        $libre = $partesSku['libre'];
+                        $libre = isset($libre) && $libre != '' ? true : false;
+                        $bateria = $partesSku['bateria'];
+                        $estado = $partesSku['estado'];
+                        //separar en la capacidad los numeros de las palabras
+                        // if($capacidad){
+                        //     $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
+                        // }
+                        // Buscar el producto en la base de datos basándose en los valores obtenidos del SKU
+                        
+                        Producto::updateOrCreate(
+                            [
+                                'nombre' => $nombre,
+                                'capacidad' => $capacidad,
+                                'descripcion' => $productoData['comment'],
+                                'precioA' => $productoData['min_price'],
+                                'precioD' => $productoData['min_price'],
+                                'color' => $color,
+                                'libre' => $libre,
+                                'bateria' => $bateria,
+                                'estado' => $estado,
+                            ],
+                            [
+                                'stock' => $productoData['quantity'] // Este es el valor del stock que deseas establecer
+                            ]
+                        );
+                    }  catch (\Exception $e) {
+                    }
+                }
+            }
+            $response = [
+                'productosAPI' => $allListings,
+                'Totalproductos' => $listing['count'],
+                'productosPorPaginas' => $productosPorPaginas
+            ];
+            // Devolver la respuesta JSON
+           // return response()->json($response);
+            return redirect()->route('admin.dashboard')->with('success','Base de datos actualizada');
+           
+        } catch (\Exception $e) {
+            // Manejar errores y devolver una respuesta vacía o un mensaje de error según corresponda
+            //return response()->json(['error' => $e->getMessage()], 500);
+            return redirect()->route('admin.dashboard')->with('error','Error al actualizar la base de datos' . $e->getMessage());
+        }
+    }
+    //Actualizar los productos en línea
+    public function actualizarProductosEnLineaBD(){
+        try {
+            $productosPorPaginas = $this->productosPorPaginas;
+            $Totalpaginas=1;
+            $allListings=[];
+            for ($x = 1; $x <= $Totalpaginas; $x++){
+                // Hacer una solicitud a la API de BackMarket para obtener detalles del producto
+                //$listing = $this->backMarketApi->apiGet('listings_bi/?page='.$x.'&page-size='.$productosPorPaginas);
+                $listing = $this->backMarketApi->apiGet('listings/?publication_state=2&page='.$x.'&page-size='.$productosPorPaginas);
                 $Totalpaginas = ceil($listing['count'] / $productosPorPaginas);
                 $allListings = array_merge($allListings, $listing['results']);
             }
@@ -789,7 +867,37 @@ class BackMarketController extends Controller{
         }
     }
 
+    // Obtener pedidos de la base de datos
+    public function obtenerPedidoPendiente(){
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+        
+        // Verificar si el usuario está autenticado
+        if($user){
+            // Obtener el ID del usuario autenticado
+            $userId = $user->id;    
+            // Obtener los pedidos asociados al usuario autenticado con los detalles de productos
+            $pedidos = Pedido::all();
+            // Devolver los pedidos obtenidos
+            return view('admin.verPedidos', ['pedidos' => $pedidos]);
+        } else {
+            // Si el usuario no está autenticado, devolver un mensaje de error o manejarlo según sea necesario
+            return "Usuario no autenticado";
+        }
+    }
+
+    // Método para actualizar el estado del pedido
+    public function actualizarestadopedido(Request $request) {
+        // Obtén el ID del pedido y el nuevo estado del pedido desde la solicitud
+        $pedidoId = $request->input('pedido_id');
+        $nuevoEstado = $request->input('nuevo_estado');
+        
+        // Actualizar el pedido en la base de datos
+        Pedido::where('id', $pedidoId)->update(['enviado' => $nuevoEstado]);
     
+        // Retorna una respuesta apropiada (puedes retornar JSON si lo deseas)
+        return response()->json(['success' => true]);
+    }
 }
 
 

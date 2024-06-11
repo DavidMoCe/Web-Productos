@@ -31,6 +31,8 @@ Route::get('/redirect',[LoginController::class,'redirect'])->name('redireccionar
 Route::get('/admin',[BackMarketController::class, 'obtenerMoviles'])->middleware(['auth', 'verified', AdminMiddleware::class])->name('admin.dashboard');
 Route::get('/modelo',[BackMarketController::class, 'obtenerModelos'])->middleware(['auth','verified', AdminMiddleware::class])->name('admin.modelo');
 Route::get('/stock',[BackMarketController::class, 'obtenerStock'])->middleware(['auth','verified', AdminMiddleware::class])->name('admin.stock');
+Route::get('/pedidos',[BackMarketController::class, 'obtenerPedidoPendiente'])->middleware(['auth','verified', AdminMiddleware::class])->name('verPedidos');
+Route::post('/actualizar-estado-pedido', [BackMarketController::class, 'actualizarEstadoPedido'])->name('actualizarEstadoPedido');
 
 // mostrar pagina de productos
 Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name('products');

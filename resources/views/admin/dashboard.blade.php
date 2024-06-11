@@ -32,8 +32,7 @@
                             {{-- {{ __("You're logged in!") }} --}}
                             {{-- <h1>Bienvenido {{ auth()->user()->name }}</h1>--}}
                             <button id="actualizarBD" class="bg-gray-50 p-3 rounded-md border border-black">Actualizar BD</button>
-                        
-                            {{-- <button id="Pedidos" class="bg-gray-50 p-3 rounded-md border border-black">Ver listado</button> --}}
+                            <button id="verPedidos" class="bg-gray-50 p-3 rounded-md border border-black">Ver pedidos</button>
                         </div>
                     </div>
                 </div>
@@ -115,9 +114,9 @@
                 @endif
 
 
-                <div class="sketchfab-embed-wrapperç pt-8"> 
+                {{-- <div class="sketchfab-embed-wrapperç pt-8"> 
                     <iframe title="Platano (Banana)" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="640" height="480" src="https://sketchfab.com/models/86018b256c5b49e9a9862de7e9fb5ca3/embed?autospin=0.5&autostart=1&preload=1&ui_hint=0"> </iframe> 
-                </div>
+                </div> --}}
 
             </div>
         </x-app-layout>
@@ -125,6 +124,10 @@
     <script>
         document.getElementById('actualizarBD').addEventListener('click', function() {
             window.location.href = "{{ route('actualizarProductos') }}";
+        });
+
+        document.getElementById('verPedidos').addEventListener('click', function() {
+            window.location.href = "{{ route('verPedidos') }}";
         });
       
     </script>
