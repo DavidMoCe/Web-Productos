@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\BackMarketApi;
 use App\Models\Pedido;
 use App\Models\Producto;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 // use Illuminate\Support\Facades\Session;
@@ -868,18 +869,41 @@ class BackMarketController extends Controller{
     }
 
     // Obtener pedidos de la base de datos
-    public function obtenerPedidoPendiente(){
+    public function obtenerPedidos($vista){
         // Obtener el usuario autenticado
         $user = Auth::user();
         
         // Verificar si el usuario está autenticado
         if($user){
-            // Obtener el ID del usuario autenticado
-            $userId = $user->id;    
-            // Obtener los pedidos asociados al usuario autenticado con los detalles de productos
-            $pedidos = Pedido::all();
+            switch ($vista){
+                case 'Recibidos':
+                    // Obtener todos los pedidos
+                    $pedidos= Pedido::with(['usuario','direccionFacturacion'])->get();
+                    break;
+                case 'Pendientes':
+                    // Obtener los pedidos pendientes
+                    $pedidos = Pedido::with('usuario')->where('enviado', 'pendiente')->get();
+                    break;
+                case 'Aceptados':
+                    // Obtener los pedidos enviados
+                    $pedidos = Pedido::with('usuario')->where('enviado', 'aceptado')->get();
+                    break;
+                case 'Procesados':
+                    // Obtener los pedidos procesados
+                    $pedidos = Pedido::with('usuario')->where('enviado', 'procesado')->get();
+                    break;
+                case 'Rechazados':
+                    // Obtener los pedidos rechazados
+                    $pedidos = Pedido::with('usuario')->where('enviado','rechazado')->get();
+                    break;
+                default:
+                    // Si no se especifica
+                    $pedidos =  Pedido::with('usuario')->get();
+                    break;
+            } 
+           
             // Devolver los pedidos obtenidos
-            return view('admin.verPedidos', ['pedidos' => $pedidos]);
+            return view('admin.verPedidos', ['pedidos' => $pedidos, 'estado'=>$vista]);
         } else {
             // Si el usuario no está autenticado, devolver un mensaje de error o manejarlo según sea necesario
             return "Usuario no autenticado";
@@ -898,6 +922,53 @@ class BackMarketController extends Controller{
         // Retorna una respuesta apropiada (puedes retornar JSON si lo deseas)
         return response()->json(['success' => true]);
     }
+
+    // Método para obtener los datos del cliente
+    public function obtenerDatosCliente(Request $request) {
+        // Obtén el ID del pedido y el nuevo estado del pedido desde la solicitud
+        $pedido= Pedido::find($request->input('pedido_id'));
+        $user= User::find($pedido->usuario_id);
+        
+        // Obtener el nombre, apellidos, gmail, telefono de la tabla usuario
+        $name = $user->name ?? '';
+        $lastname = $user->lastname ?? '';
+        $email= $user->email ?? '';
+        $telefono= $user->phone ?? '';
+
+        //obtener pais, direccion_1,direccion_2,ciudad,cp,empresa,telefono de la tabla envio
+        //accedemos a la funcion direccion envio del modelo user.php
+        $direccionEnvio = $user->direccionEnvio;
+        $E_pais= $direccionEnvio->pais ?? '';
+        $E_direccion_1= $direccionEnvio->direccion_1 ?? '';
+        $E_direccion_2= $direccionEnvio->direccion_2 ?? '';
+        $E_ciudad= $direccionEnvio->ciudad ?? '';
+        $E_codigo_postal= $direccionEnvio->codigo_postal ?? '';
+        $E_empresa= $direccionEnvio->empresa ?? '';
+        $E_telefono= $direccionEnvio->empresa ?? '';
+
+        //obtener pais, direccion_1,direccion_2,ciudad,cp,empresa,nif_dni de la tabla facturacion
+        //accedemos a la funcion direccion envio del modelo user.php
+        $direccionFacturacion = $user->direccionFacturacion;
+        // Obtener la dirección_1 del usuario autenticado, si existe
+        $F_direccion_1 = $direccionFacturacion ? $direccionFacturacion->direccion_1 : '';
+        $F_direccion_2 = $direccionFacturacion ? $direccionFacturacion->direccion_2 : '';
+        $F_pais = $direccionFacturacion ? $direccionFacturacion->pais : '';
+        $F_ciudad = $direccionFacturacion ? $direccionFacturacion->ciudad : '';
+        $F_codigo_postal = $direccionFacturacion ? $direccionFacturacion->codigo_postal : '';
+        $F_empresa = $direccionFacturacion ? $direccionFacturacion->empresa : '';
+        $F_nif_dni = $direccionFacturacion ? $direccionFacturacion->nif_dni : '';
+        
+        // Retorna una respuesta apropiada (puedes retornar JSON si lo deseas)
+        return response()->json(['nombre'=> $name, 'apellido'=>$lastname,'email'=>$email,'telefono'=>$telefono,
+            'E_pais'=>$E_pais,'E_direccion_1'=>$E_direccion_1,'E_direccion_2'=>$E_direccion_2,'E_ciudad'=>$E_ciudad,
+            'E_codigo_postal'=>$E_codigo_postal,'E_empresa'=>$E_empresa,'E_telefono'=>$E_telefono,
+            'F_direccion_1'=>$F_direccion_1,'F_direccion_2'=>$F_direccion_2,'F_pais'=>$F_pais,'F_ciudad'=>$F_ciudad,
+            'F_codigo_postal'=>$F_codigo_postal,'F_empresa'=>$F_empresa,'F_nif_dni'=>$F_nif_dni]);
+        return response()->json(['success' => true]);
+    }
+
+
+
 }
 
 

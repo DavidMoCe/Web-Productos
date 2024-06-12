@@ -127,7 +127,7 @@
         });
 
         document.getElementById('verPedidos').addEventListener('click', function() {
-            window.location.href = "{{ route('verPedidos') }}";
+            window.location.href = "{{ route('verTodosPedidos', ['vista' => 'Recibidos']) }}";
         });
       
     </script>

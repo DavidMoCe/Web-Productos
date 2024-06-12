@@ -10,6 +10,7 @@ use App\Http\Controllers\BackMarketController;//para utilizar la api
 use App\Http\Middleware\AdminMiddleware;//para limitar el acceso del usuario
 use App\Http\Controllers\CartController;//para manejar las funciones del carrito
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\verPedidosController;
 use Illuminate\Http\Request;
 
 // Route::get('/', function () {
@@ -31,8 +32,10 @@ Route::get('/redirect',[LoginController::class,'redirect'])->name('redireccionar
 Route::get('/admin',[BackMarketController::class, 'obtenerMoviles'])->middleware(['auth', 'verified', AdminMiddleware::class])->name('admin.dashboard');
 Route::get('/modelo',[BackMarketController::class, 'obtenerModelos'])->middleware(['auth','verified', AdminMiddleware::class])->name('admin.modelo');
 Route::get('/stock',[BackMarketController::class, 'obtenerStock'])->middleware(['auth','verified', AdminMiddleware::class])->name('admin.stock');
-Route::get('/pedidos',[BackMarketController::class, 'obtenerPedidoPendiente'])->middleware(['auth','verified', AdminMiddleware::class])->name('verPedidos');
+Route::get('/pedidos/{vista}',[BackMarketController::class, 'obtenerPedidos'])->middleware(['auth','verified', AdminMiddleware::class])->name('verTodosPedidos');
+
 Route::post('/actualizar-estado-pedido', [BackMarketController::class, 'actualizarEstadoPedido'])->name('actualizarEstadoPedido');
+Route::post('/datosCliente', [BackMarketController::class, 'obtenerDatosCliente'])->name('obtenerDatosCliente');
 
 // mostrar pagina de productos
 Route::get('/products',[BackMarketController::class, 'mostrarProductos'])->name('products');
