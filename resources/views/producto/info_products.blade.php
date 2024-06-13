@@ -697,7 +697,7 @@
                 // Obtener el div sku
                 const skuDiv = document.getElementById('titulo_sku');
                 // Verificar si la palabra "NEWBATTERY" está presente en el contenido del div sku
-                if (skuDiv.textContent.includes('NEWBATTERY')) {
+                if (skuDiv.textContent.includes('NEWBATTERY') || skuDiv.textContent.includes('NEW BATTERY')) {
                     // Si está presente, activar el checkbox
                     checkbox.checked = true;
                 }
@@ -870,9 +870,11 @@
                     'titanio azul': 'rgb(72, 76, 85)',
                     'titanio blanco': 'rgb(255,255,255)',
                     'azul pacifico' : 'rgb(43, 70, 81)',
+                    'azul alpino' : 'rgb(140, 177, 223)',
                     'grafito' : 'rgb(192, 192, 192)',
                     'oro' : 'rgb(235, 220, 197)',
-                    'plata' : 'rgb(243, 244, 236)',
+                    'plata' : 'rgb(215, 215, 215)',
+                    'verde alpino' : 'rgb(67, 84, 68)',
                     'Sin color': '#808080'
                 };
                 // Obtener el contenedor donde se agregarán los elementos <li>
@@ -1061,6 +1063,7 @@
                         var precioCOR= response.precioCOR;
                         var precioBUE= response.precioBUE;
                         var precioIMP= response.precioIMP;
+                        console.log(response);
                         //console.log(response.precio*0.95, response);
                         //Convertir la cadena de precio a un número
                         var precio = parseFloat(precioString);

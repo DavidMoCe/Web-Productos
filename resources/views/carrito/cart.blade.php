@@ -196,12 +196,11 @@
                                         @endif
                                         <div class="mb-7 w-full md:mt-4 md:flex md:items-start border-b-2 border-gray-200 pb-4 cart-product" data-product-price="{{ $producto['precio_producto'] }}" data-product-sku="{{ $producto['titulo_sku'] }}">
                                             <div class="flex grow items-start overflow-hidden">
-                                                {{-- {{ route('info_products',  ['producto' => $nombreTelefono, 'capacidad' => $capacidad, 'color' => $color]) }} --}}
-                                                <a href="#scroll=false" rel="noreferrer noopener" >
+                                                <a href={{ route('info_products',  ['producto' => $producto['nombre'], 'capacidad' => $producto['capacidad'], 'color' => $producto['color']]) }} rel="noreferrer noopener" >
                                                     <img class="w-14 md:w-28 max-w-60 cursor-pointer align-top leading-none" alt="{{ $producto['titulo_imagen'] }}" decoding="async" loading="lazy" src="./imagenes/{{ $producto['titulo_imagen'] }}.jpg">
                                                 </a>
                                                 <div class="ml-4 inline-block md:ml-10">
-                                                    <a href="#scroll=false" rel="noreferrer noopener" class="rounded-md cursor-pointer no-underline hover:underline">
+                                                    <a href={{ route('info_products',  ['producto' => $producto['nombre'], 'capacidad' => $producto['capacidad'], 'color' => $producto['color']]) }} rel="noreferrer noopener" class="rounded-md cursor-pointer no-underline hover:underline">
                                                         <div class="font-bold">{{ $producto['titulo_producto'] }}</div>
                                                     </a>
                                                     <div class="flex">
@@ -244,7 +243,7 @@
                                                         <div class="relative inline-block ml-1" has-selected-option="false">
                                                             <select data-product-sku="{{ $producto['titulo_sku'] }}" aria-label="Cantidad" class="cantidad_selector cursor-pointer font-bold transition duration-50 ease-in bg-gray-100 hover:bg-gray-200 border border-none focus:ring-gray-300 focus:ring-2 py-2 pl-4 pr-10 rounded-md leading-tight">
                                                                 @for ($i = 1; $i <= $producto['stock_total']; $i++)
-                                                                    <option class="bg-white" value="{{ $i }}" {{ $i == $producto['cantidad'] ? 'selected' : '' }}>{{ $i }}</option>
+                                                                    <option class="bg-white appearance-none" value="{{ $i }}" {{ $i == $producto['cantidad'] ? 'selected' : '' }}>{{ $i }}</option>
                                                                 @endfor
                                                             </select>
                                                         </div>

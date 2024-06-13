@@ -27,7 +27,7 @@
                 <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
                     <div class="container md:pt-4 md:pb-8 md:px-5 mx-auto">
                         <div class="w-full overflow-x-auto">
-                            <div class="pb-8 pt-3">
+                            <div class="pb-8 pt-3 flex flex-wrap sm:flex-nowrap">
                                 <a href={{ route('verTodosPedidos', ['vista' => 'Recibidos']) }} class="btn btn-default border border-black p-3">Todos los pedidos</a>
                                 <a href={{ route('verTodosPedidos', ['vista' => 'Pendientes']) }} class="btn btn-default border border-black p-3">Pedidos pendientes</a>
                                 <a href={{ route('verTodosPedidos', ['vista' => 'Aceptados']) }} class="btn btn-default border border-black p-3">Pedidos Aceptados</a>
@@ -89,7 +89,7 @@
                                                     <td class="py-3 whitespace-nowrap text-center">
                                                         <div class="text-left pl-6 flex flex-col">
                                                             <span class="text-sm">SKU</span>
-                                                            <span class="text-sm">{{ $producto->nombre." ". $producto->capacidad." - ".$producto->color." - ".($producto->libre ? 'Libre ':'').($producto->bateria ? $producto->bateria:'')." ".$estado}}</span>
+                                                            <span class="text-sm">{{ $producto->nombre." ". $producto->capacidad." - ".$producto->color." - ".($producto->libre ? 'Libre ':'').($producto->bateria ? $producto->bateria:'')." ".$producto->estado}}</span>
                                                             <span class="text-sm pt-1">Cantidad</span>
                                                             <span class="text-sm">{{ $producto->pivot->unidades }}</span>
                                                         </div>
@@ -118,7 +118,9 @@
                             </div>
                             <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-end opacity-0 pointer-events-none transition-opacity duration-500">
                                 <div id="modalContentContainer" class="bg-gray-100 w-2/3 h-full p-4 shadow-lg transform translate-x-full transition-transform duration-500">
-                                    <button id="closeModalBtn" class="btn btn-default border border-black p-3">Cerrar</button>
+                                    <div class="align">
+                                        <button id="closeModalBtn" class="btn btn-default border border-black p-3 align-content-end">Cerrar</button>
+                                    </div>
                                     <h2 class="text-xl font-bold mb-4">Datos del usuario</h2>
 
                                     <div class="bg-white overflow-hidden hover:shadow-md sm:w-full rounded-lg p-5 m-auto mb-6">                      
@@ -154,7 +156,33 @@
                                         <div class="container md:p-1 mx-auto relative">
                                             <div class="w-full overflow-x-auto">
                                                 <h2 class="text-xl font-bold mb-4">Líneas de pedido</h2>
-
+                                                <table class="w-full divide-y divide-gray-200">
+                                                    <thead>
+                                                        <tr class="text-sm text-left">
+                                                            <th class="px-6 py-3">Nº artículo del pedido</th>
+                                                            <th class="px-6 py-3">SKU</th>
+                                                            <th class="px-6 py-3">Artículo</th>
+                                                            <th class="px-6 py-3">Apariencia</th>
+                                                            <th class="px-6 py-3">Grado</th>
+                                                            <th class="px-6 py-3">Cantidad</th>
+                                                            <th class="px-6 py-3">IMEI/Nº de serie</th>
+                                                            <th class="px-6 py-3">Precio</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="divide-y divide-gray-200">
+                                                        <tr class="text-gray-500 text-sm">
+                                                            <td id="idPedido" class="px-6 py-3"></td>
+                                                            <td id="skuProducto" class="px-6 py-3"></td>
+                                                            <td id="articulo" class="px-6 py-3"></td>
+                                                            <td id="apariencia" class="px-6 py-3"></td>
+                                                            <td id="grado" class="px-6 py-3"></td>
+                                                            <td id="cantidadProducto" class="px-6 py-3"></td>
+                                                            <td class="px-6 py-3"></td>
+                                                            <td id="precioProducto" class="px-6 py-3 whitespace-nowrap"></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                
                                             </div>
                                         </div>
                                     </div>
@@ -164,7 +192,49 @@
                                             <div class="container md:p-1 mx-auto relative">
                                                 <div class="w-full overflow-x-auto">
                                                     <h2 class="text-xl font-bold mb-4">Dirección de envío</h2>
-
+                                                    <div class="flex gap-4 mb-6">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mt-1">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                                                          </svg>
+                                                        <div class=""> 
+                                                            <div class="text-lg">
+                                                                <span class="nombreCliente"></span>
+                                                                <span class="apellidoCliente"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="E_empresa"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="E_direccion_1"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="E_direccion_2"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="E_codigoPostal"></span>
+                                                                <span id="E_ciudad"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="E_pais"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-6">
+                                                        <span class="flex items-center gap-4">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                                                            </svg>
+                                                            <span class="E_telefono"></span>
+                                                        </span>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <span class="flex items-center gap-4">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                                            </svg>
+                                                            <span class="emailCliente"></span>
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -173,79 +243,53 @@
                                             <div class="container md:p-1 mx-auto relative">
                                                 <div class="w-full overflow-x-auto">
                                                     <h2 class="text-xl font-bold mb-4">Dirección de facturación</h2>
-
-                                                    <div class="mb-2">
-                                                        <span>
-                                                            {{  $pedido->usuario->name }}
-                                                            {{  $pedido->usuario->lastname }}
+                                                    <div class="flex gap-4 mb-6">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mt-1">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                                                          </svg>
+                                                        <div class=""> 
+                                                            <div class="text-lg">
+                                                                <span class="nombreCliente"></span>
+                                                                <span class="apellidoCliente"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="F_empresa"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="F_direccion_1"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="F_direccion_2"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="F_codigoPostal"></span>
+                                                                <span id="F_ciudad"></span>
+                                                            </div>
+                                                            <div class="">
+                                                                <span id="F_pais"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mb-6">
+                                                        <span class="flex items-center gap-4">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                                                            </svg>
+                                                            <span class="E_telefono"></span>
                                                         </span>
                                                     </div>
-                                                    <div class="">
-                                                        <span>
-                                                            {{ $pedido->direccionFacturacion->empresa }}
+                                                    <div class="mb-3">
+                                                        <span class="flex items-center gap-4">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                                            </svg>
+                                                            <span class="emailCliente"></span>
                                                         </span>
                                                     </div>
-                                                    <div class="">
-                                                        <span>
-                                                            {{ $pedido->direccionFacturacion->direccion_1 }}
-                                                        </span>
-                                                    </div>
-                                                    <div class="">
-                                                        <span>
-                                                            {{ old('address_2', isset($direccion_2) ? $direccion_2 : '') }}
-                                                        </span>
-                                                        <input type="text" id="address_2" name="address_2" value="{{ old('address_2', isset($direccion_2) ? $direccion_2 : '') }}" hidden readonly>
-                                                    </div>
-                                                    <div class="">
-                                                        <span>
-                                                            {{ old('postal_code', isset($codigo_postal) ? $codigo_postal : '') }}
-                                                            {{ old('city', isset($ciudad) ? $ciudad : '') }}Málaga
-                                                        </span>
-                                                        <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code', isset($codigo_postal) ? $codigo_postal : '') }}" hidden readonly>
-                                                        <input type="text" id="city" name="city" value="{{ old('city', isset($ciudad) ? $ciudad : '') }}" hidden readonly>
-                                                    </div>
-                                                    <div class="">
-                                                        <span>
-                                                            {{ old('country', isset($pais) ?  $pais : '') }}
-                                                        </span>
-                                                        <input type="text" id="country" name="country"value="{{ old('country', isset($pais) ?  $pais : '') }}" hidden readonly>
-                                                    </div>
-                                                    <div class="mb-2">
-                                                        <span>
-                                                            {{ old('phone', isset($telefono) ? $telefono : '') }}
-                                                        </span>
-                                                        <input type="text" id="phone" name="phone" value="{{ old('phone', isset($telefono) ? $telefono : '') }}" hidden readonly>
-                                                    </div>
-
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    <p id='nombreCliente' class="p-2">Nombre</p>
-                                    <p id='apellidoCliente' class="p-2">Apellido</p>
-                                    <p id='emailCliente' class="p-2">Email</p>
-                                    <p id='telefonoCliente' class="p-2">Telefono</p>
-                                    
-                                    <p id='E_pais' class="p-2">País envío</p>
-                                    <p id='E_direccion_1' class="p-2">Dirección 1 envío</p>
-                                    <p id='E_direccion_2' class="p-2">Dirección 2 envío</p>
-                                    <p id='E_ciudad' class="p-2">Ciudad envío</p>
-                                    <p id='E_codigoPostal' class="p-2">CP envío</p>
-                                    <p id='E_empresa' class="p-2">Empresa envío</p>
-                                    <p id='E_telefono' class="p-2">Teléfono envío</p>
-                                    
-                                    <p id='F_pais' class="p-2">País facturación</p>
-                                    <p id='F_direccion_1' class="p-2">Dirección 1 facturación</p>
-                                    <p id='F_direccion_2' class="p-2">Dirección 2 facturación</p>
-                                    <p id='F_ciudad' class="p-2">Ciudad facturación</p>
-                                    <p id='F_codigoPostal' class="p-2">CP facturación</p>
-                                    <p id='F_empresa' class="p-2">Empresa facturación</p>
-                                    <p id='F_nif_dni' class="p-2">NIF/DNI facturación</p>
                                 </div>
                             </div>
                         
@@ -306,12 +350,19 @@
                                             var F_codigo_postal = response.F_codigo_postal;
                                             var F_empresa = response.F_empresa;
                                             var F_nif_dni = response.F_nif_dni;
+                                            
+                                            var idPedido = response.idPedido;
+                                            var skuProducto = response.skuProducto;
+                                            var articulo = response.articulo;
+                                            var grado = response.grado;
+                                            var cantidadProducto = response.cantidadProducto;
+                                            var precioProducto = response.precioProducto;
 
                                             // Maneja la respuesta del servidor si es necesario
                                             console.log(response);
-                                            $("#nombreCliente").text(nombre);
-                                            $("#apellidoCliente").text(apellido);
-                                            $("#emailCliente").text(email);
+                                            $(".nombreCliente").text(nombre);
+                                            $(".apellidoCliente").text(apellido);
+                                            $(".emailCliente").text(email);
                                             $("#telefonoCliente").text(telefono);
                                             
                                             $("#E_pais").text(E_pais);
@@ -320,7 +371,7 @@
                                             $("#E_ciudad").text(E_ciudad);
                                             $("#E_codigoPostal").text(E_codigo_postal);
                                             $("#E_empresa").text(E_empresa);
-                                            $("#E_telefono").text(E_telefono);
+                                            $(".E_telefono").text(E_telefono);
                                             
                                             $("#F_pais").text(F_pais);
                                             $("#F_direccion_1").text(F_direccion_1);
@@ -329,7 +380,42 @@
                                             $("#F_codigoPostal").text(F_codigo_postal);
                                             $("#F_empresa").text(F_empresa);
                                             $("#F_nif_dni").text(F_nif_dni);
-                                            
+
+                                            $("#idPedido").text(idPedido);
+                                            $("#skuProducto").text(skuProducto);
+                                            $("#articulo").text(articulo);
+                                            $("#grado").text(grado);
+
+                                            var apariencia;
+                                            switch (grado) {
+                                                case 'STA':
+                                                case 'COR':
+                                                    apariencia="Correcto";
+                                                    break;
+                                                case 'BUE':
+                                                case 'MBU':
+                                                    apariencia="Muy bueno";
+                                                    break;
+                                                case 'IMP':
+                                                    apariencia="Excelente";
+                                                    break;
+                                                default:
+                                                    apariencia="";
+                                                    break;
+                                            }
+                                            $("#apariencia").text(apariencia);
+                                            $("#cantidadProducto").text(cantidadProducto);
+
+                                            // Formatear el total en euros con separador de miles y dos decimales
+                                            const formatterEuro = new Intl.NumberFormat("es-ES", {
+                                                style: "currency",
+                                                currency: "EUR",
+                                                minimumFractionDigits: 2,
+                                                // Especificar separador de miles
+                                                useGrouping: true,
+                                            });
+                                            const formattedTotal = formatterEuro.format(precioProducto);
+                                            $("#precioProducto").text(formattedTotal);
                                         },
                                         error: function(xhr, status, error) {
                                             // Maneja los errores si es necesario

@@ -32,7 +32,7 @@
                             {{-- {{ __("You're logged in!") }} --}}
                             {{-- <h1>Bienvenido {{ auth()->user()->name }}</h1>--}}
                             <button id="actualizarBD" class="bg-gray-50 p-3 rounded-md border border-black">Actualizar BD</button>
-                            <button id="verPedidos" class="bg-gray-50 p-3 rounded-md border border-black">Ver pedidos</button>
+                            {{-- <button id="verPedidos" class="bg-gray-50 p-3 rounded-md border border-black">Ver pedidos</button> --}}
                         </div>
                     </div>
                 </div>
@@ -126,9 +126,9 @@
             window.location.href = "{{ route('actualizarProductos') }}";
         });
 
-        document.getElementById('verPedidos').addEventListener('click', function() {
-            window.location.href = "{{ route('verTodosPedidos', ['vista' => 'Recibidos']) }}";
-        });
+        // document.getElementById('verPedidos').addEventListener('click', function() {
+        //     window.location.href = "{{ route('verTodosPedidos', ['vista' => 'Recibidos']) }}";
+        // });
       
     </script>
 </html>

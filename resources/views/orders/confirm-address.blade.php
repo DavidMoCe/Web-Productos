@@ -138,7 +138,7 @@
                                     <div class="">
                                         <span>
                                             {{ old('postal_code', isset($codigo_postal) ? $codigo_postal : '') }}
-                                            {{ old('city', isset($ciudad) ? $ciudad : '') }}Málaga
+                                            {{ old('city', isset($ciudad) ? $ciudad : '') }}
                                         </span>
                                         <input type="text" id="postal_code" name="postal_code" value="{{ old('postal_code', isset($codigo_postal) ? $codigo_postal : '') }}" hidden readonly>
                                         <input type="text" id="city" name="city" value="{{ old('city', isset($ciudad) ? $ciudad : '') }}" hidden readonly>

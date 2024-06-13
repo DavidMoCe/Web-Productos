@@ -21,6 +21,18 @@
                         </div>
                     @endif
                 @endauth
+
+                @auth
+                    @if(Auth::user()->usertype == '1')
+                        <!-- Navigation Links -->
+                        <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <!-- (LINK) Ruta que he creado en el archivo web.php y que llama a la funcion redirect de LoginController -->
+                            <x-nav-link :href="route('verTodosPedidos', ['vista' => 'Recibidos'])" :active="request()->routeIs('verTodosPedidos')">
+                                {{ __('Pedidos') }}
+                            </x-nav-link>
+                        </div>
+                    @endif
+                @endauth
                 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <!-- (LINK) Ruta que he creado en el archivo web.php y que llama a la funcion redirect de LoginController -->
@@ -35,8 +47,6 @@
                         {{ __('Cart') }}
                     </x-nav-link>
                 </div>
-
-
             </div>
 
             <!-- Settings Dropdown -->
@@ -116,6 +126,15 @@
                     </x-responsive-nav-link>
                 @endif
             @endauth
+
+            @auth
+                @if(Auth::user()->usertype == '1')
+                    <x-responsive-nav-link :href="route('verTodosPedidos', ['vista' => 'Recibidos'])" :active="request()->routeIs('verTodosPedidos')">
+                        {{ __('Pedidos') }}
+                    </x-responsive-nav-link>
+                @endif
+            @endauth
+
             <x-responsive-nav-link :href="route('products')" :active="request()->routeIs('products') || request()->is('/')">
                 {{ __('Products') }}
             </x-responsive-nav-link>

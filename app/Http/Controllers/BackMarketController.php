@@ -728,16 +728,17 @@ class BackMarketController extends Controller{
                             [
                                 'nombre' => $nombre,
                                 'capacidad' => $capacidad,
-                                'descripcion' => $productoData['comment'],
-                                'precioA' => $productoData['min_price'],
-                                'precioD' => $productoData['min_price'],
                                 'color' => $color,
                                 'libre' => $libre,
                                 'bateria' => $bateria,
                                 'estado' => $estado,
                             ],
                             [
-                                'stock' => $productoData['quantity'] // Este es el valor del stock que deseas establecer
+                                // Este son los valores del stock que deseas establecer
+                                'descripcion' => $productoData['comment'],
+                                'precioA' => $productoData['min_price'],
+                                'precioD' => $productoData['min_price'],
+                                'stock' => $productoData['quantity']
                             ]
                         );
                     }  catch (\Exception $e) {
@@ -750,7 +751,7 @@ class BackMarketController extends Controller{
                 'productosPorPaginas' => $productosPorPaginas
             ];
             // Devolver la respuesta JSON
-           // return response()->json($response);
+            // return response()->json($response);
             return redirect()->route('admin.dashboard')->with('success','Base de datos actualizada');
            
         } catch (\Exception $e) {
@@ -878,7 +879,7 @@ class BackMarketController extends Controller{
             switch ($vista){
                 case 'Recibidos':
                     // Obtener todos los pedidos
-                    $pedidos= Pedido::with(['usuario','direccionFacturacion'])->get();
+                    $pedidos= Pedido::with(['usuario','direccionEnvio','direccionFacturacion'])->get();
                     break;
                 case 'Pendientes':
                     // Obtener los pedidos pendientes
@@ -928,6 +929,11 @@ class BackMarketController extends Controller{
         // Obtén el ID del pedido y el nuevo estado del pedido desde la solicitud
         $pedido= Pedido::find($request->input('pedido_id'));
         $user= User::find($pedido->usuario_id);
+
+        // Obtén el ID del producto asociado al pedido desde la tabla pivot
+        $productoId = $pedido->productos()->first()->id;
+        // Busca el producto asociado al pedido
+        $producto = Producto::find($productoId);
         
         // Obtener el nombre, apellidos, gmail, telefono de la tabla usuario
         $name = $user->name ?? '';
@@ -944,7 +950,7 @@ class BackMarketController extends Controller{
         $E_ciudad= $direccionEnvio->ciudad ?? '';
         $E_codigo_postal= $direccionEnvio->codigo_postal ?? '';
         $E_empresa= $direccionEnvio->empresa ?? '';
-        $E_telefono= $direccionEnvio->empresa ?? '';
+        $E_telefono= $direccionEnvio->telefono ?? '';
 
         //obtener pais, direccion_1,direccion_2,ciudad,cp,empresa,nif_dni de la tabla facturacion
         //accedemos a la funcion direccion envio del modelo user.php
@@ -958,13 +964,23 @@ class BackMarketController extends Controller{
         $F_empresa = $direccionFacturacion ? $direccionFacturacion->empresa : '';
         $F_nif_dni = $direccionFacturacion ? $direccionFacturacion->nif_dni : '';
         
+        //Obtenemos los datos del producto
+        $idPedido = $pedido->id;
+        $skuProducto = $producto->nombre." ". $producto->capacidad." - ".$producto->color." - ".($producto->libre ? 'Libre ':'').($producto->bateria ? $producto->bateria:'')." ".$producto->estado;
+        $articulo = $producto->nombre." ". $producto->capacidad." - ".$producto->color." - ".($producto->libre ? 'Libre ':'');
+        $grado = $producto->estado;
+        // Accede a las unidades del producto desde la relación pivot
+        $cantidadProducto = $pedido->productos()->where('producto_id', $producto->id)->first()->pivot->unidades;
+        $precioProducto = $producto->precioD;
+
         // Retorna una respuesta apropiada (puedes retornar JSON si lo deseas)
         return response()->json(['nombre'=> $name, 'apellido'=>$lastname,'email'=>$email,'telefono'=>$telefono,
             'E_pais'=>$E_pais,'E_direccion_1'=>$E_direccion_1,'E_direccion_2'=>$E_direccion_2,'E_ciudad'=>$E_ciudad,
             'E_codigo_postal'=>$E_codigo_postal,'E_empresa'=>$E_empresa,'E_telefono'=>$E_telefono,
             'F_direccion_1'=>$F_direccion_1,'F_direccion_2'=>$F_direccion_2,'F_pais'=>$F_pais,'F_ciudad'=>$F_ciudad,
-            'F_codigo_postal'=>$F_codigo_postal,'F_empresa'=>$F_empresa,'F_nif_dni'=>$F_nif_dni]);
-        return response()->json(['success' => true]);
+            'F_codigo_postal'=>$F_codigo_postal,'F_empresa'=>$F_empresa,'F_nif_dni'=>$F_nif_dni,
+            'idPedido'=>$idPedido,'skuProducto'=>$skuProducto,'articulo'=>$articulo,'grado'=>$grado,
+            'cantidadProducto'=>$cantidadProducto,'precioProducto'=>$precioProducto]);
     }
 
 

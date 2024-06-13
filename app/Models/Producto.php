@@ -13,7 +13,7 @@ class Producto extends Model
     // Campos que se pueden asignar a la vez, si un atributo no está no se puede crear o actualizar
     protected $fillable = [
         'nombre', 'descripcion', 'precioA', 'precioD', 'color', 'stock', 
-        'capacidad', 'libre', 'bateria', 'estado'
+        'capacidad', 'libre', 'bateria', 'estado','create_at','update_at',
     ];
 
     // Nombre del campo de clave primaria
