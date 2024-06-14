@@ -40,34 +40,34 @@
                                 <p>No hay pedidos disponibles en este momento</p>
                             
                             @else
-                            <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg mx-1">
+                            <div class="shadow overflow-hidden  border border-gray-800 sm:rounded-lg mx-1">
                                 <div class="overflow-auto">
                                     <table class="min-w-full divide-y divide-gray-200">
                                         <!-- Cabecera de la tabla -->
-                                        <thead class="bg-gray-100 dark:bg-gray-700">
+                                        <thead class="text-gray-700 bg-neutral-300 dark:bg-gray-700">
                                             <tr>
-                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium dark:text-gray-300 uppercase tracking-wider">
                                                     ID Pedido
                                                 </th>
-                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium dark:text-gray-300 uppercase tracking-wider">
                                                     Nombre producto
                                                 </th>
-                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium dark:text-gray-300 uppercase tracking-wider">
                                                     Estado
                                                 </th>
-                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium dark:text-gray-300 uppercase tracking-wider">
                                                     Unidades
                                                 </th>
-                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium dark:text-gray-300 uppercase tracking-wider">
                                                     Precio
                                                 </th>
-                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium dark:text-gray-300 uppercase tracking-wider">
                                                     Método de pago
                                                 </th>
-                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium dark:text-gray-300 uppercase tracking-wider">
                                                     Fecha de realización
                                                 </th>
-                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium dark:text-gray-300 uppercase tracking-wider">
                                                     Estado pedido
                                                 </th>
                                             </tr>

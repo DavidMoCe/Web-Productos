@@ -143,14 +143,11 @@ class CartController extends Controller{
     public function index(){
         // Verificar si el usuario ha iniciado sesión
         $user = Auth::user();
-
         if ($user) {
             // Si el carrito no está asociado con el usuario, asociarlo
             $this->associateCartWithUser();
-
             // El usuario ha iniciado sesión, obtener el carrito desde la base de datos
             $carrito = Carrito::where('usuario_id', $user->id)->with('productos')->first();
-
             if ($carrito) {
                 // Convertir los productos del carrito en el formato esperado
                 $dbCart = [];
@@ -159,11 +156,9 @@ class CartController extends Controller{
                      //De momento saco solo el nombre hasta el numero
                     preg_match('/(\S*\s?){2}/', $producto->nombre, $matches);
                     $nombre= isset($matches[0]) ? trim($matches[0]) : '';
-
                     if($producto->capacidad){
                         $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $producto->capacidad);
                     }
-
                     $dbCart[] = [
                         'id_producto'=>$producto->id,'titulo_sku' => $producto->nombre . ' ' . $producto->capacidad . ' - ' . $producto->color . ' - ' . ($producto->libre ? 'Libre' : '') . ($producto->bateria ? ' ' . $producto->bateria : '') . ' ' . $producto->estado,
                         'titulo_producto'=> $producto->nombre.' '.$capacidad.' - '.$producto->color.' - '.($producto->libre ? 'Libre' : ''),'estado_producto'=> $producto->estado,'cantidad' => $producto->pivot->unidades,
@@ -178,19 +173,16 @@ class CartController extends Controller{
             } else {
                 $dbCart = [];
             }
-
             // Verificar el stock del carrito de la base de datos antes de mostrarlo al usuario
             $cookieCart = $this->verificarStockCarritoBD($dbCart);
         } else {
             // El usuario no ha iniciado sesión, obtener el carrito desde la cookie
             $cookieCart = session()->get('cart', []);
-
             // Verificar el stock del carrito de la cookie antes de mostrarlo al usuario
             if(!empty($cookieCart)){
                 $cookieCart = $this->verificarStockCarrito($cookieCart);
             }
         }
-
         // Pasar los datos del carrito a la vista
         return view('carrito.cart', compact('cookieCart'));
     }

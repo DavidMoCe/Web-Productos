@@ -9,15 +9,9 @@
         <title>TouchPhone</title>
         <!-- Favicon-->
         <!-- <link rel="icon" type="image/x-icon" href="assets/favicon.ico" /> -->
-
         <script src="https://cdn.tailwindcss.com"></script>
-
-        <!-- <link href="css/styles.css" rel="stylesheet" /> -->
-
         @vite('resources/css/app.css')
-
         <!-- <link href="{!! asset('css/styles.css') !!}" rel="stylesheet" /> -->
-
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', (event) => {
@@ -107,7 +101,6 @@
                 });
             });
         </script>
-{{-- <script src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.client_id') }}&currency=EUR"></script> --}}
     </head>
     <body>
         <x-app-layout>
@@ -154,30 +147,6 @@
                     {{ session('error') }}
                 </div>
             @endif
-
-
-            {{-- <div id="paypal-button-container"></div>
-<script>
-    paypal.Buttons({
-    createOrder: function(data, actions) {
-        return actions.order.create({
-            purchase_units: [{
-                amount: {
-                    value: '0' // Reemplaza con el valor adecuado
-                }
-            }]
-        });
-    },
-    onApprove: function(data, actions) {
-        return actions.order.capture().then(function(details) {
-            alert('Pago completado por ' + details.payer.name.given_name);
-            // Aquí puedes redirigir al usuario o realizar otras acciones después del pago
-        });
-    }
-}).render('#paypal-button-container');
-</script> --}}
-
-
             <div class="mx-auto max-w-2xl px-4 py-10 md:px-6 md:!py-16 lg:max-w-7xl lg:px-8">
                 <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
                     <div class="container md:pt-4 md:p-8 mx-auto">

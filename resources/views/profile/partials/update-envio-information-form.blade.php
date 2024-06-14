@@ -8,7 +8,7 @@
             {{ __("Update your shipping address.") }}
         </p>
     </header>
-    <form action="{{ route('profile.updateShipping') }}" method="POST" class="mt-6 space-y-6">
+    <form action="{{ route('profile.updateDirection', ['updateType' => 'shipping']) }}" method="POST" class="mt-6 space-y-6">
         @csrf                    
         <!-- Mostrar los campos nombre y apellido del usuario logueado -->
         <div>
