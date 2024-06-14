@@ -38,89 +38,97 @@
                                 <p>No hay pedidos en este momento</p>
                             @else
                             <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg mx-1">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <!-- Cabecera de la tabla -->
-                                    <thead class="bg-gray-100 dark:bg-gray-700">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                                                Detalles del pedido
-                                            </th>
-                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                                                Detalles del envío
-                                            </th>
-                                            <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                                                Detalles de pago
-                                            </th>
-                                            <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                                                Estado pedido
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <!-- Cuerpo de la tabla -->
-                                    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                        @foreach ($pedidos as $pedido)
-                                            @foreach ($pedido->productos as $producto)
-                                                @php
-                                                    switch ($producto->estado) {
-                                                        case 'STA':
-                                                        case 'COR':
-                                                            $estado="Correcto";
-                                                            break;
-                                                        case 'BUE':
-                                                        case 'MBU':
-                                                            $estado="Muy bueno";
-                                                            break;
-                                                        case 'IMP':
-                                                            $estado="Excelente";
-                                                            break;
-                                                        default:
-                                                            $estado="";
-                                                            break;
-                                                    }
-                                                @endphp
-                                                <tr data-pedido-id="{{ $pedido->id }}">
-                                                    <td class="py-3 whitespace-nowrap text-center cursor-pointer openModalBtn" onclick="obtenerDatos({{ $pedido->id }})">
-                                                        <div class="text-left pl-6 flex flex-col">
-                                                            <span class="underline text-md">{{ $pedido->id }}</span>
-                                                            <span class="text-sm">{{ $pedido->created_at->format('d/m/Y, H:i')}}</span>
-                                                            <span class="text-sm font-bold">{{ $pedido->usuario->name}} {{ $pedido->usuario->lastname}}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="py-3 whitespace-nowrap text-center">
-                                                        <div class="text-left pl-6 flex flex-col">
-                                                            <span class="text-sm">SKU</span>
-                                                            <span class="text-sm">{{ $producto->nombre." ". $producto->capacidad." - ".$producto->color." - ".($producto->libre ? 'Libre ':'').($producto->bateria ? $producto->bateria:'')." ".$producto->estado}}</span>
-                                                            <span class="text-sm pt-1">Cantidad</span>
-                                                            <span class="text-sm">{{ $producto->pivot->unidades }}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="py-3 whitespace-nowrap text-center">
-                                                        <div class="text-left pl-6 flex flex-col">
-                                                            <span class="text-sm text-slate-600">Precio total (IVA incluido)</span>
-                                                            <span class="text-sm font-bold">{{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</span>
-                                                            <span class="text-sm">{{ $pedido->metodoPago }}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="py-3 whitespace-nowrap text-center">
-                                                        <select class="form-select" onchange="actualizarEstadoPedido({{ $pedido->id }}, this.value)">
-                                                            <option value="pendiente" {{ $pedido->enviado == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                                                            <option value="aceptado" {{ $pedido->enviado == 'aceptado' ? 'selected' : '' }}>Aceptado</option>
-                                                            <option value="procesado" {{ $pedido->enviado == 'procesado' ? 'selected' : '' }}>Procesado</option>
-                                                            <option value="rechazado" {{ $pedido->enviado == 'rechazado' ? 'selected' : '' }}>Rechazado</option>
-                                                            
-                                                        </select>
-                                                    </td>
-                                                </tr>
+                                <div class="overflow-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <!-- Cabecera de la tabla -->
+                                        <thead class="bg-gray-100 dark:bg-gray-700">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                    Detalles del pedido
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                    Detalles del envío
+                                                </th>
+                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                    Detalles de pago
+                                                </th>
+                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                                                    Estado pedido
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <!-- Cuerpo de la tabla -->
+                                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                            @foreach ($pedidos as $pedido)
+                                                @foreach ($pedido->productos as $producto)
+                                                    @php
+                                                        switch ($producto->estado) {
+                                                            case 'STA':
+                                                            case 'COR':
+                                                                $estado="Correcto";
+                                                                break;
+                                                            case 'BUE':
+                                                            case 'MBU':
+                                                                $estado="Muy bueno";
+                                                                break;
+                                                            case 'IMP':
+                                                                $estado="Excelente";
+                                                                break;
+                                                            default:
+                                                                $estado="";
+                                                                break;
+                                                        }
+                                                    @endphp
+                                                    <tr data-pedido-id="{{ $pedido->id }}">
+                                                        <td class="py-3 whitespace-nowrap text-center cursor-pointer openModalBtn" onclick="obtenerDatos({{ $pedido->id }})">
+                                                            <div class="text-left pl-6 flex flex-col">
+                                                                <span class="underline text-md font-bold">{{ $pedido->id }}</span>
+                                                                <span class="text-sm">{{ $pedido->created_at->format('d/m/Y, H:i')}}</span>
+                                                                <span class="text-sm font-bold">{{ $pedido->usuario->name}} {{ $pedido->usuario->lastname}}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="py-3 whitespace-nowrap text-center">
+                                                            <div class="text-left pl-6 flex flex-col">
+                                                                <span class="text-sm">SKU</span>
+                                                                <span class="text-sm">{{ $producto->nombre." ". $producto->capacidad." - ".$producto->color." - ".($producto->libre ? 'Libre ':'').($producto->bateria ? $producto->bateria:'')." ".$producto->estado}}</span>
+                                                                <span class="text-sm pt-1">Cantidad</span>
+                                                                <span class="text-sm">{{ $producto->pivot->unidades }}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="py-3 whitespace-nowrap text-center">
+                                                            <div class="text-left pl-6 flex flex-col">
+                                                                <span class="text-sm text-slate-600">Precio total (IVA incluido)</span>
+                                                                <span class="text-sm font-bold">{{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</span>
+                                                                <span class="text-sm">{{ $pedido->metodoPago }}</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="py-3 whitespace-nowrap text-center">
+                                                            <select class="form-select" onchange="actualizarEstadoPedido({{ $pedido->id }}, this.value)">
+                                                                <option value="pendiente" {{ $pedido->enviado == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                                                                <option value="aceptado" {{ $pedido->enviado == 'aceptado' ? 'selected' : '' }}>Aceptado</option>
+                                                                <option value="procesado" {{ $pedido->enviado == 'procesado' ? 'selected' : '' }}>Procesado</option>
+                                                                <option value="rechazado" {{ $pedido->enviado == 'rechazado' ? 'selected' : '' }}>Rechazado</option>
+                                                                
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                             @endforeach
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div id="modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-end opacity-0 pointer-events-none transition-opacity duration-500">
-                                <div id="modalContentContainer" class="bg-gray-100 w-2/3 h-full p-4 shadow-lg transform translate-x-full transition-transform duration-500">
-                                    <div class="align">
-                                        <button id="closeModalBtn" class="btn btn-default border border-black p-3 align-content-end">Cerrar</button>
+                                <div id="modalContentContainer" class="overflow-auto bg-gray-100 w-2/3 h-full p-4 shadow-lg transform translate-x-full transition-transform duration-500">
+                                    <div class="flex justify-between items-center">   
+                                        <p id="idPedidoTitulo" class="text-center flex-1"></p>
+                                        <button id="closeModalBtn" class="btn btn-default p-3 align-content-end">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
                                     </div>
+                                    
                                     <h2 class="text-xl font-bold mb-4">Datos del usuario</h2>
 
                                     <div class="bg-white overflow-hidden hover:shadow-md sm:w-full rounded-lg p-5 m-auto mb-6">                      
@@ -174,15 +182,14 @@
                                                             <td id="idPedido" class="px-6 py-3"></td>
                                                             <td id="skuProducto" class="px-6 py-3"></td>
                                                             <td id="articulo" class="px-6 py-3"></td>
-                                                            <td id="apariencia" class="px-6 py-3"></td>
-                                                            <td id="grado" class="px-6 py-3"></td>
+                                                            <td id="apariencia" class="px-6 py-3 font-bold text-gray-800"></td>
+                                                            <td id="grado" class="px-6 py-3 font-bold text-gray-800"></td>
                                                             <td id="cantidadProducto" class="px-6 py-3"></td>
                                                             <td class="px-6 py-3"></td>
                                                             <td id="precioProducto" class="px-6 py-3 whitespace-nowrap"></td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                
                                             </div>
                                         </div>
                                     </div>
@@ -359,7 +366,7 @@
                                             var precioProducto = response.precioProducto;
 
                                             // Maneja la respuesta del servidor si es necesario
-                                            console.log(response);
+                                            //console.log(response);
                                             $(".nombreCliente").text(nombre);
                                             $(".apellidoCliente").text(apellido);
                                             $(".emailCliente").text(email);
@@ -381,6 +388,7 @@
                                             $("#F_empresa").text(F_empresa);
                                             $("#F_nif_dni").text(F_nif_dni);
 
+                                            $("#idPedidoTitulo").text(idPedido);
                                             $("#idPedido").text(idPedido);
                                             $("#skuProducto").text(skuProducto);
                                             $("#articulo").text(articulo);

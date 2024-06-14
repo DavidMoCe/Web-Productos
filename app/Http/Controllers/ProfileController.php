@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\Envio;
+use Carbon\Carbon;
+use App\Models\Facturacion;
 
 class ProfileController extends Controller
 {
@@ -37,6 +40,93 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
+
+    /**
+     * Update the user's shipping address.
+     */
+    public function updateShipping(Request $request){
+        // Valida los datos de entrada
+        $validatedData = $request->validate([
+            'company' => 'nullable|string|max:255',
+            'address' => 'required|string|max:255',
+            'address_2' => 'nullable|string|max:255',
+            'postal_code' => 'required|string|max:20',
+            'city' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+        ]);
+
+        // Definir los criterios de búsqueda
+        $criterio = [
+            'user_id' => auth()->id(),
+        ];
+
+       // Definir los datos a actualizar o crear
+       $updateData = [
+            'user_id' => auth()->id(),
+            'pais' => $validatedData['country'],
+            'direccion_1' => $validatedData['address'],
+            'direccion_2' => $validatedData['address_2'] ?? null,
+            'ciudad' => $validatedData['city'],
+            'codigo_postal' => $validatedData['postal_code'],
+            'empresa' => $validatedData['company'] ?? null,
+            'telefono' => $validatedData['phone'],
+            'updated_at' => Carbon::now(),
+        ];
+
+        // Crear un nuevo registro en la tabla envios o actualizar uno existente
+        Envio::updateOrCreate($criterio, $updateData);
+
+        // Redirecciona de nuevo a la página de edición del perfil con un mensaje de éxito
+        return Redirect::route('profile.edit')->with('status', 'shipping-updated');
+    }
+
+    /**
+     * Update the user's billing address.
+     */
+    public function updateBilling(Request $request){
+        // Valida los datos de entrada
+        $validatedData = $request->validate([
+            'company' => 'nullable|string|max:255',
+            'address' => 'required|string|max:255',
+            'address_2' => 'nullable|string|max:255',
+            'postal_code' => 'required|string|max:20',
+            'city' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+            'nif_dni' => [
+                    'nullable',
+                    'string',
+                    'regex:/^[0-9]{8}[a-zA-Z]$/',
+                    'max:9', // Para asegurarse de que el DNI tiene exactamente 9 caracteres
+                ],
+        ]);
+
+        // Definir los criterios de búsqueda
+        $criterio = [
+            'user_id' => auth()->id(),
+        ];
+
+       // Definir los datos a actualizar o crear
+       $updateData = [
+            'user_id' => auth()->id(),
+            'pais' => $validatedData['country'],
+            'direccion_1' => $validatedData['address'],
+            'direccion_2' => $validatedData['address_2'] ?? null,
+            'ciudad' => $validatedData['city'],
+            'codigo_postal' => $validatedData['postal_code'],
+            'empresa' => $validatedData['company'] ?? null,
+            'telefono' => $validatedData['phone'],
+            'updated_at' => Carbon::now(),
+        ];
+
+        // Crear un nuevo registro en la tabla facturaciones o actualizar uno existente
+        Facturacion::updateOrCreate($criterio, $updateData);
+
+        // Redirecciona de nuevo a la página de edición del perfil con un mensaje de éxito
+        return Redirect::route('profile.edit')->with('status', 'billing-updated');
+    }
+
+
 
     /**
      * Delete the user's account.

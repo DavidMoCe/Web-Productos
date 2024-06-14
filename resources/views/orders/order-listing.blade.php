@@ -41,68 +41,111 @@
                             
                             @else
                             <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg mx-1">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <!-- Cabecera de la tabla -->
-                                    <thead class="bg-gray-100 dark:bg-gray-700">
-                                        <tr>
-                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                ID Pedido
-                                            </th>
-                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Nombre producto
-                                            </th>
-                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Estado
-                                            </th>
-                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Unidades
-                                            </th>
-                                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Precio
-                                            </th>
-                                            <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Método de pago
-                                            </th>
-                                            <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                Fecha de realización
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <!-- Cuerpo de la tabla -->
-                                    <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                        @foreach ($pedidos as $pedido)
-                                            @foreach ($pedido->productos as $producto)
-                                                @php
-                                                    switch ($producto->estado) {
-                                                        case 'STA':
-                                                        case 'COR':
-                                                            $estado="Correcto";
-                                                            break;
-                                                        case 'BUE':
-                                                        case 'MBU':
-                                                            $estado="Muy bueno";
-                                                            break;
-                                                        case 'IMP':
-                                                            $estado="Excelente";
-                                                            break;
-                                                        default:
-                                                            $estado="";
-                                                            break;
-                                                    }
-                                                @endphp
-                                                <tr>
-                                                    <td class="py-3 whitespace-nowrap text-center">{{ $pedido->id }}</td>
-                                                    <td class="py-3 whitespace-nowrap text-center">{{ $producto->nombre." ". $producto->capacidad." ".$producto->color." ".($producto->libre ? 'Libre':'')." ".$producto->bateria}}</td>
-                                                    <td class="py-3 whitespace-nowrap text-center">{{ $estado }}</td>
-                                                    <td class="py-3 whitespace-nowrap text-center">{{ $producto->pivot->unidades }}</td>
-                                                    <td class="py-3 whitespace-nowrap text-center">{{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</td>
-                                                    <td class="py-3 whitespace-nowrap text-center">{{ $pedido->metodoPago }}</td>
-                                                    <td class="py-3 whitespace-nowrap text-center">{{ $pedido->created_at }}</td>
-                                                </tr>
+                                <div class="overflow-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <!-- Cabecera de la tabla -->
+                                        <thead class="bg-gray-100 dark:bg-gray-700">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    ID Pedido
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Nombre producto
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Estado
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Unidades
+                                                </th>
+                                                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Precio
+                                                </th>
+                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Método de pago
+                                                </th>
+                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Fecha de realización
+                                                </th>
+                                                <th scope="col"  class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                    Estado pedido
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <!-- Cuerpo de la tabla -->
+                                        <tbody class="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                            @foreach ($pedidos as $pedido)
+                                                @foreach ($pedido->productos as $producto)
+                                                    @php
+                                                        switch ($producto->estado) {
+                                                            case 'STA':
+                                                            case 'COR':
+                                                                $estado="Correcto";
+                                                                break;
+                                                            case 'BUE':
+                                                            case 'MBU':
+                                                                $estado="Muy bueno";
+                                                                break;
+                                                            case 'IMP':
+                                                                $estado="Excelente";
+                                                                break;
+                                                            default:
+                                                                $estado="";
+                                                                break;
+                                                        }
+                                                    @endphp
+                                                    @switch($pedido->enviado)
+                                                        @case("pendiente")
+                                                            <tr class="bg-amber-50">
+                                                            @break
+                                                        @case("aceptado")
+                                                            <tr class="bg-blue-50">
+                                                            @break
+                                                        @case("procesado")
+                                                            <tr class="bg-green-100">
+                                                            @break
+                                                        @case("rechazado")
+                                                            <tr class="bg-red-50">
+                                                            @break
+                                                        @default
+                                                            <tr>
+                                                            @break
+                                                    @endswitch
+                                                    
+                                                        <td class="py-3 whitespace-nowrap text-center">{{ $pedido->id }}</td>
+                                                        <td class="py-3 text-center">{{ $producto->nombre." ". $producto->capacidad." ".$producto->color." ".($producto->libre ? 'Libre':'')." ".$producto->bateria}}</td>
+                                                        <td class="py-3 text-center">{{ $estado }}</td>
+                                                        <td class="py-3 text-center">{{ $producto->pivot->unidades }}</td>
+                                                        <td class="py-3 whitespace-nowrap text-center">{{ number_format($producto->precioD, 2, ',', '.') . ' €' }}</td>
+                                                        <td class="py-3 text-center">{{ $pedido->metodoPago }}</td>
+                                                        <td class="py-3 whitespace-nowrap text-center">{{ $pedido->created_at }}</td>
+                                                        <td class="py-3 text-center">
+                                                            @switch($pedido->enviado)
+                                                            @case("pendiente")
+                                                                <span class="text-amber-700 font-bold capitalize">{{ $pedido->enviado }}</span>
+                                                                @break
+                                                            @case("aceptado")
+                                                                <span class="text-blue-700 font-bold capitalize">{{ $pedido->enviado }}</span>
+                                                                @break
+                                                            @case("procesado")
+                                                                <span class="text-green-700 font-bold capitalize">{{ $pedido->enviado }}</span>
+                                                                @break
+                                                            @case("rechazado")
+                                                                <span class="text-red-700 font-bold capitalize">{{ $pedido->enviado }}</span>
+                                                                @break
+                                                            @default
+                                                                {{ $pedido->enviado }}
+                                                                @break
+                                                        @endswitch
+                                                        {{-- {{$pedido->enviado}} --}}
+                                                            
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                             @endforeach
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             @endif
                         </div>
