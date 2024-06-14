@@ -353,9 +353,15 @@ class CartController extends Controller{
                 // Si el producto no está en el carrito, agregarlo
                 if (!$productExists) {
                     // Añadir el producto al carrito
+                    $regex = '/^(.*?)\s*(\d+\s*[MTG]B)\s*-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*(?:-\s*(\bLibre\b))?(\s*-\s*)?(.*)/i';
+                    if (preg_match($regex, $tituloSku, $matches)) {
+                        // El nombre del teléfono
+                        $nombre = isset($matches[1]) ? trim($matches[1]) : 'pepe';
+                    }
                     $cookieCart[] = [
                         'titulo_imagen' => $tituloImagen,
                         'titulo_sku' => $tituloSku,
+                        'nombre' => $nombre,
                         'cantidad' => $cantidadProducto,
                         'titulo_producto' => $tituloProducto,
                         'precio_producto' => $precioProducto,
