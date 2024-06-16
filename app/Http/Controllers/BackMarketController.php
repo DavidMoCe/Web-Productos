@@ -13,13 +13,14 @@ use Illuminate\Support\Facades\Auth;
 
 class BackMarketController extends Controller{
     protected $backMarketApi;
-    Protected $productosPorPaginas= 50;
+    Protected $productosPorPaginas= 10;
     // Constructor del controlador
     public function __construct(BackMarketApi $backMarketApi){
         $this->backMarketApi = $backMarketApi;
     }
 
     // Método para obtener los productos en linea de Back Market Pagina por pagina, para la página de productos
+    //(PUEDE OMITIRSE E IR DIRECTAMENTE A ProductController)
     public function mostrarProductos(Request $request){
         try {
             // Obtener el valor del parámetro de página de la solicitud
@@ -65,6 +66,7 @@ class BackMarketController extends Controller{
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     // Método para obtener todos los productos en linea de Back Market Devuelve una coleccion
     public function obtenerTodosEnLinea(){
@@ -156,6 +158,35 @@ class BackMarketController extends Controller{
     }
 
     // Parte de detalles del producto
+    public function ObtenerUnProductoBD(Request $request){
+        // Obtener los parametros del producto
+        $productoSeleccionado= $this->tipoTelefono($request);
+        $capacidad= $this->capacidad($request);
+        $color= $this->color($request);
+        $mejor_precio= $this->mejor_Precio($request);
+        $mas_popular= $this->mas_popular($request);
+        $scroll=false;
+     
+        // Verificar si el producto existe
+        if ($productoSeleccionado) {
+            //obtenemos los productos que coincidan con el productoseleccionado de la bd
+            $productosFiltrados = Producto::where('nombre', $productoSeleccionado)->where('stock', '>', 0)->get();
+
+            //añadimos los datos que no son nulos a la vista
+            $data = ['info_producto' => $productosFiltrados];
+            $variables = ['productoSeleccionado', 'capacidad', 'color','mejor_precio','mas_popular'];
+            //comprobamos si es null o no 
+            foreach ($variables as $variable) {
+                if (isset($$variable)) {
+                    $data[$variable] = $$variable;
+                }
+            }
+            return view('producto.info_productsBD',$data);
+        }else{
+            return redirect()->route('products');
+        }
+    }
+
     public function ObtenerUnProducto(Request $request){
         // Obtener los parametros del producto
         $productoSeleccionado= $this->tipoTelefono($request);
@@ -164,11 +195,10 @@ class BackMarketController extends Controller{
         $mejor_precio= $this->mejor_Precio($request);
         $mas_popular= $this->mas_popular($request);
         $scroll=false;
-        //print_r($productoSeleccionado);
+        
 
         // Verificar si el producto existe
         if ($productoSeleccionado) {
-
             // Obtener los productos de la funcion obtenerTodosEnLínea
             $productosColeccion = $this->obtenerTodosEnLinea();
             //filtramos el producto que coincida con algo del titulo
@@ -190,6 +220,7 @@ class BackMarketController extends Controller{
                 }
             });
 
+            //añadimos los datos que no son nulos a la vista
             $data = ['info_producto' => $productosFiltrados];
             $variables = ['productoSeleccionado', 'capacidad', 'color','mejor_precio','mas_popular'];
             //comprobamos si es null o no 
@@ -266,6 +297,8 @@ class BackMarketController extends Controller{
         }
         return '';
     }
+
+    //SE PUEDE BORRAR
     public function peticionProductos(Request $request){
         try {
             // Definir una colección para almacenar los colores únicos y las capacidades unicas
@@ -631,6 +664,402 @@ class BackMarketController extends Controller{
         }
     }
 
+    public function peticionProductosBD(Request $request){
+        try {
+            // Definir una colección para almacenar los colores únicos y las capacidades unicas
+            $coloresUnicos = new \Illuminate\Support\Collection();
+            $capacidadesUnicas = new \Illuminate\Support\Collection();
+
+            // Obtener todos los productos en línea
+            $productosColeccion = $this->obtenerTodosEnLinea();
+
+            // Obtener el título del producto de la solicitud
+            $tituloProducto = $request->input('titulo_producto');
+            $estadoCheckbox = $request->input('estadoCheckbox');
+            $estadoProducto = $request->input('estadoProducto');
+            $productoCapacidad = $request->input('productoCapacidad');
+            $productoColor = $request->input('productoColor');
+            $productoSinBateria= false;
+            $productoConBateria= false;
+
+                //si el checkbox esta marcado
+                if($estadoCheckbox==='true'){
+                    //comprobamos si existe el producto con NEWBATTERY
+                    if($estadoProducto === "estado_correcto"){
+                        //preg_match('/NEW\s*BATTERY/i', $producto->bateria)
+                        // Filtrar productos que coincidan con el título, tengan NEWBATTERY, la capacidad seleccionada y el color
+                        $productosFiltrados = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'COR')
+                                  ->orWhere('estado', 'STA');
+                        }) ->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+
+                        $productoEncontradoSinBateria = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'COR')
+                                  ->orWhere('estado', 'STA');
+                        })->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')
+                        ->where('stock', '>', 0)->first();
+
+                        if ($productoEncontradoSinBateria) {
+                            $productoSinBateria = true;
+                        }
+                    }elseif($estadoProducto === "estado_bueno"){
+                        // Filtrar productos que coincidan con el título y tengan en el sku NEWBATTERY
+                        $productosFiltrados = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'BUE')
+                                  ->orWhere('estado', 'MBU');
+                        }) ->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+
+                        $productoEncontradoSinBateria = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'BUE')
+                                  ->orWhere('estado', 'MBU');
+                        })->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')
+                        ->where('stock', '>', 0)->first();
+
+                        if ($productoEncontradoSinBateria) {
+                            $productoSinBateria = true;
+                        }
+                    }elseif($estadoProducto === "estado_impecable"){
+                        // Filtrar productos que coincidan con el título y tengan en el sku NEWBATTERY
+                        $productosFiltrados = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where('estado', 'IMP')->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+
+                        $productoEncontradoSinBateria = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where('estado', 'IMP')->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')
+                        ->where('stock', '>', 0)->first();
+
+                        if ($productoEncontradoSinBateria) {
+                            $productoSinBateria = true;
+                        }
+                    }
+                    //obtener el precio de los tres estados con NEWBATTERY para ponerlo en el estado
+                    $precioCOR1 = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'COR')
+                                  ->orWhere('estado', 'STA');
+                        }) ->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+                    
+                    $precioBUE1 = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'BUE')
+                                  ->orWhere('estado', 'MBU');
+                        }) ->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+
+                    $precioIMP1 = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where('estado', 'IMP')->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+
+                    //obtener los colores disponibles en una determinada capacidad
+                        // Filtrar productos para obtener los que coinciden con el título del producto y ciertas condiciones
+                        $coloresProducto = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)
+                        ->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->get();
+
+                        $coloresUnicos = collect();
+
+                        // Iterar sobre los productos filtrados para extraer los colores
+                        $coloresProducto->each(function ($producto) use ($coloresUnicos) {
+                            preg_match('/\s*([a-zA-ZáéíóúñÑÁÉÍÓÚ\s]+)/', $producto->color, $matches);
+                            if (isset($matches[1])) {
+                                $colorUnico= trim($matches[1]);
+                                 // Reemplazar valores específicos
+                                if (strtolower($colorUnico) === "product") {
+                                    $colorUnico = "Rojo";
+                                }
+                                $coloresUnicos->add($colorUnico);
+                            }
+                        });
+                        // Convertir la colección en un array y eliminar duplicados
+                        $coloresUnicosArray = $coloresUnicos->unique()->values()->toArray();
+
+                    //obtener la capacidad segun el color
+                        // Filtrar productos para obtener los que coinciden con el título del producto y ciertas condiciones
+                        $capacidadesProducto = Producto::where('nombre', $tituloProducto)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->get();
+
+                        $coloresUnicos = collect();
+
+                        // Iterar sobre los productos filtrados para extraer las capacidades
+                        $capacidadesProducto->each(function ($producto) use ($capacidadesUnicas) {
+                            preg_match('/^(\d+)\s*([MTG]B\b)$/i', $producto->capacidad, $matches);
+                            if (isset($matches)) {
+                                // Obtener la capacidad encontrada
+                                $capacidadUnica = '';
+                                if (strtoupper($matches[2]) === "GB") {
+                                    $capacidadUnica = $matches[1] . "GB";
+                                } else if (strtoupper($matches[2]) === "MB") {
+                                    $capacidadUnica = $matches[1] . "MB";
+                                } else if (strtoupper($matches[2]) === "TB") {
+                                    $capacidadUnica = $matches[1] . "TB";
+                                } else {
+                                    // Si no es GB, MB ni TB, asumimos GB por defecto
+                                    $capacidadUnica = $matches[1] . "GB";
+                                }
+                                $capacidadesUnicas->add(trim($capacidadUnica));
+                            }
+                        });
+                        // Convertir la colección en un array y eliminar duplicados
+                        $capacidadesUnicasArray = $capacidadesUnicas->unique()->values()->toArray();
+
+                }else{
+                    if($estadoProducto === "estado_correcto"){
+                        // Filtrar productos que coincidan con el título y NO tengan en el sku NEWBATTERY
+                        $productosFiltrados = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'COR')
+                                  ->orWhere('estado', 'STA');
+                        })->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')
+                        ->where('stock', '>', 0)->first();
+                        
+                        
+                        $productoEncontradoConBateria = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'COR')
+                                  ->orWhere('estado', 'STA');
+                        }) ->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+
+                        if ($productoEncontradoConBateria) {
+                            $productoConBateria = true;
+                        }
+                    }elseif($estadoProducto === "estado_bueno"){
+                        // Filtrar productos que coincidan con el título y NO tengan en el sku NEWBATTERY
+                        $productosFiltrados = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'BUE')
+                                  ->orWhere('estado', 'MBU');
+                        })->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')
+                        ->where('stock', '>', 0)->first();
+
+                        $productoEncontradoConBateria = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where(function ($query) {
+                            $query->where('estado', 'BUE')
+                                  ->orWhere('estado', 'MBU');
+                        }) ->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+
+                        if ($productoEncontradoConBateria) {
+                            $productoConBateria = true;
+                        }
+                    }elseif($estadoProducto === "estado_impecable"){
+                        // Filtrar productos que coincidan con el título y NO tengan en el sku NEWBATTERY
+                        $productosFiltrados = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where('estado', 'IMP')->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')
+                        ->where('stock', '>', 0)->first();
+
+                        $productoEncontradoConBateria = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where('estado', 'IMP')->where(function ($query) {
+                            $query->where('bateria', 'NEW BATTERY')
+                                  ->orWhere('bateria', 'NEWBATTERY');
+                        })->where('stock', '>', 0)->first();
+
+                        if ($productoEncontradoConBateria) {
+                            $productoConBateria = true;
+                        }
+                    }
+                    //obtener el precio de los tres estados sin NEWBATTERY para ponerlo en el estado
+                    $precioCOR1 = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                    ->where(function ($query) {
+                        $query->where('estado', 'COR')
+                              ->orWhere('estado', 'STA');
+                    })->where('bateria', '!=', 'NEW BATTERY')
+                    ->where('bateria', '!=', 'NEWBATTERY')
+                    ->where('stock', '>', 0)->first();
+
+                    $precioBUE1 = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                    ->where(function ($query) {
+                        $query->where('estado', 'BUE')
+                              ->orWhere('estado', 'MBU');
+                    }) ->where('bateria', '!=', 'NEW BATTERY')
+                    ->where('bateria', '!=', 'NEWBATTERY')
+                    ->where('stock', '>', 0)->first();
+
+                    $precioIMP1 = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)->where('color', $productoColor)
+                        ->where('estado', 'IMP')->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')
+                        ->where('stock', '>', 0)->first();
+
+                    //obtener los colores disponibles en una determinada capacidad
+                        // Filtrar productos para obtener los que coinciden con el título del producto y ciertas condiciones
+                        $coloresProducto = Producto::where('nombre', $tituloProducto)->where('capacidad', $productoCapacidad)
+                        ->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')->where('stock', '>', 0)->get();
+
+                        $coloresUnicos = collect();
+
+                        // Iterar sobre los productos filtrados para extraer los colores
+                        $coloresProducto->each(function ($producto) use ($coloresUnicos) {
+                            preg_match('/\s*([a-zA-ZáéíóúñÑÁÉÍÓÚ\s]+)/', $producto->color, $matches);
+                            if (isset($matches[1])) {
+                                $colorUnico= trim($matches[1]);
+                                 // Reemplazar valores específicos
+                                if (strtolower($colorUnico) === "product") {
+                                    $colorUnico = "Rojo";
+                                }
+                                $coloresUnicos->add($colorUnico);
+                            }
+                        });
+                        // Convertir la colección en un array y eliminar duplicados
+                        $coloresUnicosArray = $coloresUnicos->unique()->values()->toArray();
+                        
+                    //obtener la capacidad segun el color
+                        // Filtrar productos para obtener los que coinciden con el título del producto y ciertas condiciones de SKU
+                        $capacidadesProducto = Producto::where('nombre', $tituloProducto)->where('color', $productoColor)
+                        ->where('bateria', '!=', 'NEW BATTERY')
+                        ->where('bateria', '!=', 'NEWBATTERY')->where('stock', '>', 0)->get();
+
+                        $coloresUnicos = collect();
+
+                        // Iterar sobre los productos filtrados para extraer las capacidades
+                        $capacidadesProducto->each(function ($producto) use ($capacidadesUnicas) {
+                            preg_match('/^(\d+)\s*([MTG]B\b)$/i', $producto->capacidad, $matches);
+                            if (isset($matches)) {
+                                // Obtener la capacidad encontrada
+                                $capacidadUnica = '';
+                                if (strtoupper($matches[2]) === "GB") {
+                                    $capacidadUnica = $matches[1] . "GB";
+                                } else if (strtoupper($matches[2]) === "MB") {
+                                    $capacidadUnica = $matches[1] . "MB";
+                                } else if (strtoupper($matches[2]) === "TB") {
+                                    $capacidadUnica = $matches[1] . "TB";
+                                } else {
+                                    // Si no es GB, MB ni TB, asumimos GB por defecto
+                                    $capacidadUnica = $matches[1] . "GB";
+                                }
+                                $capacidadesUnicas->add(trim($capacidadUnica));
+                            }
+                        });
+                        // Convertir la colección en un array y eliminar duplicados
+                        $capacidadesUnicasArray = $capacidadesUnicas->unique()->values()->toArray();
+                    
+                }
+
+                //si existe el producto en los estados, se pone el precio si no se pone 0
+                if(isset($precioCOR1)){
+                    $precioCOR = $precioCOR1->precioD;
+                }else{
+                    $precioCOR = 0;
+                }
+                if(isset($precioBUE1)){
+                    $precioBUE = $precioBUE1->precioD;
+                }else{
+                    $precioBUE = 0;
+                }
+                if(isset($precioIMP1)){
+                    $precioIMP = $precioIMP1->precioD;
+                }else{
+                    $precioIMP = 0;
+                }
+
+                //si productosFiltrados es null, si precioCOR==0 miramos el precioBUE y si no precioIMP y mostramos el primero que  encuentres en cualquiera de los tres estados
+                if(!isset($productosFiltrados)){
+                    if($precioCOR!=0){
+                        $productosFiltrados = $precioCOR1;
+                    }elseif($precioBUE!=0){
+                        $productosFiltrados = $precioBUE1;
+                    }elseif($precioIMP!=0){
+                        $productosFiltrados = $precioIMP1;
+                    }
+                }
+
+            $productBat='NoHay';
+            //si hay productos con barteria mandar conBat y si hay productos sin bateria mandar sinBat
+            if($estadoCheckbox=='true' && $productoConBateria ==false && $productoSinBateria ==true){
+                $productBat = 'haySinBat';
+            }
+            if($estadoCheckbox=='false' && $productoSinBateria ===false && $productoConBateria ===true){
+                $productBat = 'hayConBat';
+            }
+               
+            if($productosFiltrados){
+                $productosFiltradosPrecio = $productosFiltrados->precioD;
+            }else{
+                $productosFiltradosPrecio = 0;
+            }
+            if($productosFiltrados){
+                //sacamos el sku
+                $productosFiltradosSku = $productosFiltrados->nombre.' '.$productosFiltrados->capacidad.' - '.$productosFiltrados->color.($productosFiltrados->libre ? ' - Libre ' : '').($productosFiltrados->bateria ? ' '.$productosFiltrados->bateria.' ' : '').$productosFiltrados->estado;
+                //sacamos el titulo
+                $titulo_producto= $productosFiltrados->nombre.' '.$productosFiltrados->capacidad.' '.$productosFiltrados->color.($productosFiltrados->libre ? ' - Libre' : '');
+                
+                //sacamos el nombre de la imagen
+                $nombre= $productosFiltrados->nombre;
+                            
+                $patron = '/iphone \d+/i';
+                if (preg_match($patron, $nombre, $matches)) {
+                    $nombre= $matches[0];
+                }
+                $nombreImagen= str_replace(' ','',$nombre.'-'.$productosFiltrados->color);
+                //la ponemos en minuscula
+                $nombreImagen= strtolower($nombreImagen);
+            }else{
+                $productosFiltradosSku = '';
+                $titulo_producto='';
+                $nombreImagen='';
+            }
+
+            //obtenemos el stock total del producto
+            if($productosFiltrados){
+                $stock_total=$productosFiltrados->stock;
+            }else{
+                $stock_total=0;
+            }
+
+            // Devolver los precios y estados de los productos filtrados como respuesta JSON
+            return response()->json(['stock_total'=> $stock_total,'titulo1'=>$tituloProducto,'capacidadActivar'=>$capacidadesUnicasArray, 'colorActivar'=>$coloresUnicosArray, 'imput' => $estadoCheckbox, 'titulo' => $titulo_producto, 'sku' => $productosFiltradosSku, 'precio' => $productosFiltradosPrecio,
+             'estado' => $estadoProducto, 'productoSinBateria' => $productoSinBateria, 'productoConBateria' => $productoConBateria,'precioCOR'=>$precioCOR,'precioBUE'=>$precioBUE,'precioIMP'=>$precioIMP,'productBat'=>$productBat, 'capacidad'=>$productoCapacidad, 'nombreIMG'=>$nombreImagen]);
+
+        } catch (\Exception $e) {
+            // Verificar si el checkbox está activado
+            $checkboxActivado = $request->input('estadoCheckbox') === 'true';
+
+            // Si el checkbox está activado, intentar nuevamente la solicitud o realizar las comprobaciones nuevamente
+            if ($checkboxActivado) {
+               return $this->peticionProductosBD($request->merge(['estadoCheckbox' => 'false']));
+            } else {
+               return $this->peticionProductosBD($request->merge(['estadoCheckbox' => 'true']));
+            }
+
+            // Manejar cualquier excepción que pueda ocurrir durante la solicitud
+            return response()->json(['noStock' => 'No hay productos','error' => $e->getMessage()], 500);
+        }
+    }
+
     //parte carrito
     public function mostrarUnProducto($sku){
         try {           
@@ -800,14 +1229,18 @@ class BackMarketController extends Controller{
                         //     $capacidad= preg_replace('/(\d+)([A-Za-z]+)/', '$1 $2', $capacidad);
                         // }
                         // Buscar el producto en la base de datos basándose en los valores obtenidos del SKU
-                        
+                        if(isset($productoData['min_price'])&& $productoData['min_price']!=0){
+                            $precio= $productoData['min_price'];
+                        }else{
+                            $precio = 0;
+                        }
                         Producto::updateOrCreate(
                             [
                                 'nombre' => $nombre,
                                 'capacidad' => $capacidad,
                                 'descripcion' => $productoData['comment'],
-                                'precioA' => $productoData['price'],
-                                'precioD' => $productoData['min_price'],
+                                'precioA' => $precio,
+                                'precioD' => $precio,
                                 'color' => $color,
                                 'libre' => $libre,
                                 'bateria' => $bateria,

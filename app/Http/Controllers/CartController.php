@@ -30,7 +30,7 @@ class CartController extends Controller{
         $regex = '/^(.*?)\s*(\d+\s*[MTG]B)\s*-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*(?:-\s*(\bLibre\b))?(\s*-\s*)?(.*)/i';
         $regex1 = '/\bNew\s*battery\b/i';
         $regex2 = '/\b(\w+)\b$/i';
-
+        
         // Inicializar las variables fuera de los bloques if
         $bateria = '';
         $estado = '';
@@ -180,7 +180,7 @@ class CartController extends Controller{
             $cookieCart = session()->get('cart', []);
             // Verificar el stock del carrito de la cookie antes de mostrarlo al usuario
             if(!empty($cookieCart)){
-                $cookieCart = $this->verificarStockCarrito($cookieCart);
+                $cookieCart = $this->verificarStockCarritoBD($cookieCart);
             }
         }
         // Pasar los datos del carrito a la vista
@@ -191,18 +191,20 @@ class CartController extends Controller{
         try {
             // Recorrer los productos del carrito para verificar el stock
             foreach ($carrito as &$item) {
-                $user = Auth::user();
-                if($user){
+                
+                    $partesSku = $this->separarSku($item['titulo_sku']);
+                    $libre = $partesSku['libre'];
+                    $libre = isset($libre) && $libre != '' ? true : false;
+                    
                     // Recorrer los productos del carrito para verificar el stock en la base de datos
                     // Obtener el producto desde la base de datos
                     $producto = Producto::where('nombre', $item['nombre'])
                                         ->where('capacidad', $item['capacidad'])
                                         ->where('color', $item['color'])
-                                        ->where('libre', $item['libre'])
-                                        ->where('bateria', $item['bateria'])
-                                        ->where('estado', $item['estado_producto'])
-                                        ->first();
-
+                                        ->where('libre', $libre)
+                                        ->where('bateria', $partesSku['bateria'])
+                                        ->where('estado', $partesSku['estado'])
+                                        ->first();                 
                     if ($producto && $producto->stock > 0) {
                         // Si hay stock disponible, actualizar la cantidad en el carrito
                         $item['stock_total'] = $producto->stock;
@@ -211,16 +213,17 @@ class CartController extends Controller{
                         // Si no hay stock disponible, establecer el stock en 0 y agregar un mensaje
                         $item['stock_total'] = 0;
                         $item['mensaje_stock'] = "NoStock";
-                    }
-                }   
+                    }  
+                    
             }
+            
             return $carrito;
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Error al verificar el stock del carrito: ' . $e->getMessage()], 500);
         }
     }
 
-    //comprobar el stock de los productos del carrito en backmarket MUESTRA EL STOCK DE BACKMARKET
+    //comprobar el stock de los productos del carrito en backmarket MUESTRA EL STOCK DE BACKMARKET (SE PUEDE ELIMINAR)
     public function verificarStockCarrito($carrito){
         try {
             // Recorrer los productos del carrito para verificar el stock
@@ -241,10 +244,10 @@ class CartController extends Controller{
             }
             return $carrito;
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Error al verificar el stock del carrito: ' . $e->getMessage()], 500);
         }
     }
-    //comprobar stock de un producto solo
+    //comprobar stock de un producto solo (SE PUEDE ELIMINAR)
     public function verificarStockProducto($productoSku){
         try {
             // Obtener todos los productos en línea desde BackMarketController
@@ -266,6 +269,42 @@ class CartController extends Controller{
             return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
         }
     }
+
+    //comprobar stock de un producto solo
+    public function verificarStockProductoBD($productoSku){
+        try {
+            
+            // Obtener el stock del producto de la bd
+            $partesSku = $this->separarSku($productoSku);
+
+            $libre = $partesSku['libre'];
+            $libre = isset($libre) && $libre != '' ? true : false;
+
+            $producto = Producto::where('nombre', $partesSku['nombre'])
+                ->where('capacidad', $partesSku['capacidad'])
+                ->where('color', $partesSku['color'])
+                ->where('libre', $libre)
+                ->where('bateria', $partesSku['bateria'])
+                ->where('estado', $partesSku['estado'])
+                ->first();          
+
+            if ($producto && $producto['quantity'] > 0) {
+                // Si hay stock disponible, actualiza la cantidad en el carrito
+                $item['stock_total'] = $producto['stock'];
+                $item['mensaje_stock'] = "HayStock";
+                //$item['mensaje_stock'] = "Hay {$producto['quantity']} disponibles";
+            } else {
+                // Si no hay stock disponible, establece el stock en 0 y agrega un mensaje
+                $item['stock_total'] = 0;
+                $item['mensaje_stock'] = "NoStock";
+            }
+    
+            return $producto;
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al verificar el stock: ' . $e->getMessage()], 500);
+        }
+    }
+    
     //añadir producto al carrito
     public function add(Request $request){
         try {
@@ -290,6 +329,7 @@ class CartController extends Controller{
                 $carrito = Carrito::firstOrCreate(['usuario_id' => $user->id]);
                 // Separar el SKU en partes (nombre, capacidad, color, libre, bateria, estado)
                 $partesSku = $this->separarSku($tituloSku);
+                
                 // Verificar si la función devolvió un resultado válido
                 if (!empty($partesSku)) {
                     // Aquí puedes utilizar $partesSku para acceder a las partes del SKU
@@ -339,10 +379,11 @@ class CartController extends Controller{
                 $productExists = false;
                 // Verificar si el producto ya está en el carrito
                 foreach ($cookieCart as &$item) {
+                    
                     if ($item['titulo_sku'] === $tituloSku) {
                         //si hay mas stock de ese producto, se suma si no se queda igual
-                        $productoCarrito = $this->verificarStockProducto($tituloSku);
-                        if($productoCarrito['quantity']>$item['cantidad']){
+                        $productoCarrito = $this->verificarStockProductoBD($tituloSku);
+                        if($productoCarrito['stock']>$item['cantidad']){
                             // Si el producto ya está en el carrito, aumentar la cantidad y actualizar el carrito en la sesión
                             $item['cantidad'] += $cantidadProducto;
                         }
@@ -353,25 +394,33 @@ class CartController extends Controller{
                 // Si el producto no está en el carrito, agregarlo
                 if (!$productExists) {
                     // Añadir el producto al carrito
-                    $regex = '/^(.*?)\s*(\d+\s*[MTG]B)\s*-\s*([^-\s]+(?:\s+[^-\s]+)*)\s*(?:-\s*(\bLibre\b))?(\s*-\s*)?(.*)/i';
-                    if (preg_match($regex, $tituloSku, $matches)) {
-                        // El nombre del teléfono
-                        $nombre = isset($matches[1]) ? trim($matches[1]) : 'pepe';
-                    }
+                    $partesSku = $this->separarSku($tituloSku);
+                    // $regex = '/^(.*?)\s*(\d+\s*[MTG]B)\s*\s*([^-\s]+(?:\s+[^-\s]+)*)\s*(?:-\s*(\bLibre\b))?(\s*-\s*)?(.*)/i';
+                    // if (preg_match($regex, $tituloSku, $matches)) {
+                    //     // El nombre del teléfono
+                    //     $nombre = isset($matches[1]) ? trim($matches[1]) : '';
+                    // }
+                    $libre = $partesSku['libre'];
+                    $libre = isset($libre) && $libre != '' ? true : false;
+                    $bateria = $partesSku['bateria'];
+                    
                     $cookieCart[] = [
                         'titulo_imagen' => $tituloImagen,
                         'titulo_sku' => $tituloSku,
-                        'nombre' => $nombre,
+                        'nombre' => $partesSku['nombre'],
                         'cantidad' => $cantidadProducto,
                         'titulo_producto' => $tituloProducto,
                         'precio_producto' => $precioProducto,
                         'precio_producto_antiguo' => $precioProducto_antiguo,
-                        'estado' => $estado,
+                        'estado' => $partesSku['estado'],
                         'capacidad' => $capacidad,
                         'color' => $color,
+                        'bateria' => $bateria,
+                        'libre' => $libre,
                         'stock_total'=>$stock_total,
                     ];
                 }
+                
                 // Actualizar el carrito en la sesión
                 session()->put('cart', $cookieCart);
 
@@ -411,12 +460,12 @@ class CartController extends Controller{
             }else {
                 $cart = session()->get('cart', []);
                 $productoEncontrado = false;
-                foreach ($cart as $key => $item) {
-                    if ($item['titulo_sku'] === $sku) {  
+                foreach ($cart as $key => $item) {    
+                    if ($item['titulo_sku'] == $sku) {  
                         //se verifica el stock del producto
-                        $productoCarrito = $this->verificarStockProducto($sku);
+                        $productoCarrito = $this->verificarStockProductoBD($sku);
                         //si hay mas stock de ese producto se suma, si no se queda igual
-                        if($productoCarrito['quantity']>= $item['cantidad']){  
+                        if($productoCarrito['stock']>= $item['cantidad']){  
                             // Actualizar la cantidad del producto en el carrito
                             $cart[$key]['cantidad'] = $cantidad_sumar;
                             $productoEncontrado = true;

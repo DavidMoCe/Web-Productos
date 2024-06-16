@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', function() {
             loadingIcon.classList.add('hidden');
             loadingIcon.classList.remove('bg-slate-100/50');
             buyButton.disabled = false;
-        }, 1000);
+        }, 3000);
     }
     
     // Agregar clase para mostrar el icono de carga
@@ -31,13 +31,11 @@ window.addEventListener('DOMContentLoaded', function() {
         loadingIcon.classList.add('hidden');
         loadingIcon.classList.remove('bg-slate-100/50');
         buyButton.disabled = false;
-    }, 1000);
+    }, 3000);
 
     // Aplicar los efectos al hacer clic en un enlace
     links.forEach(function(link) {
         link.addEventListener('click', function(event) {
-            // Prevenir el comportamiento predeterminado de los enlaces
-            event.preventDefault();
             // Aplicar los efectos al hacer clic en el enlace
             applyClickEffects(link);
         });

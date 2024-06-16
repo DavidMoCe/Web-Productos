@@ -151,6 +151,7 @@
                 <div id="iphone-list" class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 sm:w-full sm:h-full m-auto">                      
                     <div class="container md:pt-4 md:p-8 mx-auto">
                         <div class="w-full overflow-x-auto">
+                            
                             @if (count($cookieCart) > 0)
                                 <form action="{{ route('confirm-address') }}" method="POST">
                                     @csrf

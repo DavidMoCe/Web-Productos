@@ -34,31 +34,33 @@
                 @endif
                 {{-----------------------------------------REALIZAR CAMBIOS, ENFOCANDOME EN LA BD-------------------}}
                 <div class="grid grid-cols-1 gap-x-6 gap-y-4 md:gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 xl:gap-x-8">
-                    @if (isset($productos))
+                    @if ($gruposPaginados->count() > 0)
                         <!-- obtenemos los productos de la BD -->
-                        @foreach($productos as $producto)
+                        @foreach($gruposPaginados as $grupoDeProductos)
+                        {{-- @foreach($productos as $producto) --}}
                             @php
-                                // Aplicar la expresión regular para capturar la capacidad
-                                if (preg_match('/\S*\s*(?!-)\S+/', $producto->descripcion, $matches)) {
-                                    // Obtener la coincidencia y asignarla a una variable
-                                    $capacidad = $matches[0];
+                            
+                                $producto = $grupoDeProductos[0];
+                                //sacamos el nombre de la imagen
+                                $nombre= $producto['nombre'];
+                                $patron = '/iphone \d+/i';
+                                if (preg_match($patron, $nombre, $matches)) {
+                                    $nombre= $matches[0];
                                 }
-                                //sacamos el nombre para la imagen
-                                //quitamos la capacidad y los espacios
-                                $nombreImagen= str_replace($capacidad,'',$producto->descripcion);
-                                $nombreImagen= str_replace(' ','',$producto->nombre.$nombreImagen);
+
+                                $nombreImagen= str_replace(' ','',$nombre.'-'.$producto['color']);
                                 //la ponemos en minuscula
                                 $nombreImagen= strtolower($nombreImagen);
                             @endphp
 
                             <div class="bg-white overflow-hidden hover:shadow-md rounded-lg p-5 w-11/12 sm:w-full sm:h-full m-auto">
-                                <a href='info_products' rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
+                                <a href={{ route('info_products',  ['producto' => $producto['nombre'], 'capacidad' => $producto['capacidad'], 'color' => $producto['color']]) }} rel="noreferrer noopener" class="group focus:outline-none group md:box-border relative grid grid-cols-3 sm:grid-cols-1 items-center">
                                     <div class="h-auto w-full overflow-hidden rounded-lg xl:aspect-h-8 xl:aspect-w-7 w-2/3 sm:w-fit pr-3">
-                                        <img src="./imagenes/{{$nombreImagen}}.jpg" alt="{{ $producto->nombre." ".$producto->descripcion }}" class="h-full w-full object-cover object-center">
+                                        <img src="./imagenes/{{$nombreImagen}}.jpg" alt="{{ $producto['nombre'].' '.$producto['capacidad'].' - '.$producto['color'].($producto['libre'] ? ' - Libre' : '').($producto['bateria'] ? ' '.$producto['bateria'] : '') }}" class="h-full w-full object-cover object-center">
                                     </div>
                                     <div class="col-span-2">
-                                        <h3 class="mt-4 text-base text-gray-700 font-bold">{{ $producto->nombre }}</h3>
-                                        <h3 class="mt-2 text-sm text-gray-700 mb-2">{{ $producto->descripcion }} </h3>
+                                        <h3 class="mt-4 text-base text-gray-700 font-bold">{{ $producto['nombre'] }}</h3>
+                                        <h3 class="mt-2 text-sm text-gray-700 mb-2">{{ $producto['capacidad'].' - '.$producto['color'].' - '.($producto['libre'] ? 'Libre' : '') }} </h3>
                                         <div class="flex items-center">
                                             <svg aria-label="filledStar" fill="currentColor" height="16" role="img" viewBox="0 0 48 48" width="16" xmlns="http://www.w3.org/2000/svg" class="text-primary">
                                                 <path d="m25.75 6.07 4.73 9.43A1.93 1.93 0 0032 16.55l10.56 1.51a1.92 1.92 0 011.09 3.28L36 28.68a1.91 1.91 0 00-.56 1.71l1.8 10.36a1.94 1.94 0 01-2.83 2l-9.45-4.89a2 2 0 00-1.82 0l-9.45 4.89a1.94 1.94 0 01-2.83-2l1.8-10.36a1.91 1.91 0 00-.56-1.71l-7.7-7.34a1.92 1.92 0 011.09-3.28l10.56-1.51a1.93 1.93 0 001.47-1.05l4.73-9.43a2 2 0 013.5 0Z"></path>
@@ -82,13 +84,7 @@
                                         </span> 
                                         <div>
                                             <span class="text-sm font-medium text-black-900">
-                                                <b> {{ str_replace('.', ',', number_format($producto->precioD, 2)) }}&nbsp;€</b>
-                                            </span>
-                                            <span class="line-through text-sm font-medium text-gray-600">
-                                                {{ str_replace('.', ',', number_format($producto->precioA, 2)) }}&nbsp;€
-                                                <span>
-                                                    nuevo
-                                                </span>
+                                                <b> {{ str_replace('.', ',', number_format($producto['precioD'], 2)) }}&nbsp;€</b>
                                             </span>
                                         </div>
                                     </div>
@@ -196,14 +192,16 @@
                 <div class="flex justify-center mt-4">
                     <nav class="block">
                         <ul class="flex pl-0 rounded list-none flex-wrap">
-                            @php
+                            {{-- @php
                                 $Totalpaginas = ceil($Totalproductos / $productosPorPaginas);
+
                             @endphp
                             @for ($x = 1; $x <= $Totalpaginas; $x++)
                                 <li>
                                     <a href="{{ route('products', ['page='.$x]) }}" class="pagination-link block hover:bg-gray-200 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200">{{ $x }}</a>
                                 </li>
-                            @endfor
+                            @endfor --}}
+                            {{ $gruposPaginados->links('vendor.pagination.paginacion') }}
                         </ul>
                     </nav>
                 </div>    
