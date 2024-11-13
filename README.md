@@ -31,7 +31,7 @@ Este proyecto es una tienda en línea para la venta de **productos reacondiciona
 
 2. Navega al directorio del proyecto:
    ```bash
-    cd tienda-reacondicionados
+    cd Web-Productos
 
 3. Instala las dependencias del proyecto:
    ```bash
