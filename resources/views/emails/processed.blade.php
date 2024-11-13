@@ -109,7 +109,7 @@
             <p class="text-lg font-bold">Total: {{ $orderDetails['total'] }}</p>
             <p class="text-lg">We will process your order shortly.</p>
             <p class="text-lg">Thank you for shopping with us!</p>
-            <p class="text-lg">Thanks,TouchPhone</p>
+            <p class="text-lg">Thanks,Titulo proyecto</p>
         </div>
     </div>
 </body>
