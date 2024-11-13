@@ -7,7 +7,7 @@
         {{-- <meta name="csrf-token" content="{{ csrf_token() }}"> --}}
         
         <!-- <title>Shop Homepage - Start Bootstrap Template</title> -->
-        <title>TouchPhone</title>
+        <title>Titulo proyecto</title>
         <!-- Favicon-->
         <!-- <link rel="icon" type="image/x-icon" href="assets/favicon.ico" /> -->
 
