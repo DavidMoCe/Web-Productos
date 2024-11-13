@@ -1,4 +1,4 @@
-@echo off
+a@echo off
 
 REM Inicia XAMPP
 echo Iniciando XAMPP, Apache y Mysql...
@@ -18,4 +18,4 @@ timeout /t 2 /nobreak > nul
 
 REM Ejecuta el comando php artisan schedule:work
 echo Ejecutando php artisan schedule:work...
-start /B "" cmd /c "cd /d C:\xampp\htdocs\Fullrenew && php artisan schedule:work > nul 2>&1"
+start /B "" cmd /c "cd /d C:\xampp\htdocs\carpeta && php artisan schedule:work > nul 2>&1"
