@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <!-- <title>Shop Homepage - Start Bootstrap Template</title> -->
-        <title>TouchPhone</title>
+        <title>Titulo proyecto</title>
         <!-- Favicon-->
         <!-- <link rel="icon" type="image/x-icon" href="assets/favicon.ico" /> -->
 
