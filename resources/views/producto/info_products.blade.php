@@ -197,7 +197,7 @@
                                         <div class="expert flex flex-row">
                                             <div
                                                 class="rounded-md mr-2 flex h-10 w-10 shrink-0 items-center justify-center">
-                                                <img alt="Reacondicionado por FullRenew"
+                                                <img alt="Reacondicionado por Tienda"
                                                     class="h-auto max-h-full max-w-full leading-none" decoding="async"
                                                     height="40" loading="lazy" sizes="100vw"
                                                     src="https://front-office.statics.backmarket.com/12cda31977eadf4334ee8c2516765201d2ece6c8/img/product/verified-refurbished/logo-with-bg.svg"
@@ -602,9 +602,9 @@
                                                     Reacondicionado por
                                                     <a href="#"
                                                         class="rounded-md font-bold font-weight-link cursor-pointer hover-hover underline"
-                                                        rel="noreferrer noopener" data-qa="seller-info">FullRenew</a>
+                                                        rel="noreferrer noopener" data-qa="seller-info">Tienda</a>
                                                 </p>
-                                                <p class="text-sm">Reacondicionador desde 2020, origen: España</p>
+                                                <p class="text-sm">Reacondicionador desde 2018, origen: España</p>
                                             </div>
                                         </div>
 
