@@ -66,7 +66,7 @@ This project is an online store for selling **refurbished products**. Developed 
 8. Access the application in your browser at `http://localhost:8000`. 🌟
 
 ### **License** 📜
-This project is licensed under the **CC BY-NC 4.0** license. See the `LICENSE` file for details.
+This project is licensed under the **CC BY-NC 4.0** license. See the [`LICENSE`](https://github.com/DavidMoCe/Web-Productos/blob/main/LICENSE.txt) file for details.
 
 ### **Credits** 👨‍💻
 Developed by **David Moreno Cerezo**.
@@ -138,7 +138,7 @@ Este proyecto es una tienda en línea para la venta de **productos reacondiciona
 8. Accede a la aplicación en tu navegador en http://localhost:8000. 🌟
 
 ### **Licencia** 📜
-Este proyecto está licenciado bajo la licencia **CC BY-NC 4.0**. Consulta el archivo `LICENSE` para más detalles.
+Este proyecto está licenciado bajo la licencia **CC BY-NC 4.0**. Consulta el archivo [`LICENSE`](https://github.com/DavidMoCe/Web-Productos/blob/main/LICENSE.txt) para más detalles.
 
 ### **Créditos** 👨‍💻
 Desarrollado por **David Moreno Cerezo**.
